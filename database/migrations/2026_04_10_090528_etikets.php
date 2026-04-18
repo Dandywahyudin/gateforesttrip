@@ -17,7 +17,6 @@ return new class extends Migration
                   ->constrained('reservasis', 'reservasiId')
                   ->cascadeOnDelete();
             $table->string('kode_tiket', 30)->unique();
-            $table->string('qr_code')->nullable();
             $table->string('file_path')->nullable();
             $table->enum('status', ['unused', 'used', 'expired'])->default('unused');
             $table->timestamp('created_at')->useCurrent();

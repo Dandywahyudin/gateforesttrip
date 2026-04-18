@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>GateForestTrip - Login</title>
+    <title>GateForestTrip - Masuk</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-white dark:bg-background-dark text-[#1c140d] dark:text-white antialiased">
@@ -17,24 +17,26 @@
             <!-- Content -->
             <div class="relative z-10 flex flex-col h-full justify-between">
                 <!-- Logo Area -->
+                <a href="/">
                 <div class="flex items-center gap-3">
-                    <span class="material-symbols-outlined text-primary text-4xl">forest</span>
+                    <img src="/images/logo/logo.png" alt="logo" class="w-12 h-12 object-contain">
                     <span class="text-2xl font-bold font-display uppercase text-white">GateForestTrip</span>
                 </div>
-                
+                </a>
+
                 <!-- Quote Area -->
                 <div class="max-w-md">
                     <h1 class="text-5xl font-black font-display leading-tight mb-6" style="text-shadow: 0 2px 10px rgba(0,0,0,0.3);">
-                        Discover nature's hidden paths.
+                        Temukan jalur petualangan terbaik.
                     </h1>
                     <p class="text-lg font-medium text-white/90">
-                        Join thousands of nature enthusiasts exploring the wildest corners of the world.
+                        Bergabunglah untuk menjelajahi trip alam terbaik dengan pengalaman yang lebih rapi dan praktis.
                     </p>
                 </div>
                 
                 <!-- Footer/Copyright -->
                 <div class="text-sm text-white/70">
-                    © 2024 GateForestTrip. All rights reserved.
+                    © 2026 GateForestTrip.
                 </div>
             </div>
         </div>
@@ -43,15 +45,17 @@
         <div class="flex w-full lg:w-1/2 flex-col justify-center items-center bg-white dark:bg-background-dark px-6 py-12 lg:px-20 overflow-y-auto">
             <div class="w-full max-w-[440px] flex flex-col gap-8">
                 <!-- Mobile Logo (Visible only on small screens) -->
+                <a href="/">
                 <div class="flex lg:hidden items-center gap-3 mb-4 self-center">
-                    <span class="material-symbols-outlined text-primary text-3xl">forest</span>
+                    <img src="/images/logo/logo.png" alt="logo" class="w-12 h-12 object-contain">
                     <span class="text-xl font-bold font-display text-gray-900 dark:text-white uppercase">GateForestTrip</span>
                 </div>
+                </a>
                 
                 <!-- Header -->
                 <div class="text-left">
-                    <h2 class="text-3xl font-black font-display text-gray-900 dark:text-white mb-2">Welcome back</h2>
-                    <p class="text-gray-500 dark:text-gray-400">Please enter your details to sign in.</p>
+                    <h2 class="text-3xl font-black font-display text-gray-900 dark:text-white mb-2">Selamat datang kembali</h2>
+                    <p class="text-gray-500 dark:text-gray-400">Masukkan data Anda untuk masuk ke akun.</p>
                 </div>
                 
                 <!-- Session Status -->
@@ -77,7 +81,7 @@
                                 class="w-full rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 px-4 py-3.5 text-base text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none @error('email') border-red-500 @enderror"
                                 id="email" 
                                 name="email"
-                                placeholder="name@gateforest.com" 
+                                placeholder="nama@contoh.com" 
                                 type="email"
                                 value="{{ old('email') }}"
                                 required
@@ -96,7 +100,7 @@
                                 class="w-full rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 px-4 py-3.5 text-base text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none @error('password') border-red-500 @enderror"
                                 id="password" 
                                 name="password"
-                                placeholder="Enter your password" 
+                                placeholder="Masukkan kata sandi" 
                                 type="password"
                                 required
                                 autocomplete="current-password"
@@ -113,10 +117,10 @@
                                 name="remember"
                                 type="checkbox"
                             >
-                            <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Remember me</span>
+                            <span class="text-sm font-medium text-gray-600 dark:text-gray-300">Ingat saya</span>
                         </label>
                         @if (Route::has('password.request'))
-                            <a class="text-sm font-bold text-primary hover:text-primary-dark transition-colors" href="{{ route('password.request') }}">Forgot Password?</a>
+                            <a class="text-sm font-bold text-primary hover:text-primary-dark transition-colors" href="{{ route('password.request') }}">Lupa kata sandi?</a>
                         @endif
                     </div>
                     
@@ -125,7 +129,7 @@
                         class="group flex w-full items-center justify-center gap-2 rounded-xl bg-primary hover:bg-primary-dark px-4 py-3.5 text-base font-bold text-white shadow-lg shadow-primary/30 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-background-dark transition-all active:scale-[0.98]"
                         type="submit"
                     >
-                        Log In
+                        Masuk
                         <span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-x-1">arrow_forward</span>
                     </button>
                 </form>
@@ -133,7 +137,7 @@
                 <!-- Divider -->
                 <div class="relative flex items-center py-2">
                     <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
-                    <span class="flex-shrink-0 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Or continue with</span>
+                    <span class="flex-shrink-0 px-4 text-xs font-medium text-gray-400 uppercase tracking-wider">Atau lanjut dengan</span>
                     <div class="flex-grow border-t border-gray-200 dark:border-gray-700"></div>
                 </div>
                 
@@ -156,8 +160,8 @@
                 <!-- Sign Up Link -->
                 <div class="text-center mt-4">
                     <p class="text-sm text-gray-600 dark:text-gray-400">
-                        Don't have an account? 
-                        <a class="font-bold text-primary hover:text-primary-dark transition-colors" href="{{ route('register') }}">Register for free</a>
+                        Belum punya akun? 
+                        <a class="font-bold text-primary hover:text-primary-dark transition-colors" href="{{ route('register') }}">Daftar sekarang</a>
                     </p>
                 </div>
             </div>

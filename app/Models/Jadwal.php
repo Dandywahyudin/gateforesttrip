@@ -19,12 +19,6 @@ class Jadwal extends Model
         'cutoff_booking'
     ];
 
-    protected $casts = [
-        'tanggal_berangkat' => 'datetime',
-        'tanggal_kembali' => 'datetime',
-        'cutoff_booking' => 'datetime',
-    ];
-
     public function paketTrip()
     {
         return $this->belongsTo(PaketTrip::class, 'paketId');

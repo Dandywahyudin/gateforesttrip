@@ -3,113 +3,109 @@
 @section('title', $paket->nama . ' - GateForestTrip')
 
 @section('content')
-<!-- Hero Section with Image Gallery & Booking Card -->
-<section class="w-full bg-white pt-24">
-    <div class="max-w-[1440px] mx-auto px-6 lg:px-16 py-8">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Left: Image Gallery -->
-            <div class="space-y-3">
-                <!-- Main Image -->
-                <div class="rounded-lg overflow-hidden shadow-lg h-[300px] md:h-[400px]">
-                    <img id="gallery-main" src="{{ $paket->foto ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=600&fit=crop' }}" 
-                         alt="{{ $paket->nama }}" class="w-full h-full object-cover cursor-zoom-in transition-transform hover:scale-105 duration-300">
+<section class="w-full pt-24 pb-10 bg-[radial-gradient(circle_at_top_left,_rgba(21,128,61,0.12),_transparent_35%),linear-gradient(to_bottom,_#ffffff,_#f8faf7)]">
+    <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
+        <div class="mb-6">
+            <x-breadcrumbs :items="[
+                ['label' => 'Home', 'url' => url('/')],
+                ['label' => 'Trip', 'url' => route('paket-trip.index')],
+                ['label' => $paket->nama, 'url' => null],
+            ]" />
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-[1.25fr_0.85fr] gap-8 items-start">
+            <div class="space-y-4">
+                <div class="relative overflow-hidden rounded-[32px] border border-white/60 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.12)]">
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent z-10"></div>
+                    <div class="absolute left-5 top-5 z-20 flex flex-wrap gap-2">
+                        <span class="inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.28em] text-forest-green backdrop-blur-sm">
+                            {{ $paket->kategori }}
+                        </span>
+                        <span class="inline-flex items-center rounded-full bg-primary/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.28em] text-white backdrop-blur-sm">
+                            Open Trip
+                        </span>
+                    </div>
+
+                    <div class="aspect-[16/11] w-full">
+                        <img id="gallery-main" src="{{ $paket->foto_url ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=600&fit=crop' }}" alt="{{ $paket->nama }}" class="h-full w-full object-cover transition-transform duration-700 hover:scale-105">
+                    </div>
+
+                    <div class="absolute inset-x-0 bottom-0 z-20 p-5 md:p-7">
+                        <div class="max-w-2xl space-y-2 text-white">
+                            <p class="text-[10px] font-black uppercase tracking-[0.35em] text-white/75">Paket Trip Pilihan</p>
+                            <h1 class="text-3xl md:text-5xl font-display font-black uppercase leading-tight drop-shadow-md">
+                                {{ $paket->nama }}
+                            </h1>
+                            <p class="text-sm md:text-base text-white/85 tracking-wide">{{ $paket->lokasi }}</p>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Thumbnails -->
-                <div class="grid grid-cols-4 gap-2">
-                    <div class="gallery-thumb rounded-lg overflow-hidden cursor-pointer border-2 border-primary h-20" 
-                         onclick="updateGallery('{{ $paket->foto ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=600&fit=crop' }}')">
-                        <img src="{{ $paket->foto ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop' }}" 
-                             alt="Foto 1" class="w-full h-full object-cover hover:scale-110 transition-transform">
-                    </div>
-                    <div class="gallery-thumb rounded-lg overflow-hidden cursor-pointer border-2 border-forest-green/20 hover:border-primary h-20 transition-colors" 
-                         onclick="updateGallery('{{ $paket->foto2 ?? 'https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=200&h=200&fit=crop' }}')">
-                        <img src="{{ $paket->foto2 ?? 'https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=200&h=200&fit=crop' }}" 
-                             alt="Foto 2" class="w-full h-full object-cover hover:scale-110 transition-transform">
-                    </div>
-                    <div class="gallery-thumb rounded-lg overflow-hidden cursor-pointer border-2 border-forest-green/20 hover:border-primary h-20 transition-colors" 
-                         onclick="updateGallery('{{ $paket->foto3 ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=200&h=200&fit=crop' }}')">
-                        <img src="{{ $paket->foto3 ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=200&h=200&fit=crop' }}" 
-                             alt="Foto 3" class="w-full h-full object-cover hover:scale-110 transition-transform">
-                    </div>
-                    <div class="gallery-thumb rounded-lg overflow-hidden cursor-pointer border-2 border-forest-green/20 hover:border-primary h-20 transition-colors" 
-                         onclick="updateGallery('{{ $paket->foto4 ?? 'https://images.unsplash.com/photo-1511316695145-4992006ffddb?w=200&h=200&fit=crop' }}')">
-                        <img src="{{ $paket->foto4 ?? 'https://images.unsplash.com/photo-1511316695145-4992006ffddb?w=200&h=200&fit=crop' }}" 
-                             alt="Foto 4" class="w-full h-full object-cover hover:scale-110 transition-transform">
-                    </div>
+                <div class="grid grid-cols-4 gap-3">
+                    <button type="button" class="gallery-thumb overflow-hidden rounded-2xl border border-primary ring-2 ring-primary/10 aspect-square transition" onclick="updateGallery('{{ $paket->foto_url ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=600&fit=crop' }}')">
+                        <img src="{{ $paket->foto_url ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop' }}" alt="Foto 1" class="h-full w-full object-cover">
+                    </button>
+                    <button type="button" class="gallery-thumb overflow-hidden rounded-2xl border border-forest-green/10 ring-0 aspect-square transition hover:border-primary/60" onclick="updateGallery('{{ $paket->foto2_url ?? 'https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=200&h=200&fit=crop' }}')">
+                        <img src="{{ $paket->foto2_url ?? 'https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=200&h=200&fit=crop' }}" alt="Foto 2" class="h-full w-full object-cover">
+                    </button>
+                    <button type="button" class="gallery-thumb overflow-hidden rounded-2xl border border-forest-green/10 ring-0 aspect-square transition hover:border-primary/60" onclick="updateGallery('{{ $paket->foto3_url ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=200&h=200&fit=crop' }}')">
+                        <img src="{{ $paket->foto3_url ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=200&h=200&fit=crop' }}" alt="Foto 3" class="h-full w-full object-cover">
+                    </button>
+                    <button type="button" class="gallery-thumb overflow-hidden rounded-2xl border border-forest-green/10 ring-0 aspect-square transition hover:border-primary/60" onclick="updateGallery('{{ $paket->foto4_url ?? 'https://images.unsplash.com/photo-1511316695145-4992006ffddb?w=200&h=200&fit=crop' }}')">
+                        <img src="{{ $paket->foto4_url ?? 'https://images.unsplash.com/photo-1511316695145-4992006ffddb?w=200&h=200&fit=crop' }}" alt="Foto 4" class="h-full w-full object-cover">
+                    </button>
                 </div>
             </div>
 
-            <!-- Right: Booking Card & Title -->
-            <div class="space-y-4">
-                <!-- Category & Title -->
-                <div>
-                    <span class="inline-block text-primary font-black text-[10px] uppercase tracking-widest px-4 py-1 bg-primary/10 rounded-full mb-2">
-                        {{ $paket->kategori }}
-                    </span>
-                    <h1 class="text-3xl md:text-4xl font-display font-black text-forest-green uppercase">
-                        {{ $paket->nama }}
-                    </h1>
-                    <p class="text-xs text-forest-green/60 uppercase tracking-widest mt-1">{{ $paket->lokasi }}</p>
-                </div>
+            <div class="lg:sticky lg:top-28 space-y-4">
+                <div class="rounded-[28px] border border-white/70 bg-white/90 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-md space-y-6">
+                    <div class="space-y-4">
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="inline-flex items-center rounded-full bg-forest-green/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.28em] text-forest-green">Detail Paket</span>
+                            <span class="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.28em] text-primary">{{ $paket->durasi_hari }} Hari</span>
+                        </div>
 
-                <!-- Booking Card -->
-                <div class="bg-white border border-gray-200 rounded-lg p-6 space-y-4">
-                    <!-- Harga -->
-                    <div>
-                        <p class="text-xs text-forest-green/60 uppercase tracking-widest">Harga Dari</p>
-                        <p class="text-3xl font-display font-black text-forest-green">
-                            IDR {{ number_format($paket->harga / 1000000, 1) }}M
-                        </p>
-                        <p class="text-xs text-forest-green/50">/ pax</p>
-                    </div>
+                        <div>
+                            <p class="text-xs font-black uppercase tracking-[0.28em] text-forest-green/40">Harga mulai</p>
+                            <p class="mt-2 text-4xl font-display font-black text-forest-green">Rp {{ number_format($paket->harga, 0, ',', '.') }}</p>
+                            <p class="mt-1 text-xs text-forest-green/50">Per orang</p>
+                        </div>
 
-                    <!-- Jadwal Selection -->
-                    <div>
-                        <p class="text-xs font-black text-forest-green uppercase tracking-widest mb-3">Pilih Jadwal</p>
-                        <div class="space-y-2">
-                            <!-- Single date for demo - dapat di-expand dengan data jadwal dari relasi -->
-                            <label class="flex items-center p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition">
-                                <input type="radio" name="jadwal" checked class="w-4 h-4 text-primary">
-                                <span class="ml-3 flex-1">
-                                    <span class="text-sm font-black text-forest-green">12 OKT</span>
-                                    <span class="text-xs text-forest-green/50 ml-2">Ke-0174</span>
-                                </span>
-                                <span class="text-sm font-black text-forest-green">IDR 250k</span>
-                            </label>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="rounded-2xl bg-background-light p-4">
+                                <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-2">Lokasi</p>
+                                <p class="text-sm font-bold text-forest-green leading-snug">{{ $paket->lokasi }}</p>
+                            </div>
+                            <div class="rounded-2xl bg-background-light p-4">
+                                <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-2">Durasi</p>
+                                <p class="text-sm font-bold text-forest-green leading-snug">{{ $paket->durasi_hari }} Hari</p>
+                            </div>
+                        </div>
+
+                        <div class="rounded-2xl border border-dashed border-forest-green/15 bg-white p-4">
+                            <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-2">Meeting Point</p>
+                            <p class="text-sm leading-relaxed text-forest-green/70">{{ $paket->meeting_point ?? '-' }}</p>
                         </div>
                     </div>
 
-                    <!-- Lokasi -->
-                    <div>
-                        <p class="text-xs font-black text-forest-green uppercase tracking-widest mb-2">Lokasi</p>
-                        <p class="text-sm text-forest-green/70">{{ $paket->lokasi }}</p>
-                    </div>
-
-                    <!-- Quantity -->
-                    <div>
-                        <p class="text-xs font-black text-forest-green uppercase tracking-widest mb-2">Jumlah Peserta</p>
-                        <div class="flex items-center gap-3">
-                            <button onclick="decreaseQty()" class="w-8 h-8 border border-gray-300 rounded flex items-center justify-center hover:bg-gray-100">−</button>
-                            <input type="number" id="quantity" value="1" min="1" class="w-12 text-center font-black text-forest-green border border-gray-300 rounded py-1">
-                            <button onclick="increaseQty()" class="w-8 h-8 border border-gray-300 rounded flex items-center justify-center hover:bg-gray-100">+</button>
-                        </div>
-                    </div>
-
-                    <hr class="border-gray-200">
-
-                    <!-- Total -->
-                    <div class="flex justify-between items-center">
-                        <span class="text-sm font-black text-forest-green">Total Pembayaran</span>
-                        <p class="text-2xl font-display font-black text-forest-green">
-                            IDR <span id="total">{{ number_format($paket->harga / 1000000, 1) }}M</span>
-                        </p>
-                    </div>
-
-                    <!-- CTA Button -->
-                    <button onclick="goToReservasi({{ $paket->paketId }})" class="w-full py-3 p-3 bg-forest-green hover:bg-forest-green/90 text-white font-black uppercase tracking-widest rounded text-center transition-all text-sm">
-                        Reservasi Sekarang
-                    </button>
+                    @auth
+                        @if(auth()->user()->isWisatawan())
+                            <a href="{{ route('reservasi.jadwal', $paket) }}" class="group flex w-full items-center justify-center gap-3 rounded-2xl bg-forest-green px-5 py-4 text-sm font-black uppercase tracking-[0.28em] text-white transition hover:-translate-y-0.5 hover:bg-forest-green/90 hover:shadow-lg hover:shadow-forest-green/20">
+                                <span>Reservasi Sekarang</span>
+                                <span class="transition group-hover:translate-x-1">→</span>
+                            </a>
+                        @else
+                            <a href="{{ route('login') }}" class="group flex w-full items-center justify-center gap-3 rounded-2xl bg-forest-green px-5 py-4 text-sm font-black uppercase tracking-[0.28em] text-white transition hover:-translate-y-0.5 hover:bg-forest-green/90 hover:shadow-lg hover:shadow-forest-green/20">
+                                <span>Login untuk Reservasi</span>
+                                <span class="transition group-hover:translate-x-1">→</span>
+                            </a>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}" class="group flex w-full items-center justify-center gap-3 rounded-2xl bg-forest-green px-5 py-4 text-sm font-black uppercase tracking-[0.28em] text-white transition hover:-translate-y-0.5 hover:bg-forest-green/90 hover:shadow-lg hover:shadow-forest-green/20">
+                            <span>Login untuk Reservasi</span>
+                            <span class="transition group-hover:translate-x-1">→</span>
+                        </a>
+                    @endauth
                 </div>
             </div>
         </div>
@@ -117,16 +113,16 @@
 </section>
 
 <!-- Tab Section -->
-<section class="w-full bg-white border-b border-gray-200">
+<section class="w-full bg-white/95 border-y border-forest-green/10 backdrop-blur-sm">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
-        <div class="flex gap-8 overflow-x-auto">
-            <button class="tab-btn py-4 font-black text-sm uppercase tracking-widest text-forest-green border-b-2 border-forest-green whitespace-nowrap transition-all active" data-tab="deskripsi">
+        <div class="flex gap-3 overflow-x-auto py-3 sm:py-4">
+            <button class="tab-btn shrink-0 rounded-full border border-forest-green/10 bg-forest-green px-5 py-3 text-xs font-black uppercase tracking-[0.25em] text-white shadow-sm transition-all active" data-tab="deskripsi">
                 Deskripsi
             </button>
-            <button class="tab-btn py-4 font-black text-sm uppercase tracking-widest text-forest-green/50 border-b-2 border-transparent hover:text-forest-green whitespace-nowrap transition-all" data-tab="fasilitas">
+            <button class="tab-btn shrink-0 rounded-full border border-forest-green/10 bg-white px-5 py-3 text-xs font-black uppercase tracking-[0.25em] text-forest-green/60 shadow-sm transition-all hover:border-primary/30 hover:text-forest-green" data-tab="fasilitas">
                 Fasilitas
             </button>
-            <button class="tab-btn py-4 font-black text-sm uppercase tracking-widest text-forest-green/50 border-b-2 border-transparent hover:text-forest-green whitespace-nowrap transition-all" data-tab="rancangan">
+            <button class="tab-btn shrink-0 rounded-full border border-forest-green/10 bg-white px-5 py-3 text-xs font-black uppercase tracking-[0.25em] text-forest-green/60 shadow-sm transition-all hover:border-primary/30 hover:text-forest-green" data-tab="rancangan">
                 Rancangan Perjalanan
             </button>
         </div>
@@ -134,125 +130,139 @@
 </section>
 
 <!-- Tab Content -->
-<section class="w-full bg-white py-12">
+<section class="w-full bg-[#fbfcfa] py-14 lg:py-20">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
         <!-- Deskripsi Tab -->
         <div id="deskripsi" class="tab-content space-y-8">
-            <p class="text-forest-green/70 text-base leading-relaxed">
-                {{ $paket->deskripsi }}
-            </p>
+            <div class="grid grid-cols-1 lg:grid-cols-[1.25fr_0.75fr] gap-8 items-start">
+                <div class="space-y-6">
+                    <div class="space-y-3 max-w-3xl">
+                        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Tentang Paket</p>
+                        <h2 class="text-3xl md:text-4xl font-display font-black text-forest-green uppercase leading-tight">Perjalanan yang disusun untuk pengalaman yang rapi dan berkesan</h2>
+                        <p class="text-forest-green/70 text-base leading-relaxed">{{ $paket->deskripsi }}</p>
+                    </div>
 
-            <!-- Durasi & Grup -->
-            <div class="grid grid-cols-2 gap-8">
-                <div class="bg-background-light p-6 rounded-lg">
-                    <p class="text-xs font-black text-forest-green/60 uppercase tracking-widest mb-2">Durasi</p>
-                    <p class="text-3xl font-display font-black text-forest-green">{{ $paket->durasi_hari }} HARI</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div class="rounded-3xl border border-forest-green/10 bg-white p-5 shadow-sm">
+                            <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-2">Durasi</p>
+                            <p class="text-3xl font-display font-black text-forest-green">{{ $paket->durasi_hari }}</p>
+                            <p class="mt-1 text-sm text-forest-green/60">Hari perjalanan</p>
+                        </div>
+                        <div class="rounded-3xl border border-forest-green/10 bg-white p-5 shadow-sm">
+                            <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-2">Kategori</p>
+                            <p class="text-3xl font-display font-black text-forest-green">{{ strtoupper($paket->kategori) }}</p>
+                            <p class="mt-1 text-sm text-forest-green/60">Konsep perjalanan</p>
+                        </div>
+                        <div class="rounded-3xl border border-forest-green/10 bg-white p-5 shadow-sm">
+                            <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-2">Lokasi</p>
+                            <p class="text-3xl font-display font-black text-forest-green">{{ Str::limit($paket->lokasi, 16) }}</p>
+                            <p class="mt-1 text-sm text-forest-green/60">Destinasi utama</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-background-light p-6 rounded-lg">
-                    <p class="text-xs font-black text-forest-green/60 uppercase tracking-widest mb-2">Ukuran Grup</p>
-                    <p class="text-2xl font-display font-black text-forest-green">MAKS. 15<br/>ORANG</p>
-                </div>
-            </div>
 
-            <div class="prose prose-forest-green max-w-none">
-                <p class="text-forest-green/70 text-base leading-relaxed">
-                    Perjalanan kami dilengkapi dengan pemandu wisata berpengalaman yang akan memastikan setiap momen petualangan Anda berkesan. Nikmati keindahan alam yang menakjubkan dengan fasilitas lengkap dan layanan terbaik.
-                </p>
+                <div class="rounded-[28px] border border-forest-green/10 bg-white p-6 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-4">Highlight</p>
+                    <div class="space-y-4">
+                        <div class="rounded-2xl bg-background-light p-4">
+                            <p class="text-xs font-black uppercase tracking-[0.25em] text-forest-green/40 mb-1">Fasilitas Utama</p>
+                            <p class="text-sm leading-relaxed text-forest-green/70">{{ \Illuminate\Support\Str::limit($paket->fasilitas, 160) }}</p>
+                        </div>
+                        <div class="rounded-2xl bg-background-light p-4">
+                            <p class="text-xs font-black uppercase tracking-[0.25em] text-forest-green/40 mb-1">Meeting Point</p>
+                            <p class="text-sm leading-relaxed text-forest-green/70">{{ $paket->meeting_point ?? '-' }}</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Fasilitas Tab -->
         <div id="fasilitas" class="tab-content space-y-6 hidden">
-            <h3 class="text-2xl font-display font-black text-forest-green mb-6">Fasilitas Lengkap</h3>
-            <ul class="space-y-3">
+            <div class="flex items-end justify-between gap-4 mb-4">
+                <div>
+                    <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-2">Fasilitas</p>
+                    <h3 class="text-3xl font-display font-black text-forest-green uppercase">Semua yang termasuk di paket ini</h3>
+                </div>
+            </div>
+
+            <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 @foreach(explode(',', $paket->fasilitas) as $fasilitas)
-                    <li class="flex items-start gap-3">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 text-primary mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                        </svg>
-                        <span class="text-forest-green/80">{{ trim($fasilitas) }}</span>
+                    <li class="flex items-start gap-3 rounded-2xl border border-forest-green/10 bg-white p-4 shadow-sm">
+                        <span class="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                            </svg>
+                        </span>
+                        <span class="text-forest-green/80 leading-relaxed">{{ trim($fasilitas) }}</span>
                     </li>
                 @endforeach
             </ul>
         </div>
 
         <!-- Rancangan Tab -->
-        <div id="rancangan" class="tab-content space-y-6 hidden">
-            <!-- Include & Exclude -->
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                    <h4 class="text-lg font-display font-black text-forest-green mb-4">✓ Termasuk</h4>
-                    <ul class="space-y-2 text-sm text-forest-green/70">
+        <div id="rancangan" class="tab-content space-y-8 hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="rounded-[28px] border border-forest-green/10 bg-white p-6 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3">Termasuk</p>
+                    <h4 class="text-2xl font-display font-black text-forest-green uppercase mb-5">Apa yang didapat</h4>
+                    <ul class="space-y-3 text-sm text-forest-green/70">
                         @foreach(explode(',', $paket->include ?? '') as $item)
-                            <li class="flex items-center gap-2">
-                                <span class="w-2 h-2 bg-primary rounded-full"></span>
-                                {{ trim($item) }}
+                            <li class="flex items-start gap-3 rounded-2xl bg-background-light p-4">
+                                <span class="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary shrink-0">
+                                    <span class="h-2 w-2 rounded-full bg-primary"></span>
+                                </span>
+                                <span class="leading-relaxed">{{ trim($item) }}</span>
                             </li>
                         @endforeach
                     </ul>
                 </div>
-                <div>
-                    <h4 class="text-lg font-display font-black text-forest-green mb-4">✗ Tidak Termasuk</h4>
-                    <ul class="space-y-2 text-sm text-forest-green/70">
+                <div class="rounded-[28px] border border-forest-green/10 bg-white p-6 shadow-sm">
+                    <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3">Tidak Termasuk</p>
+                    <h4 class="text-2xl font-display font-black text-forest-green uppercase mb-5">Pengecualian paket</h4>
+                    <ul class="space-y-3 text-sm text-forest-green/70">
                         @foreach(explode(',', $paket->exclude ?? '') as $item)
-                            <li class="flex items-center gap-2">
-                                <span class="w-2 h-2 bg-red-500 rounded-full"></span>
-                                {{ trim($item) }}
+                            <li class="flex items-start gap-3 rounded-2xl bg-background-light p-4">
+                                <span class="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-100 text-red-600 shrink-0">
+                                    <span class="h-2 w-2 rounded-full bg-red-500"></span>
+                                </span>
+                                <span class="leading-relaxed">{{ trim($item) }}</span>
                             </li>
                         @endforeach
                     </ul>
                 </div>
             </div>
 
-            <!-- Meeting Point -->
-            <div class="p-6 bg-background-light rounded-lg border-l-4 border-primary">
-                <h4 class="text-base font-display font-black text-forest-green mb-2">🚩 Titik Kumpul</h4>
-                <p class="text-forest-green/70 text-sm">{{ $paket->meeting_point }}</p>
+            <div class="rounded-[28px] border border-primary/15 bg-gradient-to-r from-primary/8 to-white p-6 shadow-sm">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div>
+                        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-2">Meeting Point</p>
+                        <h4 class="text-2xl font-display font-black text-forest-green uppercase">Titik Kumpul</h4>
+                    </div>
+                    <p class="text-forest-green/70 text-sm leading-relaxed max-w-2xl">{{ $paket->meeting_point }}</p>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
 <!-- What's Included Section -->
-<section class="w-full bg-background-light py-16">
-    <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
-        <h2 class="text-4xl font-display font-black text-forest-green uppercase mb-12">
-            Apa Yang<br/>Akan Didapatkan
-        </h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-                <p class="text-xs font-black text-forest-green/60 uppercase tracking-widest mb-3">01</p>
-                <h4 class="text-lg font-display font-black text-forest-green mb-3">Dokumentasi</h4>
-                <p class="text-forest-green/70 text-sm">Kami menyediakan dokumentasi profesional selama perjalanan untuk mengabadikan momen-momen berharga Anda.</p>
-            </div>
-            <div>
-                <p class="text-xs font-black text-forest-green/60 uppercase tracking-widest mb-3">02</p>
-                <h4 class="text-lg font-display font-black text-forest-green mb-3">Logistik</h4>
-                <p class="text-forest-green/70 text-sm">Transportasi lengkap, akomodasi nyaman, dan semua kebutuhan logistik Anda diurus dengan sempurna.</p>
-            </div>
-            <div>
-                <p class="text-xs font-black text-forest-green/60 uppercase tracking-widest mb-3">03</p>
-                <h4 class="text-lg font-display font-black text-forest-green mb-3">Panduan Ahli</h4>
-                <p class="text-forest-green/70 text-sm">Pemandu wisata bersertifikat dan berpengalaman siap membimbing Anda sepanjang perjalanan.</p>
-            </div>
-        </div>
-    </div>
-</section>
-
 <!-- Related Trips Section -->
-<section class="w-full py-24 bg-background-light">
+<section class="w-full py-24 bg-gradient-to-b from-[#fbfcfa] to-white">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
-        <h2 class="text-4xl font-display font-black text-forest-green uppercase mb-12">Paket Serupa</h2>
+        <div class="mb-10 max-w-2xl space-y-3">
+            <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Rekomendasi</p>
+            <h2 class="text-4xl font-display font-black text-forest-green uppercase">Paket Serupa</h2>
+        </div>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
             @foreach($paketSerupa ?? [] as $related)
                 <x-trip-card 
-                    id="{{ $related->paketId }}"
-                    image="{{ $related->foto ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=400&fit=crop' }}"
+                    :paket="$related"
+                    image="{{ $related->foto_url ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=400&fit=crop' }}"
                     category="{{ strtoupper($related->kategori) }}"
                     title="{{ $related->nama }}"
                     description="{{ Str::limit($related->deskripsi, 80) }}"
-                    price="IDR {{ number_format($related->harga / 1000000, 1) }}M"
+                    price="Rp {{ number_format($related->harga, 0, ',', '.') }}"
                     rating="4.9"
                 />
             @endforeach
@@ -325,40 +335,6 @@
         });
     });
 
-    // Quantity controls
-    function increaseQty() {
-        const qty = document.getElementById('quantity');
-        qty.value = parseInt(qty.value) + 1;
-        updateTotal();
-    }
-
-    function decreaseQty() {
-        const qty = document.getElementById('quantity');
-        if (parseInt(qty.value) > 1) {
-            qty.value = parseInt(qty.value) - 1;
-            updateTotal();
-        }
-    }
-
-    function updateTotal() {
-        const qty = parseInt(document.getElementById('quantity').value);
-        const pricePerPerson = {{ $paket->harga / 1000000 }};
-        const total = qty * pricePerPerson;
-        document.getElementById('total').textContent = total.toFixed(1) + 'M';
-    }
-
-    // Listen to quantity input changes
-    document.getElementById('quantity').addEventListener('change', updateTotal);
-
-    // Navigate to reservasi page with paketId and quantity
-    function goToReservasi(paketId) {
-        @if(auth()->check())
-            const quantity = document.getElementById('quantity').value;
-            window.location.href = `{{ route('reservasi.create') }}?paketId=${paketId}&jml_peserta=${quantity}`;
-        @else
-            window.location.href = `{{ route('login') }}?redirect={{ url('/paket-trip/:id') }}`;
-        @endif
-    }
 </script>
 @endpush
 @endsection

@@ -12,12 +12,10 @@ class Reservasi extends Model
         'userId',
         'jadwalId',
         'kode_reservasi',
+        'catatan',
         'jml_peserta',
         'total_harga',
         'status',
-        'expired_at',
-        'payment_status',
-        'source',
     ];
 
     public function user()
@@ -38,5 +36,10 @@ class Reservasi extends Model
     public function peserta()
     {
         return $this->hasMany(PesertaTrip::class, 'reservasiId');
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'kode_reservasi';
     }
 }

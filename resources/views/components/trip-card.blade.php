@@ -1,13 +1,12 @@
-@props(['image', 'category', 'title', 'description', 'price', 'rating' => 4.9, 'id' => null])
+@props(['image', 'category', 'title', 'description', 'price', 'rating' => 4.9, 'paket' => null])
 
-<a href="{{ $id ? route('paket-trip.show', $id) : '#' }}" class="bg-white rounded-2xl overflow-hidden group hover:shadow-2xl transition-all duration-500 flex flex-col h-full">
+<a href="{{ $paket ? route('paket-trip.show', $paket) : '#' }}" class="bg-white rounded-2xl overflow-hidden group hover:shadow-2xl transition-all duration-500 flex flex-col h-full">
     <div class="relative aspect-[4/3] overflow-hidden">
         <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style='background-image: url("{{ $image }}");'></div>
         <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-3 py-1 rounded-lg flex items-center gap-1 shadow-md">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4 text-primary">
                 <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
-            <span class="text-xs font-black text-forest-green">{{ $rating }}</span>
         </div>
     </div>
 

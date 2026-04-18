@@ -16,18 +16,23 @@ class PaketTripController extends Controller
         return view('paket_trip.index', compact('pakets'));
     }
 
-    public function show($id)
+    public function show(PaketTrip $paketTrip)
     {
-        $paket = PaketTrip::findOrFail($id);
+        $paket = $paketTrip->load(['jadwals' => function ($query) {
+                $query->where('status', 'open')
+                    ->orderBy('tanggal_berangkat');
+            }]);
         
         // Get related pakets (paket serupa dengan kategori sama, exclude paket ini)
         $paketSerupa = PaketTrip::where('kategori', $paket->kategori)
-            ->where('paketId', '!=', $id)
+            ->where('paketId', '!=', $paket->paketId)
             ->where('aktif', true)
             ->limit(3)
             ->get();
 
-        return view('paket_trip.show', compact('paket', 'paketSerupa'));
+        $jadwals = $paket->jadwals;
+
+        return view('paket_trip.show', compact('paket', 'paketSerupa', 'jadwals'));
     }
 
     public function create()

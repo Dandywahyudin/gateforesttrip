@@ -1,18 +1,63 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller as BaseController;
+use App\Models\Jadwal;
+use App\Models\PaketTrip;
+use App\Models\Reservasi;
+use Illuminate\View\View;
 
-class AdminController extends Controller
+class AdminController extends BaseController
 {
-    public function dashboard()
+    public function dashboard(): View
     {
-        return view('admin.dashboard');
+        $stats = [
+            'total_paket' => PaketTrip::count(),
+            'paket_aktif' => PaketTrip::where('aktif', true)->count(),
+            'total_jadwal' => Jadwal::count(),
+            'total_reservasi' => Reservasi::count(),
+            'reservasi_paid' => Reservasi::where('status', 'paid')->count(),
+            'omzet' => (float) Reservasi::sum('total_harga'),
+        ];
+
+        $paketTrips = PaketTrip::withCount([
+                'jadwals as jadwal_open_count' => function ($query) {
+                    $query->where('status', 'open');
+                },
+                'reservasis as reservasi_count',
+            ])
+            ->latest('paketId')
+            ->limit(6)
+            ->get();
+
+        $reservasis = Reservasi::with(['jadwal.paketTrip', 'pembayaran', 'user'])
+            ->latest('reservasiId')
+            ->limit(5)
+            ->get();
+
+        return view('admin.dashboard', compact('stats', 'paketTrips', 'reservasis'));
     }
 
-    public function store(Request $request)
+    public function jadwal(): View
     {
-        // Implementation for storing user
+        $jadwals = Jadwal::with('paketTrip')
+            ->orderBy('tanggal_berangkat')
+            ->get();
+
+        return view('admin.jadwal', compact('jadwals'));
+    }
+
+    public function paketTrip(): View
+    {
+        $paketTrips = PaketTrip::withCount([
+                'jadwals as jadwal_open_count' => function ($query) {
+                    $query->where('status', 'open');
+                },
+            ])
+            ->latest('paketId')
+            ->get();
+
+        return view('admin.paket-trip.index', compact('paketTrips'));
     }
 }

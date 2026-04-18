@@ -3,25 +3,9 @@
 @section('title', 'Katalog Paket Trip - GateForestTrip')
 
 @section('content')
-<!-- Hero Section -->
-<section class="w-full pt-40 pb-16 bg-gradient-to-b from-forest-green/5 to-transparent">
-    <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
-        <div class="text-center space-y-6">
-            <span class="inline-block text-primary font-black tracking-[0.4em] uppercase text-xs px-6 py-2 bg-primary/10 rounded-full">
-                Temukan Petualanganmu
-            </span>
-            <h1 class="text-5xl md:text-7xl font-display font-black text-forest-green uppercase leading-tight">
-                Katalog<br class="hidden md:block" /> Petualangan Alam
-            </h1>
-            <p class="text-lg text-forest-green/60 max-w-2xl mx-auto">
-                Jelajahi berbagai pilihan paket trip yang telah dikurasi khusus untuk pengalaman petualangan tak terlupakan Anda.
-            </p>
-        </div>
-    </div>
-</section>
 
 <!-- Search & Filter Section -->
-<section class="w-full py-12 bg-white border-b border-forest-green/10">
+<section class="w-full py-20 bg-white border-b border-forest-green/10">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
         <div class="flex flex-col lg:flex-row gap-6 items-end">
             <!-- Search Input -->
@@ -47,8 +31,8 @@
                     <option value="gunung">Gunung</option>
                     <option value="hutan">Hutan</option>
                     <option value="pantai">Pantai</option>
-                    <option value="danau">Danau</option>
-                    <option value="fotografi">Fotografi</option>
+                    <option value="Trekking">Trekking</option>
+                    <option value="Ca">Canyoneering</option>
                     <option value="camping">Camping</option>
                 </select>
             </div>
@@ -85,12 +69,12 @@
             @forelse($pakets as $paket)
                 <div class="paket-card" data-kategori="{{ strtolower($paket->kategori) }}" data-harga="{{ $paket->harga }}">
                     <x-trip-card 
-                        id="{{ $paket->paketId }}"
-                        image="{{ $paket->foto ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=400&fit=crop' }}"
+                        :paket="$paket"
+                        image="{{ $paket->foto_url ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=400&fit=crop' }}"
                         category="{{ strtoupper($paket->kategori) }}"
                         title="{{ $paket->nama }}"
                         description="{{ Str::limit($paket->deskripsi, 80) }}"
-                        price="IDR {{ number_format($paket->harga / 1000000, 1) }}M"
+                            price="Rp {{ number_format($paket->harga, 0, ',', '.') }}"
                         rating="4.9"
                     />
                 </div>

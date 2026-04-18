@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\PaketTrip;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class PaketTripSeeder extends Seeder
@@ -13,8 +12,9 @@ class PaketTripSeeder extends Seeder
      */
     public function run(): void
     {
-        PaketTrip::create([
+        PaketTrip::updateOrCreate([
             'slug' => 'danau-alpin-kemilau',
+        ], [
             'nama' => 'Danau Alpin Kemilau',
             'deskripsi' => 'Rasakan keheningan malam di bawah jutaan bintang pada ketinggian 2.500 mdpl. Petualangan ini menawarkan pengalaman camping eksklusif dengan pemandangan danau yang tak terlupakan.',
             'fasilitas' => 'Tenda berkualitas, Sleeping bag, Perlengkapan camping, Guide profesional, Asuransi perjalanan, Snack & minuman',
@@ -32,8 +32,9 @@ class PaketTripSeeder extends Seeder
             'aktif' => true,
         ]);
 
-        PaketTrip::create([
+        PaketTrip::updateOrCreate([
             'slug' => 'jalur-puncak-embun',
+        ], [
             'nama' => 'Jalur Puncak Embun',
             'deskripsi' => 'Taklukkan medan menantang melalui hutan tropis basah menuju samudera awan yang ikonik. Rute pendakian ini terkenal dengan keindahan sunrise dari puncak gunung.',
             'fasilitas' => 'Peralatan pendakian lengkap, Pemandu gunung, Tenda, Sleeping bag, Dapur lapangan, Medis kit',
@@ -51,8 +52,9 @@ class PaketTripSeeder extends Seeder
             'aktif' => true,
         ]);
 
-        PaketTrip::create([
+        PaketTrip::updateOrCreate([
             'slug' => 'sinar-hutan-emas-fotografi',
+        ], [
             'nama' => 'Sinar Hutan Emas - Fotografi',
             'deskripsi' => 'Memburu momen magis Ray of Light di kedalaman hutan purba bersama fotografer ahli. Workshop fotografi alam dengan teknik pencahayaan profesional.',
             'fasilitas' => 'Grup max 8 org, Fotografer profesional, Transportasi, Akomodasi, Meals',
@@ -70,8 +72,9 @@ class PaketTripSeeder extends Seeder
             'aktif' => true,
         ]);
 
-        PaketTrip::create([
+        PaketTrip::updateOrCreate([
             'slug' => 'ekspedisi-kayak-rimba-kabut',
+        ], [
             'nama' => 'Ekspedisi Kayak Rimba Kabut',
             'deskripsi' => 'Menyusuri labirin sungai di kedalaman hutan saat kabut pagi menyelimuti pepohonan. Pengalaman meditasi dengan activitas kayaking yang menantang.',
             'fasilitas' => 'Kayak, Life jacket, Paddle, Shelter, Peralatan camping, Medis kit',
@@ -89,8 +92,9 @@ class PaketTripSeeder extends Seeder
             'aktif' => true,
         ]);
 
-        PaketTrip::create([
+        PaketTrip::updateOrCreate([
             'slug' => 'puncak-pinus-emas',
+        ], [
             'nama' => 'Puncak Pinus Emas',
             'deskripsi' => 'Pendakian santai dengan pemandangan hutan pinus memukau. Cocok untuk keluarga pemula dengan rute yang tidak terlalu berat.',
             'fasilitas' => 'Pemandu wisata, Tenda, Akomodasi shelter, Makanan, Peralatan dasar',
@@ -108,8 +112,9 @@ class PaketTripSeeder extends Seeder
             'aktif' => true,
         ]);
 
-        PaketTrip::create([
+        PaketTrip::updateOrCreate([
             'slug' => 'ray-of-light-expedition',
+        ], [
             'nama' => 'Ray of Light Expedition',
             'deskripsi' => 'Petualangan eksklusif mencari fenomena Rays di tengah hutan kuno dengan pengalaman spiritual.',
             'fasilitas' => 'Pemandu ahli alam, Perlengkapan outdoor, Eco-lodge, Makanan organik',
@@ -127,8 +132,9 @@ class PaketTripSeeder extends Seeder
             'aktif' => true,
         ]);
 
-        PaketTrip::create([
+        PaketTrip::updateOrCreate([
             'slug' => 'glacier-lake-camping',
+        ], [
             'nama' => 'Glacier Lake Camping',
             'deskripsi' => 'Berkemah di tepi danau dengan pemandangan pegunungan menakjubkan dan bintang langka.',
             'fasilitas' => 'Tenda premium, Sleeping bag -5C, Camping stove, Lampu LED, First aid kit',
@@ -146,8 +152,9 @@ class PaketTripSeeder extends Seeder
             'aktif' => true,
         ]);
 
-        PaketTrip::create([
+        PaketTrip::updateOrCreate([
             'slug' => 'pantai-pink-snorkeling',
+        ], [
             'nama' => 'Pantai Pink Snorkeling',
             'deskripsi' => 'Jelajahi keindahan terumbu karang dan ikan eksotis di pantai pasir pink langka.',
             'fasilitas' => 'Peralatan snorkeling, Perahu tradisional, Life jacket, Instruktur bersertifikat',

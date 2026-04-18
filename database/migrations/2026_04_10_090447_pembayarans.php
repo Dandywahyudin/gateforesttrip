@@ -21,7 +21,7 @@ return new class extends Migration
             $table->decimal('jumlah', 12, 2);
             $table->timestamp('paid_at')->nullable();
             $table->timestamp('expired_at')->nullable();
-            
+            $table->string('snap_token')->nullable();
             $table->index('reservasiId');
             $table->index('orderId');
             $table->enum('status', [

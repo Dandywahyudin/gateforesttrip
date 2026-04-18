@@ -23,8 +23,6 @@ class CheckRole
             return $next($request);
         }
 
-        return response()->json([
-            'message' => 'Akses ditolak. Anda tidak memiliki role yang diperlukan.'
-        ], 403);
+        abort(403, 'Akses ditolak. Anda tidak memiliki role yang diperlukan.');
     }
 }

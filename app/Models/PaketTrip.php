@@ -31,4 +31,47 @@ class PaketTrip extends Model
     {
         return $this->hasMany(Jadwal::class, 'paketId');
     }
+
+    public function reservasis()
+    {
+        return $this->hasManyThrough(Reservasi::class, Jadwal::class, 'paketId', 'jadwalId', 'paketId', 'jadwalId');
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
+    public function getFotoUrlAttribute(): ?string
+    {
+        return $this->resolveImageUrl($this->foto);
+    }
+
+    public function getFoto2UrlAttribute(): ?string
+    {
+        return $this->resolveImageUrl($this->foto2);
+    }
+
+    public function getFoto3UrlAttribute(): ?string
+    {
+        return $this->resolveImageUrl($this->foto3);
+    }
+
+    public function getFoto4UrlAttribute(): ?string
+    {
+        return $this->resolveImageUrl($this->foto4);
+    }
+
+    private function resolveImageUrl(?string $path): ?string
+    {
+        if (! $path) {
+            return null;
+        }
+
+        if (filter_var($path, FILTER_VALIDATE_URL)) {
+            return $path;
+        }
+
+        return asset('storage/' . ltrim($path, '/'));
+    }
 }

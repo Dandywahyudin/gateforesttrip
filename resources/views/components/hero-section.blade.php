@@ -6,9 +6,7 @@
 
     <div class="relative z-20 w-full max-w-[1440px] mx-auto px-6 lg:px-16 flex flex-col items-start text-left">
         <div class="max-w-[750px] space-y-8 ml-0 lg:ml-12">
-            <span class="inline-block py-2 px-4 rounded-lg bg-primary/20 border border-primary/30 text-primary text-sm font-black uppercase tracking-[0.3em] backdrop-blur-sm">
-                Eksplorasi Tak Terbatas
-            </span>
+
 
             <h2 class="text-white text-6xl md:text-8xl lg:text-[100px] font-display font-black leading-[0.9] uppercase">
                 PANGGILAN <br/><span class="text-primary italic">JIWA LIAR</span>

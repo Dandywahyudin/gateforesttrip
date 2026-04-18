@@ -2,6 +2,12 @@
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
+            @php
+                $user = Auth::user();
+                $isAdmin = $user?->isAdmin();
+                $isWisatawan = $user?->isWisatawan();
+            @endphp
+
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
@@ -12,9 +18,25 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard') || request()->routeIs('admin.*') || request()->routeIs('reservasi.riwayat')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    @if($isAdmin)
+                        <x-nav-link :href="route('admin.cms')" :active="request()->routeIs('admin.cms')">
+                            {{ __('CMS') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('admin.paket-trip.index')" :active="request()->routeIs('admin.paket-trip.*')">
+                            {{ __('Paket Trip') }}
+                        </x-nav-link>
+                    @elseif($isWisatawan)
+                        <x-nav-link :href="route('paket-trip.index')" :active="request()->routeIs('paket-trip.*')">
+                            {{ __('Katalog') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('reservasi.riwayat')" :active="request()->routeIs('reservasi.riwayat')">
+                            {{ __('Riwayat') }}
+                        </x-nav-link>
+                    @endif
                 </div>
             </div>
 
@@ -22,8 +44,11 @@
             <div class="hidden sm:flex sm:items-center sm:ms-6">
                 <x-dropdown align="right" width="48">
                     <x-slot name="trigger">
-                        <button class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
-                            <div>{{ Auth::user()->name }}</div>
+                        <button class="inline-flex items-center gap-3 px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150">
+                            <div class="flex flex-col items-start leading-none">
+                                <span class="text-[10px] font-black uppercase tracking-[0.28em] text-primary">{{ strtoupper($user?->role ?? '') }}</span>
+                                <span>{{ $user?->nama }}</span>
+                            </div>
 
                             <div class="ms-1">
                                 <svg class="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
@@ -34,8 +59,28 @@
                     </x-slot>
 
                     <x-slot name="content">
+                        <x-dropdown-link :href="route('dashboard')">
+                            {{ __('Dashboard') }}
+                        </x-dropdown-link>
+
+                        @if($isAdmin)
+                            <x-dropdown-link :href="route('admin.cms')">
+                                {{ __('CMS') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('admin.paket-trip.index')">
+                                {{ __('Paket Trip') }}
+                            </x-dropdown-link>
+                        @elseif($isWisatawan)
+                            <x-dropdown-link :href="route('reservasi.riwayat')">
+                                {{ __('Riwayat') }}
+                            </x-dropdown-link>
+                            <x-dropdown-link :href="route('paket-trip.index')">
+                                {{ __('Katalog') }}
+                            </x-dropdown-link>
+                        @endif
+
                         <x-dropdown-link :href="route('profile.edit')">
-                            {{ __('Profile') }}
+                            {{ __('Profil') }}
                         </x-dropdown-link>
 
                         <!-- Authentication -->
@@ -45,7 +90,7 @@
                             <x-dropdown-link :href="route('logout')"
                                     onclick="event.preventDefault();
                                                 this.closest('form').submit();">
-                                {{ __('Log Out') }}
+                                {{ __('Keluar') }}
                             </x-dropdown-link>
                         </form>
                     </x-slot>
@@ -70,18 +115,35 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
+
+            @if($isAdmin)
+                <x-responsive-nav-link :href="route('admin.cms')" :active="request()->routeIs('admin.cms')">
+                    {{ __('CMS') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('admin.paket-trip.index')" :active="request()->routeIs('admin.paket-trip.*')">
+                    {{ __('Paket Trip') }}
+                </x-responsive-nav-link>
+            @elseif($isWisatawan)
+                <x-responsive-nav-link :href="route('paket-trip.index')" :active="request()->routeIs('paket-trip.*')">
+                    {{ __('Katalog') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('reservasi.riwayat')" :active="request()->routeIs('reservasi.riwayat')">
+                    {{ __('Riwayat') }}
+                </x-responsive-nav-link>
+            @endif
         </div>
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
             <div class="px-4">
-                <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
+                <div class="font-medium text-base text-gray-800">{{ $user?->nama }}</div>
+                <div class="font-medium text-sm text-gray-500">{{ $user?->email }}</div>
+                <div class="mt-2 inline-flex rounded-full bg-primary/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.28em] text-primary">{{ strtoupper($user?->role ?? '') }}</div>
             </div>
 
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
-                    {{ __('Profile') }}
+                    {{ __('Profil') }}
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
@@ -91,7 +153,7 @@
                     <x-responsive-nav-link :href="route('logout')"
                             onclick="event.preventDefault();
                                         this.closest('form').submit();">
-                        {{ __('Log Out') }}
+                        {{ __('Keluar') }}
                     </x-responsive-nav-link>
                 </form>
             </div>

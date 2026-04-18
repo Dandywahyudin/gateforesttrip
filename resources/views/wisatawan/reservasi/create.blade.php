@@ -1,272 +1,171 @@
 @extends('layouts.app')
 
-@section('title', 'Reservasi - ' . $paket->nama)
+@section('title', 'Pilih Jadwal - ' . $paket->nama)
 
 @section('content')
-<div class="min-h-screen bg-background-light pt-24 pb-12">
-    <div class="max-w-4xl mx-auto px-6 lg:px-16">
-        <!-- Breadcrumb -->
-        <div class="mb-8 text-sm text-forest-green/60">
-            <a href="{{ route('paket-trip.index') }}" class="hover:text-primary transition">Katalog</a>
-            <span class="mx-2">/</span>
-            <a href="{{ route('paket-trip.show', $paket->paketId) }}" class="hover:text-primary transition">{{ $paket->nama }}</a>
-            <span class="mx-2">/</span>
-            <span class="text-forest-green">Reservasi</span>
-        </div>
+<section class="w-full pt-32 pb-16 bg-[radial-gradient(circle_at_top_right,_rgba(21,128,61,0.12),_transparent_30%),linear-gradient(to_bottom,_#f8faf7,_#ffffff)]">
+    <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
+        <div class="grid grid-cols-1 lg:grid-cols-[1.25fr_0.75fr] gap-8 items-start">
+            <div>
+                <form action="{{ route('reservasi.jadwal.store') }}" method="POST" class="rounded-[28px] border border-white/60 bg-white/90 p-6 md:p-8 shadow-[0_22px_70px_rgba(15,23,42,0.08)] backdrop-blur-md space-y-8">
+                    @csrf
+                    <input type="hidden" name="paket_id" value="{{ $paket->paketId }}">
 
-        <!-- Main Heading -->
-        <h1 class="text-4xl font-display font-black text-forest-green uppercase mb-2">
-            Reservasi {{ $paket->nama }}
-        </h1>
-        <p class="text-forest-green/70 mb-12">Silakan lengkapi data untuk menyelesaikan reservasi Anda</p>
+                    @error('jadwal_id')
+                        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{{ $message }}</div>
+                    @enderror
+                    @error('jml_peserta')
+                        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{{ $message }}</div>
+                    @enderror
+                    @error('catatan')
+                        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{{ $message }}</div>
+                    @enderror
 
-        <!-- Form -->
-        <form action="{{ route('reservasi.store') }}" method="POST" class="space-y-8">
-            @csrf
-
-            <!-- Hidden Fields -->
-            <input type="hidden" name="paketId" value="{{ $paket->paketId }}">
-
-            <!-- Step 1: Pilih Jadwal -->
-            <div class="bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-                <h2 class="text-2xl font-display font-black text-forest-green uppercase mb-6">Pilih Jadwal</h2>
-
-                @if($jadwals->isEmpty())
-                    <div class="p-6 bg-yellow-50 border border-yellow-200 rounded-lg">
-                        <p class="text-yellow-800">Tidak ada jadwal yang tersedia saat ini. Silakan kembali ke halaman detail untuk informasi lebih lanjut.</p>
+                    <div class="space-y-2">
+                        <x-breadcrumbs :items="[
+                            ['label' => 'Home', 'url' => url('/')],
+                            ['label' => 'Trip', 'url' => route('paket-trip.index')],
+                            ['label' => $paket->nama, 'url' => route('paket-trip.show', $paket)],
+                            ['label' => 'Pilih Jadwal', 'url' => null],
+                        ]" />
+                        <h3 class="text-3xl font-display font-black uppercase text-forest-green">Pilih tanggal keberangkatan</h3>
+                        <p class="max-w-2xl text-sm leading-relaxed text-forest-green/70">Jadwal tampil sebagai daftar agar pengguna bisa membandingkan tanggal, harga, dan kuota dengan cepat.</p>
                     </div>
-                @else
+
                     <div class="space-y-3">
-                        @foreach($jadwals as $jadwal)
+                        @forelse($jadwals as $jadwal)
                             @php
-                                $kuota_tersisa = $jadwal->kuota_max - $jadwal->kuota_terisi;
-                                $harga = $jadwal->harga_override ?? $paket->harga;
+                                $hargaJadwal = $jadwal->harga_override ?? $paket->harga;
+                                $sisaKuota = max(0, $jadwal->kuota_max - $jadwal->kuota_terisi);
+                                $isSelected = (string) old('jadwal_id', $sessionData['jadwal_id'] ?? '') === (string) $jadwal->jadwalId;
                             @endphp
-                            <label class="flex items-start p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary transition"
-                                   :class="{ 'border-primary bg-primary/5': selectedJadwal === '{{ $jadwal->jadwalId }}' }">
-                                <input type="radio" name="jadwalId" value="{{ $jadwal->jadwalId }}" required
-                                       class="w-4 h-4 text-primary mt-1"
-                                       @change="selectedJadwal = '{{ $jadwal->jadwalId }}'">
-                                <div class="ml-4 flex-1">
-                                    <div class="font-black text-forest-green">
-                                        {{ \Carbon\Carbon::parse($jadwal->tanggal_berangkat)->format('d M Y') }}
-                                        @if($jadwal->tanggal_kembali)
-                                            - {{ \Carbon\Carbon::parse($jadwal->tanggal_kembali)->format('d M Y') }}
-                                        @endif
+                            <label class="group flex cursor-pointer flex-col gap-4 rounded-[24px] border bg-white p-5 transition-all duration-300 {{ $isSelected ? 'border-primary ring-4 ring-primary/10 shadow-[0_18px_50px_rgba(21,128,61,0.14)]' : 'border-forest-green/10 shadow-sm hover:border-primary/30 hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)]' }}">
+                                <div class="flex items-start gap-4">
+                                    <input type="radio" name="jadwal_id" value="{{ $jadwal->jadwalId }}" class="mt-1 h-5 w-5 border-forest-green/20 text-primary focus:ring-primary" {{ $isSelected ? 'checked' : '' }}>
+
+                                    <div class="min-w-0 flex-1 space-y-4">
+                                        <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+                                            <div>
+                                                <p class="text-[10px] font-black uppercase tracking-[0.28em] text-forest-green/40 mb-2">Jadwal</p>
+                                                <h4 class="text-xl font-display font-black uppercase text-forest-green leading-tight">{{ \Illuminate\Support\Carbon::parse($jadwal->tanggal_berangkat)->translatedFormat('d M Y') }}</h4>
+                                                <p class="mt-1 text-sm text-forest-green/60">Sampai {{ \Illuminate\Support\Carbon::parse($jadwal->tanggal_kembali)->translatedFormat('d M Y') }}</p>
+                                            </div>
+
+                                            <div class="flex flex-wrap gap-2">
+                                                <span class="inline-flex rounded-full bg-background-light px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-forest-green">
+                                                    Rp {{ number_format($hargaJadwal, 0, ',', '.') }}
+                                                </span>
+                                                <span class="inline-flex rounded-full bg-background-light px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-forest-green">
+                                                    {{ $sisaKuota }} kursi
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-dashed border-forest-green/10 px-4 py-3 text-xs font-black uppercase tracking-[0.22em] {{ $sisaKuota > 0 ? 'text-forest-green/60' : 'text-red-600' }}">
+                                            <span>{{ $sisaKuota > 0 ? 'Tersedia' : 'Penuh' }}</span>
+                                            <span>{{ $sisaKuota > 0 ? 'Pilihan siap dipakai' : 'Pilih jadwal lain' }}</span>
+                                        </div>
                                     </div>
-                                    <div class="text-sm text-forest-green/70">
-                                        Kuota: {{ $kuota_tersisa }} dari {{ $jadwal->kuota_max }} tersedia
-                                    </div>
-                                </div>
-                                <div class="text-right">
-                                    <div class="font-black text-lg text-primary">
-                                        IDR {{ number_format($harga / 1000000, 1) }}M
-                                    </div>
-                                    <div class="text-xs text-forest-green/60">/orang</div>
                                 </div>
                             </label>
-                        @endforeach
+                        @empty
+                            <div class="rounded-[24px] border border-dashed border-forest-green/20 bg-white p-6 text-sm text-forest-green/60">
+                                Tidak ada jadwal open untuk paket ini.
+                            </div>
+                        @endforelse
                     </div>
 
-                    @error('jadwalId')
-                        <p class="text-red-500 text-sm mt-3">{{ $message }}</p>
-                    @enderror
-                @endif
-            </div>
-
-            <!-- Step 2: Jumlah Peserta -->
-            <div class="bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-                <h2 class="text-2xl font-display font-black text-forest-green uppercase mb-6">Jumlah Peserta</h2>
-
-                <div class="flex items-center gap-4">
-                    <label class="text-forest-green font-black">Peserta:</label>
-                    <div class="flex items-center gap-3 border border-gray-300 rounded-lg p-3 w-32">
-                        <button type="button" onclick="decreasePeserta()"
-                                class="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded transition">
-                            −
-                        </button>
-                        <input type="number" id="jml_peserta" name="jml_peserta" value="{{ $jml_peserta }}" 
-                               min="1" max="30" required
-                               class="flex-1 text-center font-black text-forest-green bg-transparent border-0 focus:ring-0 outline-none">
-                        <button type="button" onclick="increasePeserta()"
-                                class="w-8 h-8 flex items-center justify-center hover:bg-gray-100 rounded transition">
-                            +
-                        </button>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50">Jumlah Peserta</label>
+                            <div class="flex items-stretch overflow-hidden rounded-2xl border border-forest-green/10 bg-white focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20">
+                                <button type="button" id="decrement-peserta" class="w-14 shrink-0 border-r border-forest-green/10 text-2xl font-black text-forest-green transition hover:bg-background-light hover:text-primary" aria-label="Kurangi jumlah peserta">−</button>
+                                <input id="jml_peserta" type="number" name="jml_peserta" min="1" max="20" value="{{ old('jml_peserta', $sessionData['jml_peserta'] ?? 1) }}" class="w-full border-0 bg-transparent px-4 py-3 text-center font-black text-forest-green focus:outline-none focus:ring-0" required>
+                                <button type="button" id="increment-peserta" class="w-14 shrink-0 border-l border-forest-green/10 text-2xl font-black text-forest-green transition hover:bg-background-light hover:text-primary" aria-label="Tambah jumlah peserta">+</button>
+                            </div>
+                        </div>
                     </div>
-                </div>
 
-                @error('jml_peserta')
-                    <p class="text-red-500 text-sm mt-3">{{ $message }}</p>
-                @enderror
+                    <div class="flex flex-col gap-3 sm:flex-row">
+                        <a href="{{ route('paket-trip.show', $paket) }}" class="inline-flex flex-1 items-center justify-center rounded-2xl border border-forest-green/10 px-5 py-4 text-sm font-black uppercase tracking-[0.25em] text-forest-green transition hover:border-primary/40">Kembali ke Detail</a>
+                        <button type="submit" class="inline-flex flex-1 items-center justify-center rounded-2xl bg-forest-green px-5 py-4 text-sm font-black uppercase tracking-[0.25em] text-white transition hover:-translate-y-0.5 hover:bg-forest-green/90 hover:shadow-lg hover:shadow-forest-green/20">Lanjut ke Data Peserta</button>
+                    </div>
+                </form>
             </div>
 
-            <!-- Step 3: Data Peserta -->
-            <div id="pesertaContainer" class="space-y-6">
-                <!-- Peserta akan di-generate oleh JavaScript -->
-            </div>
-
-            <!-- Step 4: Catatan -->
-            <div class="bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-                <h2 class="text-lg font-display font-black text-forest-green uppercase mb-4">Catatan (Opsional)</h2>
-                <textarea name="catatan" rows="4" placeholder="Tuliskan pertanyaan atau permintaan khusus Anda..."
-                          class="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent resize-none">{{ old('catatan') }}</textarea>
-            </div>
-
-            <!-- Summary -->
-            <div class="bg-primary/10 border-l-4 border-primary rounded-lg p-6">
-                <p class="text-sm text-forest-green/60 mb-2">Estimasi Total Pembayaran:</p>
-                <p class="text-4xl font-display font-black text-primary">
-                    IDR <span id="totalPrice">0</span>M
-                </p>
-            </div>
-
-            <!-- Buttons -->
-            <div class="flex gap-4">
-                <a href="{{ route('paket-trip.show', $paket->paketId) }}"
-                   class="flex-1 py-4 border-2 border-forest-green text-forest-green font-black uppercase tracking-widest rounded-lg hover:bg-forest-green hover:text-white transition-all text-center">
-                    Kembali
-                </a>
-                <button type="submit"
-                        class="flex-1 py-4 bg-primary hover:bg-orange-700 text-white font-black uppercase tracking-widest rounded-lg transition-all">
-                    Lanjutkan ke Pembayaran
-                </button>
-            </div>
-        </form>
-    </div>
-</div>
-
-<script>
-    // Get user data from PHP
-    const userData = {
-        name: '{{ auth()->user()->name ?? "" }}',
-        email: '{{ auth()->user()->email ?? "" }}'
-    };
-
-    const jmlPesertaInput = document.getElementById('jml_peserta');
-    const pesertaContainer = document.getElementById('pesertaContainer');
-
-    function renderPesertaForm() {
-        const jml = parseInt(jmlPesertaInput.value) || 1;
-        pesertaContainer.innerHTML = '';
-
-        for (let i = 1; i <= jml; i++) {
-            const isFirst = i === 1;
-            const nama = isFirst ? userData.name : '';
-            const email = isFirst ? userData.email : '';
-
-            pesertaContainer.innerHTML += `
-                <div class="bg-white rounded-lg p-8 shadow-sm border border-gray-200">
-                    <h3 class="text-lg font-display font-black text-forest-green uppercase mb-6">Data Peserta ${i}</h3>
+            <aside class="lg:sticky lg:top-28">
+                <div class="rounded-[28px] border border-white/60 bg-white/90 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-md space-y-6">
                     <div class="space-y-4">
+                        <span class="inline-flex rounded-full bg-primary/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em] text-primary">Ringkasan</span>
                         <div>
-                            <label class="block text-sm font-black text-forest-green mb-2">Nama Lengkap</label>
-                            <input type="text" name="peserta[${i-1}][nama]" required
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                   value="${nama}">
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-black text-forest-green mb-2">Jenis Identitas</label>
-                                <select name="peserta[${i-1}][jenis_identitas]" required
-                                        class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
-                                    <option value="ktp">KTP</option>
-                                    <option value="paspor">Paspor</option>
-                                    <option value="sim">SIM</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-black text-forest-green mb-2">No. Identitas</label>
-                                <input type="text" name="peserta[${i-1}][no_identitas]" required
-                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                       placeholder="Nomor KTP/Paspor/SIM">
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label class="block text-sm font-black text-forest-green mb-2">Jenis Kelamin</label>
-                                <div class="space-y-2">
-                                    <label class="flex items-center">
-                                        <input type="radio" name="peserta[${i-1}][jenis_kelamin]" value="laki-laki" required
-                                               class="w-4 h-4 text-primary">
-                                        <span class="ml-2 text-sm text-forest-green">Laki-laki</span>
-                                    </label>
-                                    <label class="flex items-center">
-                                        <input type="radio" name="peserta[${i-1}][jenis_kelamin]" value="perempuan" required
-                                               class="w-4 h-4 text-primary">
-                                        <span class="ml-2 text-sm text-forest-green">Perempuan</span>
-                                    </label>
-                                </div>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-black text-forest-green mb-2">Tanggal Lahir</label>
-                                <input type="date" name="peserta[${i-1}][tanggal_lahir]" required
-                                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-black text-forest-green mb-2">Email</label>
-                            <input type="email" name="peserta[${i-1}][email]" 
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-                                   value="${email}">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-black text-forest-green mb-2">No. HP</label>
-                            <input type="tel" name="peserta[${i-1}][no_hp]" required
-                                   class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent">
+                            <h1 class="text-3xl md:text-4xl font-display font-black uppercase text-forest-green leading-tight">{{ $paket->nama }}</h1>
+                            <p class="mt-3 text-sm leading-relaxed text-forest-green/70">Ringkasan paket berada di sisi kanan agar form tetap dominan di kiri.</p>
                         </div>
                     </div>
+
+                    <div class="rounded-3xl overflow-hidden border border-forest-green/10 bg-gradient-to-br from-forest-green to-primary text-white">
+                        <div class="aspect-[4/3] w-full">
+                            <img src="{{ $paket->foto_url ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=900&fit=crop' }}" alt="{{ $paket->nama }}" class="h-full w-full object-cover opacity-85">
+                        </div>
+                        <div class="p-5 space-y-3">
+                            <p class="text-[10px] font-black uppercase tracking-[0.28em] text-white/70">Preview Paket</p>
+                            <h2 class="text-2xl font-display font-black uppercase leading-tight">{{ $paket->nama }}</h2>
+                            <p class="text-sm text-white/80">{{ $paket->lokasi }}</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="rounded-3xl border border-forest-green/10 bg-background-light p-4">
+                            <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-1">Harga mulai</p>
+                            <p class="text-base font-black text-forest-green leading-tight">Rp {{ number_format($paket->harga, 0, ',', '.') }}</p>
+                        </div>
+                        <div class="rounded-3xl border border-forest-green/10 bg-background-light p-4">
+                            <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-1">Jadwal</p>
+                            <p class="text-base font-black text-forest-green leading-tight">{{ $jadwals->count() }} tersedia</p>
+                        </div>
+                    </div>
+
+                    <div class="rounded-3xl border border-forest-green/10 bg-white p-4 shadow-sm">
+                        <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-2">Panduan</p>
+                        <p class="text-sm leading-relaxed text-forest-green/70">Pilih salah satu jadwal, isi jumlah peserta, lalu lanjut ke data peserta. Ringkasan ini akan membantu sebelum masuk ke langkah berikutnya.</p>
+                    </div>
                 </div>
-            `;
-        }
-    }
-
-    function updateTotal() {
-        const jadwalId = document.querySelector('input[name="jadwalId"]:checked')?.value;
-        const jml = parseInt(jmlPesertaInput.value) || 1;
-
-        if (jadwalId) {
-            const radio = document.querySelector(`input[value="${jadwalId}"]`);
-            const priceText = radio.closest('label').querySelector('.text-primary').textContent;
-            const price = parseFloat(priceText.match(/[\d.]+/)[0]);
-            const total = (price * jml).toFixed(1);
-            document.getElementById('totalPrice').textContent = total;
-        }
-    }
-
-    function increasePeserta() {
-        const current = parseInt(jmlPesertaInput.value) || 1;
-        if (current < 30) {
-            jmlPesertaInput.value = current + 1;
-            renderPesertaForm();
-            updateTotal();
-        }
-    }
-
-    function decreasePeserta() {
-        const current = parseInt(jmlPesertaInput.value) || 1;
-        if (current > 1) {
-            jmlPesertaInput.value = current - 1;
-            renderPesertaForm();
-            updateTotal();
-        }
-    }
-
-    // Listen to changes
-    jmlPesertaInput.addEventListener('change', () => {
-        renderPesertaForm();
-        updateTotal();
-    });
-
-    document.querySelectorAll('input[name="jadwalId"]').forEach(radio => {
-        radio.addEventListener('change', updateTotal);
-    });
-
-    // Initial render
-    renderPesertaForm();
-    updateTotal();
-</script>
+            </aside>
+        </div>
+    </div>
+</section>
 @endsection
+
+@push('scripts')
+<script>
+    (function () {
+        const input = document.getElementById('jml_peserta');
+        const decrementButton = document.getElementById('decrement-peserta');
+        const incrementButton = document.getElementById('increment-peserta');
+
+        if (!input || !decrementButton || !incrementButton) {
+            return;
+        }
+
+        const min = Number(input.getAttribute('min') || 1);
+        const max = Number(input.getAttribute('max') || 20);
+
+        function setValue(nextValue) {
+            const boundedValue = Math.min(max, Math.max(min, nextValue));
+            input.value = boundedValue;
+        }
+
+        decrementButton.addEventListener('click', () => {
+            setValue(Number(input.value || min) - 1);
+        });
+
+        incrementButton.addEventListener('click', () => {
+            setValue(Number(input.value || min) + 1);
+        });
+
+        input.addEventListener('blur', () => {
+            setValue(Number(input.value || min));
+        });
+    })();
+</script>
+@endpush

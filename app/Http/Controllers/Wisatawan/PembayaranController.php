@@ -2,128 +2,71 @@
 
 namespace App\Http\Controllers\Wisatawan;
 
-use App\Models\Reservasi;
-use App\Models\Pembayaran;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
-use Illuminate\Support\Str;
+use App\Models\Reservasi;
+use App\Services\MidtransService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PembayaranController extends Controller
 {
-    public function create($reservasiId)
-    {
-        // Get reservasi with all related data
-        $reservasi = Reservasi::with(['user', 'jadwal.paketTrip', 'peserta'])->findOrFail($reservasiId);
-        
-        // Check authorization
-        if ($reservasi->userId !== auth()->id()) {
-            abort(403, 'Unauthorized access');
-        }
-        
-        // Check if already paid
-        if ($reservasi->status === 'paid') {
-            return redirect()->route('reservasi.show', $reservasiId)
-                ->with('info', 'Reservasi ini sudah dibayar');
-        }
-        
-        // Get or create payment record
-        $pembayaran = $reservasi->pembayaran ?? Pembayaran::create([
-            'reservasiId' => $reservasiId,
-            'orderId' => 'ORD-' . strtoupper(Str::random(12)),
-            'jumlah' => $reservasi->total_harga,
-            'metode_pembayaran' => 'midtrans',
-            'status' => 'pending',
-            'paid_at' => null,
-        ]);
-        
-        // Prepare payment payload for Midtrans
-        $payload = [
-            'transaction_details' => [
-                'order_id' => $pembayaran->orderId,
-                'gross_amount' => (int)$reservasi->total_harga,
-            ],
-            'customer_details' => [
-                'first_name' => $reservasi->user->nama,
-                'email' => $reservasi->user->email,
-                'phone' => $reservasi->peserta->first()?->no_hp ?? '',
-            ],
-            'item_details' => [
-                [
-                    'id' => $reservasi->jadwal->paketId,
-                    'price' => (int)($reservasi->jadwal->harga_override ?? $reservasi->jadwal->paketTrip->harga),
-                    'quantity' => $reservasi->jml_peserta,
-                    'name' => $reservasi->jadwal->paketTrip->nama,
-                ]
-            ],
-            'callbacks' => [
-                'finish' => route('pembayaran.status', $pembayaran->pembayaranId),
-                'unfinish' => route('pembayaran.status', $pembayaran->pembayaranId),
-                'error' => route('pembayaran.status', $pembayaran->pembayaranId),
-            ]
-        ];
-        
-        return view('wisatawan.pembayaran.create', compact('reservasi', 'pembayaran', 'payload'));
-    }
+	public function show(string $kodeReservasi, MidtransService $midtransService)
+	{
+		$reservasi = $this->resolveReservasi($kodeReservasi);
+		$pembayaran = $midtransService->syncPayment($reservasi);
 
-    public function verify(Request $request)
-    {
-        $request->validate([
-            'order_id' => 'required|string',
-            'status_code' => 'required|string',
-            'gross_amount' => 'required|numeric',
-        ]);
+		if (in_array($pembayaran->status, ['settlement', 'capture'], true) || $reservasi->status === 'paid') {
+			return redirect()->route('reservasi.status', $reservasi->kode_reservasi);
+		}
 
-        // Find payment by orderId
-        $pembayaran = Pembayaran::where('orderId', $request->order_id)->firstOrFail();
-        $reservasi = $pembayaran->reservasi;
+		return view('wisatawan.pembayaran.create', compact('reservasi', 'pembayaran'));
+	}
 
-        // Update payment status based on Midtrans response
-        $status_code = $request->status_code;
-        
-        if ($status_code == '200' || $status_code == '201') {
-            // Payment success
-            $pembayaran->update([
-                'status' => 'settlement',
-                'paid_at' => Carbon::now(),
-            ]);
-            
-            $reservasi->update(['status' => 'paid']);
-            
-            return redirect()->route('pembayaran.status', $pembayaran->pembayaranId)
-                ->with('success', 'Pembayaran berhasil!');
-        } else {
-            // Payment failed or pending
-            $pembayaran->update(['status' => 'failed']);
-            
-            return redirect()->route('pembayaran.status', $pembayaran->pembayaranId)
-                ->with('error', 'Pembayaran gagal. Silakan coba lagi.');
-        }
-    }
+	// public function show(string $kodeReservasi, MidtransService $midtransService)
+	// {
+	// 	$reservasi = $this->resolveReservasi($kodeReservasi);
+	// 	$pembayaran = $reservasi->pembayaran;
 
-    public function status($id)
-    {
-        $pembayaran = Pembayaran::findOrFail($id);
-        $reservasi = $pembayaran->reservasi;
-        
-        // Check authorization
-        if ($reservasi->userId !== auth()->id()) {
-            abort(403, 'Unauthorized access');
-        }
+	// 	if ($pembayaran && $pembayaran->expired_at && now()->gt($pembayaran->expired_at)) {
+    //     $pembayaran->update(['status' => 'expire']);
+    //     $reservasi->update(['status' => 'expired']);
 
-        return view('wisatawan.pembayaran.status', compact('pembayaran', 'reservasi'));
-    }
+    //     return redirect()->route('reservasi.status', $reservasi->kode_reservasi)
+    //         ->with('error', 'Waktu pembayaran telah habis.');
+    // }
 
-    public function show($id)
-    {
-        $pembayaran = Pembayaran::findOrFail($id);
-        $reservasi = $pembayaran->reservasi;
-        
-        // Check authorization
-        if ($reservasi->userId !== auth()->id()) {
-            abort(403, 'Unauthorized access');
-        }
+	// 	$pembayaran = $midtransService->syncPayment($reservasi);
+	// if (in_array($pembayaran->status, ['settlement', 'capture'], true) || $reservasi->status === 'paid') {
+	// 	return redirect()->route('reservasi.status', $reservasi->kode_reservasi);
+	// }
 
-        return view('wisatawan.pembayaran.show', compact('pembayaran', 'reservasi'));
-    }
+	// 	return view('wisatawan.pembayaran.create', compact('reservasi', 'pembayaran'));
+	// }
+
+	public function status(string $kodeReservasi, MidtransService $midtransService)
+	{
+		$reservasi = $this->resolveReservasi($kodeReservasi);
+		$pembayaran = $midtransService->refreshPaymentStatus($reservasi);
+
+		return view('wisatawan.pembayaran.status', compact('reservasi', 'pembayaran'));
+	}
+
+	public function notification(Request $request, MidtransService $midtransService)
+	{
+		$pembayaran = $midtransService->handleNotification();
+
+		if (! $pembayaran) {
+			return response()->json(['message' => 'Pembayaran tidak ditemukan.'], 404);
+		}
+
+		return response()->json(['message' => 'Notification processed successfully.']);
+	}
+
+	private function resolveReservasi(string $kodeReservasi): Reservasi
+	{
+		return Reservasi::with(['jadwal.paketTrip', 'user', 'peserta', 'pembayaran'])
+			->where('kode_reservasi', $kodeReservasi)
+			->where('userId', Auth::id())
+			->firstOrFail();
+	}
 }
