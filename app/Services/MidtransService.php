@@ -2,9 +2,12 @@
 
 namespace App\Services;
 
+use App\Events\JadwalKuotaUpdated;
+use App\Models\Jadwal;
 use App\Models\Pembayaran;
 use App\Models\Reservasi;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Midtrans\Config;
 use Midtrans\Notification;
@@ -53,7 +56,7 @@ class MidtransService
 				],
 
 				'expiry' => [
-					'start_time' => now()->toIso8601String(),
+					'start_time' => now('Asia/Jakarta')->format('Y-m-d H:i:s O'),
 					'unit' => 'minute',
 					'duration' => 10,
 				],
@@ -150,51 +153,89 @@ class MidtransService
 
 	private function applyGatewayStatus(Pembayaran $pembayaran, mixed $gatewayResponse): Pembayaran
 	{
-		$gatewayData = json_decode(json_encode($gatewayResponse), true) ?: [];
-		$transactionStatus = $gatewayData['transaction_status'] ?? null;
-		$fraudStatus = $gatewayData['fraud_status'] ?? null;
-		$paymentType = $gatewayData['payment_type'] ?? null;
-		$paidAt = $pembayaran->paid_at;
-		$status = $pembayaran->status ?? 'pending';
-		$reservasiStatus = $pembayaran->reservasi?->status ?? 'unpaid';
+		return DB::transaction(function () use ($pembayaran, $gatewayResponse) {
+			$pembayaran = Pembayaran::with(['reservasi.jadwal.paketTrip'])
+				->lockForUpdate()
+				->findOrFail($pembayaran->pembayaranId);
 
-		if ($transactionStatus === 'settlement') {
-			$status = 'settlement';
-			$reservasiStatus = 'paid';
-			$paidAt = $gatewayData['settlement_time'] ?? $gatewayData['transaction_time'] ?? now();
-		} elseif ($transactionStatus === 'capture') {
-			if ($fraudStatus === 'challenge') {
-				$status = 'pending';
-				$reservasiStatus = 'unpaid';
-			} else {
-				$status = 'capture';
+			$gatewayData = json_decode(json_encode($gatewayResponse), true) ?: [];
+			$transactionStatus = $gatewayData['transaction_status'] ?? null;
+			$fraudStatus = $gatewayData['fraud_status'] ?? null;
+			$paymentType = $gatewayData['payment_type'] ?? null;
+			$paidAt = $pembayaran->paid_at;
+			$status = $pembayaran->status ?? 'pending';
+			$reservasiStatus = $pembayaran->reservasi?->status ?? 'unpaid';
+			$jadwalDiperbarui = false;
+
+			if ($transactionStatus === 'settlement') {
+				$status = 'settlement';
 				$reservasiStatus = 'paid';
 				$paidAt = $gatewayData['settlement_time'] ?? $gatewayData['transaction_time'] ?? now();
+			} elseif ($transactionStatus === 'capture') {
+				if ($fraudStatus === 'challenge') {
+					$status = 'pending';
+					$reservasiStatus = 'unpaid';
+				} else {
+					$status = 'capture';
+					$reservasiStatus = 'paid';
+					$paidAt = $gatewayData['settlement_time'] ?? $gatewayData['transaction_time'] ?? now();
+				}
+			} elseif ($transactionStatus === 'pending') {
+				$status = 'pending';
+				$reservasiStatus = 'unpaid';
+			} elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'], true)) {
+				$status = $transactionStatus;
+				$reservasiStatus = 'cancelled';
+			} elseif (in_array($transactionStatus, ['refund', 'partial_refund', 'chargeback'], true)) {
+				$status = 'cancel';
+				$reservasiStatus = 'cancelled';
 			}
-		} elseif ($transactionStatus === 'pending') {
-			$status = 'pending';
-			$reservasiStatus = 'unpaid';
-		} elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire'], true)) {
-			$status = $transactionStatus;
-			$reservasiStatus = 'cancelled';
-		} elseif (in_array($transactionStatus, ['refund', 'partial_refund', 'chargeback'], true)) {
-			$status = 'cancel';
-			$reservasiStatus = 'cancelled';
-		}
 
-		$pembayaran->update([
-			'status' => $status,
-			'paid_at' => $paidAt instanceof Carbon ? $paidAt : (is_string($paidAt) ? Carbon::parse($paidAt) : $paidAt),
-			'metode_pembayaran' => $paymentType ?? $pembayaran->metode_pembayaran,
-		]);
-
-		if ($pembayaran->reservasi) {
-			$pembayaran->reservasi->update([
-				'status' => $reservasiStatus,
+			$pembayaran->update([
+				'status' => $status,
+				'paid_at' => $paidAt instanceof Carbon ? $paidAt : (is_string($paidAt) ? Carbon::parse($paidAt) : $paidAt),
+				'metode_pembayaran' => $paymentType ?? $pembayaran->metode_pembayaran,
 			]);
-		}
 
-		return $pembayaran->fresh();
+			if ($pembayaran->reservasi) {
+				$reservasi = $pembayaran->reservasi;
+
+				if (in_array($transactionStatus, ['settlement', 'capture'], true) && $reservasi->status !== 'paid') {
+					$jadwal = Jadwal::whereKey($reservasi->jadwalId)
+						->lockForUpdate()
+						->firstOrFail();
+
+					$reservasi->update([
+						'status' => 'paid',
+					]);
+
+					$jadwal = $jadwal->syncQuotaFromPaidReservations();
+
+					$jadwalDiperbarui = true;
+					if ($jadwal) {
+						event(JadwalKuotaUpdated::fromJadwal($jadwal));
+					}
+				} elseif (in_array($transactionStatus, ['deny', 'cancel', 'expire', 'refund', 'partial_refund', 'chargeback'], true)) {
+					$reservasi->update([
+						'status' => $reservasiStatus,
+					]);
+
+					$jadwal = Jadwal::whereKey($reservasi->jadwalId)
+						->lockForUpdate()
+						->firstOrFail();
+
+					$jadwal = $jadwal->syncQuotaFromPaidReservations();
+					event(JadwalKuotaUpdated::fromJadwal($jadwal));
+					$jadwalDiperbarui = true;
+				} else {
+					$reservasi->update([
+						'status' => $reservasiStatus,
+					]);
+				}
+			}
+
+			return $pembayaran->fresh(['reservasi.jadwal.paketTrip']);
+		});
 	}
 
 	private function configure(): void

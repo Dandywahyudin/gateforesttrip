@@ -5,7 +5,7 @@
 
 @section('content')
     <div class="space-y-6">
-            <div class="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                     <div>
                         <h3 class="mt-2 text-3xl font-display font-black uppercase text-gray-900">Daftar paket trip</h3>
@@ -16,7 +16,7 @@
                     </div>
                 </div>
 
-                <div class="mt-6 overflow-x-auto rounded-2xl border border-gray-100">
+                <div class="mt-6 overflow-x-auto rounded-lg border border-gray-100">
                     <table class="min-w-[1100px] w-full divide-y divide-gray-100">
                         <thead class="bg-gray-50">
                             <tr>
@@ -43,7 +43,7 @@
                                     <td class="px-4 py-4 text-sm font-black text-gray-900">{{ $paket->jadwal_open_count }}</td>
                                     <td class="px-4 py-4 text-sm font-black text-gray-900">{{ $paket->reservasi_count }}</td>
                                     <td class="px-4 py-4">
-                                        <span class="rounded-full {{ $paket->aktif ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600' }} px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em]">
+                                        <span class="rounded-lg {{ $paket->aktif ? 'bg-green-100 text-green-700' : 'bg-gray-200 text-gray-600' }} px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em]">
                                             {{ $paket->aktif ? 'Aktif' : 'Nonaktif' }}
                                         </span>
                                     </td>

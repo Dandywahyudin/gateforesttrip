@@ -11,8 +11,7 @@ class PesertaTrip extends Model
     protected $fillable = [
         'reservasiId',
         'nama',
-        'jenis_identitas',
-        'no_identitas',
+        'email',
         'jenis_kelamin',
         'tanggal_lahir',
         'no_hp',

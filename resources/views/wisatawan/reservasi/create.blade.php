@@ -36,32 +36,37 @@
                         @forelse($jadwals as $jadwal)
                             @php
                                 $hargaJadwal = $jadwal->harga_override ?? $paket->harga;
-                                $sisaKuota = max(0, $jadwal->kuota_max - $jadwal->kuota_terisi);
+                                $sisaKuota = (int) ($jadwal->sisa_kuota_tersedia ?? max(0, $jadwal->kuota_max - $jadwal->kuota_terisi));
                                 $isSelected = (string) old('jadwal_id', $sessionData['jadwal_id'] ?? '') === (string) $jadwal->jadwalId;
                             @endphp
-                            <label class="group flex cursor-pointer flex-col gap-4 rounded-[24px] border bg-white p-5 transition-all duration-300 {{ $isSelected ? 'border-primary ring-4 ring-primary/10 shadow-[0_18px_50px_rgba(21,128,61,0.14)]' : 'border-forest-green/10 shadow-sm hover:border-primary/30 hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)]' }}">
+                            <label class="group flex cursor-pointer flex-col gap-4 rounded-[24px] border bg-white p-5 transition-all duration-300 {{ $isSelected ? 'border-primary ring-4 ring-primary/10 shadow-[0_18px_50px_rgba(21,128,61,0.14)]' : 'border-forest-green/10 shadow-sm hover:border-primary/30 hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)]' }}"
+                                data-kuota-realtime-channel="jadwal.{{ $jadwal->jadwalId }}"
+                                data-jadwal-refresh-url="{{ route('jadwal.realtime', $jadwal) }}"
+                                data-jadwal-id="{{ $jadwal->jadwalId }}"
+                                data-jadwal-status="{{ $jadwal->status }}"
+                                data-jadwal-sisa-kuota="{{ $sisaKuota }}">
                                 <div class="flex items-start gap-4">
-                                    <input type="radio" name="jadwal_id" value="{{ $jadwal->jadwalId }}" class="mt-1 h-5 w-5 border-forest-green/20 text-primary focus:ring-primary" {{ $isSelected ? 'checked' : '' }}>
+                                    <input type="radio" name="jadwal_id" value="{{ $jadwal->jadwalId }}" class="mt-1 h-5 w-5 border-forest-green/20 text-primary focus:ring-primary" {{ $isSelected ? 'checked' : '' }} {{ $sisaKuota <= 0 ? 'disabled' : '' }} data-jadwal-field="radio">
 
                                     <div class="min-w-0 flex-1 space-y-4">
                                         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
                                             <div>
                                                 <p class="text-[10px] font-black uppercase tracking-[0.28em] text-forest-green/40 mb-2">Jadwal</p>
-                                                <h4 class="text-xl font-display font-black uppercase text-forest-green leading-tight">{{ \Illuminate\Support\Carbon::parse($jadwal->tanggal_berangkat)->translatedFormat('d M Y') }}</h4>
-                                                <p class="mt-1 text-sm text-forest-green/60">Sampai {{ \Illuminate\Support\Carbon::parse($jadwal->tanggal_kembali)->translatedFormat('d M Y') }}</p>
+                                                <h4 class="text-xl font-display font-black uppercase text-forest-green leading-tight" data-jadwal-field="tanggal-berangkat">{{ \Illuminate\Support\Carbon::parse($jadwal->tanggal_berangkat)->translatedFormat('d M Y') }}</h4>
+                                                <p class="mt-1 text-sm text-forest-green/60">Sampai <span data-jadwal-field="tanggal-kembali">{{ \Illuminate\Support\Carbon::parse($jadwal->tanggal_kembali)->translatedFormat('d M Y') }}</span></p>
                                             </div>
 
                                             <div class="flex flex-wrap gap-2">
-                                                <span class="inline-flex rounded-full bg-background-light px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-forest-green">
+                                                <span class="inline-flex rounded-full bg-background-light px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-forest-green" data-jadwal-field="harga">
                                                     Rp {{ number_format($hargaJadwal, 0, ',', '.') }}
                                                 </span>
-                                                <span class="inline-flex rounded-full bg-background-light px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-forest-green">
+                                                <span class="inline-flex rounded-full bg-background-light px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-forest-green" data-jadwal-field="sisa-kuota">
                                                     {{ $sisaKuota }} kursi
                                                 </span>
                                             </div>
                                         </div>
 
-                                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-dashed border-forest-green/10 px-4 py-3 text-xs font-black uppercase tracking-[0.22em] {{ $sisaKuota > 0 ? 'text-forest-green/60' : 'text-red-600' }}">
+                                        <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-dashed border-forest-green/10 px-4 py-3 text-xs font-black uppercase tracking-[0.22em] {{ $sisaKuota > 0 ? 'text-forest-green/60' : 'text-red-600' }}" data-jadwal-field="kuota-badge">
                                             <span>{{ $sisaKuota > 0 ? 'Tersedia' : 'Penuh' }}</span>
                                             <span>{{ $sisaKuota > 0 ? 'Pilihan siap dipakai' : 'Pilih jadwal lain' }}</span>
                                         </div>

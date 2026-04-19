@@ -26,7 +26,6 @@
                     title="{{ $paket->nama }}"
                     description="{{ \Illuminate\Support\Str::limit($paket->deskripsi, 80) }}"
                     price="Rp {{ number_format($paket->harga, 0, ',', '.') }}"
-                    rating="4.9"
                 />
             @empty
                 <div class="col-span-full rounded-3xl border border-dashed border-forest-green/20 bg-white p-8 text-center text-forest-green/60">

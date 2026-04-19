@@ -8,6 +8,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Wisatawan\PaketTripController;
 use App\Http\Controllers\Wisatawan\PembayaranController;
 use App\Http\Controllers\Wisatawan\ReservasiController;
+use App\Events\JadwalKuotaUpdated;
 use App\Models\Jadwal;
 use App\Models\PaketTrip;
 use Illuminate\Http\Request;
@@ -50,6 +51,11 @@ Route::get('/', function () {
 // Landing Page Routes
 Route::get('/paket-trip', [PaketTripController::class, 'index'])->name('paket-trip.index');
 Route::get('/paket-trip/{paketTrip}', [PaketTripController::class, 'show'])->name('paket-trip.show');
+Route::get('/jadwal/{jadwal}/realtime', function (Jadwal $jadwal) {
+    return response()->json(
+        JadwalKuotaUpdated::fromJadwal($jadwal->fresh(['paketTrip', 'reservasis.pembayaran']))->broadcastWith()
+    );
+})->name('jadwal.realtime');
 
 Route::middleware(['auth', 'role:wisatawan'])->prefix('reservasi')->name('reservasi.')->group(function () {
     Route::get('/{paketTrip}/jadwal', [ReservasiController::class, 'create'])->name('jadwal');
@@ -76,7 +82,7 @@ Route::middleware(['auth', 'verified'])->get('/dashboard', function (Request $re
         return redirect()->route('admin.dashboard');
     }
 
-    return redirect()->route('reservasi.riwayat');
+    return redirect('/');
 })->name('dashboard');
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Wisatawan;
 
 use App\Http\Controllers\Controller;
 use App\Models\Reservasi;
+use App\Models\User;
 use App\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -47,8 +48,9 @@ class PembayaranController extends Controller
 	{
 		$reservasi = $this->resolveReservasi($kodeReservasi);
 		$pembayaran = $midtransService->refreshPaymentStatus($reservasi);
+		$adminWhatsappUrl = $this->resolveAdminWhatsappUrl($reservasi);
 
-		return view('wisatawan.pembayaran.status', compact('reservasi', 'pembayaran'));
+		return view('wisatawan.pembayaran.status', compact('reservasi', 'pembayaran', 'adminWhatsappUrl'));
 	}
 
 	public function notification(Request $request, MidtransService $midtransService)
@@ -68,5 +70,38 @@ class PembayaranController extends Controller
 			->where('kode_reservasi', $kodeReservasi)
 			->where('userId', Auth::id())
 			->firstOrFail();
+	}
+
+	private function resolveAdminWhatsappUrl(Reservasi $reservasi): ?string
+	{
+		$admin = User::query()
+			->where('role', 'admin')
+			->whereNotNull('no_hp')
+			->orderBy('userId')
+			->first();
+
+		if (! $admin?->no_hp) {
+			return null;
+		}
+
+		$phoneNumber = preg_replace('/\D+/', '', (string) $admin->no_hp);
+
+		if ($phoneNumber === '') {
+			return null;
+		}
+
+		if (str_starts_with($phoneNumber, '0')) {
+			$phoneNumber = '62' . substr($phoneNumber, 1);
+		} elseif (str_starts_with($phoneNumber, '8')) {
+			$phoneNumber = '62' . $phoneNumber;
+		}
+
+		$message = sprintf(
+			'Halo Admin GateForestTrip, saya ingin menanyakan reservasi %s untuk paket %s.',
+			$reservasi->kode_reservasi,
+			$reservasi->jadwal?->paketTrip?->nama ?? 'Open Trip'
+		);
+
+		return 'https://wa.me/' . $phoneNumber . '?text=' . rawurlencode($message);
 	}
 }

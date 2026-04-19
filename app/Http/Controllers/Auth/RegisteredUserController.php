@@ -34,6 +34,18 @@ class RegisteredUserController extends Controller
             'nama' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ], [
+            'nama.required' => 'Nama wajib diisi.',
+            'nama.string' => 'Nama harus berupa teks.',
+            'nama.max' => 'Nama tidak boleh lebih dari 255 karakter.',
+            'email.required' => 'Email wajib diisi.',
+            'email.string' => 'Email harus berupa teks.',
+            'email.lowercase' => 'Email harus menggunakan huruf kecil.',
+            'email.email' => 'Format email tidak valid.',
+            'email.max' => 'Email tidak boleh lebih dari 255 karakter.',
+            'email.unique' => 'Email sudah terdaftar.',
+            'password.required' => 'Kata sandi wajib diisi.',
+            'password.confirmed' => 'Konfirmasi kata sandi tidak cocok.',
         ]);
 
         $user = User::create([
@@ -46,6 +58,8 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return $user->isAdmin()
+            ? redirect()->route('admin.dashboard')
+            : redirect('/');
     }
 }

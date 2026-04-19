@@ -53,10 +53,9 @@
                                         <p class="text-xs font-black uppercase tracking-[0.25em] text-primary">Peserta</p>
                                         <h3 class="mt-1 text-lg font-black text-forest-green">{{ $peserta->nama }}</h3>
                                     </div>
-                                    <span class="text-xs font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-white text-forest-green">{{ $peserta->jenis_identitas }}</span>
                                 </div>
                                 <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-forest-green/70">
-                                    <p>No identitas: {{ $peserta->no_identitas }}</p>
+                                    <p>Email: {{ $peserta->email ?? '-' }}</p>
                                     <p>Jenis kelamin: {{ $peserta->jenis_kelamin }}</p>
                                     <p>Tanggal lahir: {{ \Illuminate\Support\Carbon::parse($peserta->tanggal_lahir)->translatedFormat('d M Y') }}</p>
                                     <p>No HP: {{ $peserta->no_hp ?? '-' }}</p>
@@ -77,6 +76,23 @@
                     <div class="rounded-xl bg-background-light p-4 text-sm text-forest-green/70 space-y-3">
                         <p>Jika status masih <span class="font-black text-forest-green">pending</span>, silakan selesaikan pembayaran terlebih dahulu.</p>
                         <p>Jika status sudah <span class="font-black text-forest-green">paid</span>, reservasi Anda sudah masuk proses verifikasi dan tiket akan disiapkan.</p>
+                    </div>
+
+                    <div class="rounded-xl border border-dashed border-primary/20 bg-primary/5 p-4 space-y-3">
+                        <div>
+                            <p class="text-xs font-black uppercase tracking-[0.25em] text-primary">Hubungi Admin</p>
+                            <p class="mt-2 text-sm leading-relaxed text-forest-green/70">Jika ingin konfirmasi reservasi, jadwal, atau ada kendala pembayaran, hubungi admin lewat WhatsApp.</p>
+                        </div>
+
+                        @if($adminWhatsappUrl)
+                            <a href="{{ $adminWhatsappUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex w-full items-center justify-center rounded-xl bg-green-600 px-4 py-3 text-sm font-black uppercase tracking-[0.25em] text-white transition hover:bg-green-700">
+                                Chat Admin WhatsApp
+                            </a>
+                        @else
+                            <div class="rounded-xl bg-white/80 p-3 text-xs font-semibold text-forest-green/60">
+                                Nomor WhatsApp admin belum tersedia. Lengkapi data <span class="font-black text-forest-green">No. HP</span> pada akun admin agar tombol kontak aktif.
+                            </div>
+                        @endif
                     </div>
 
                     <div class="flex flex-col gap-3">

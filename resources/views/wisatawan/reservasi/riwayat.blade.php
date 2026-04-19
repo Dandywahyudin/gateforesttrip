@@ -6,7 +6,6 @@
 <section class="w-full pt-32 pb-16 bg-[radial-gradient(circle_at_top_right,_rgba(21,128,61,0.12),_transparent_30%),linear-gradient(to_bottom,_#f8faf7,_#ffffff)]">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
         <div class="mb-8">
-            <p class="text-xs font-black uppercase tracking-[0.25em] text-primary">Riwayat</p>
             <x-breadcrumbs :items="[
                 ['label' => 'Home', 'url' => url('/')],
                 ['label' => 'Trip', 'url' => route('paket-trip.index')],

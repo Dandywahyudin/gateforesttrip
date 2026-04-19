@@ -12,62 +12,62 @@
         <div class="space-y-6">
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="nama">Nama Paket</label>
-                <input id="nama" name="nama" type="text" value="{{ old('nama', $paketTrip->nama ?? '') }}" class="w-full rounded-2xl border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>
+                <input id="nama" name="nama" type="text" value="{{ old('nama', $paketTrip->nama ?? '') }}" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>
             </div>
 
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="lokasi">Lokasi</label>
-                <input id="lokasi" name="lokasi" type="text" value="{{ old('lokasi', $paketTrip->lokasi ?? '') }}" class="w-full rounded-2xl border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>
+                <input id="lokasi" name="lokasi" type="text" value="{{ old('lokasi', $paketTrip->lokasi ?? '') }}" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>
             </div>
 
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="kategori">Kategori</label>
-                <input id="kategori" name="kategori" type="text" value="{{ old('kategori', $paketTrip->kategori ?? '') }}" class="w-full rounded-2xl border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" placeholder="Contoh: Camping, Pantai, Hiking">
+                <input id="kategori" name="kategori" type="text" value="{{ old('kategori', $paketTrip->kategori ?? '') }}" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" placeholder="Contoh: Camping, Pantai, Hiking">
             </div>
 
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="durasi_hari">Durasi Hari</label>
-                <input id="durasi_hari" name="durasi_hari" type="number" min="1" value="{{ old('durasi_hari', $paketTrip->durasi_hari ?? 1) }}" class="w-full rounded-2xl border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>
+                <input id="durasi_hari" name="durasi_hari" type="number" min="1" value="{{ old('durasi_hari', $paketTrip->durasi_hari ?? 1) }}" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>
             </div>
 
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="harga">Harga</label>
-                <input id="harga" name="harga" type="number" min="0" value="{{ old('harga', $paketTrip->harga ?? 0) }}" class="w-full rounded-2xl border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>
+                <input id="harga" name="harga" type="number" min="0" value="{{ old('harga', $paketTrip->harga ?? 0) }}" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>
             </div>
 
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="meeting_point">Meeting Point</label>
-                <textarea id="meeting_point" name="meeting_point" rows="3" class="w-full rounded-2xl border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">{{ old('meeting_point', $paketTrip->meeting_point ?? '') }}</textarea>
+                <textarea id="meeting_point" name="meeting_point" rows="3" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">{{ old('meeting_point', $paketTrip->meeting_point ?? '') }}</textarea>
             </div>
         </div>
 
         <div class="space-y-6">
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="deskripsi">Deskripsi</label>
-                <textarea id="deskripsi" name="deskripsi" rows="6" class="w-full rounded-2xl border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>{{ old('deskripsi', $paketTrip->deskripsi ?? '') }}</textarea>
+                <textarea id="deskripsi" name="deskripsi" rows="6" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>{{ old('deskripsi', $paketTrip->deskripsi ?? '') }}</textarea>
             </div>
 
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="fasilitas">Fasilitas</label>
-                <textarea id="fasilitas" name="fasilitas" rows="4" class="w-full rounded-2xl border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>{{ old('fasilitas', $paketTrip->fasilitas ?? '') }}</textarea>
+                <textarea id="fasilitas" name="fasilitas" rows="4" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>{{ old('fasilitas', $paketTrip->fasilitas ?? '') }}</textarea>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
                 <div>
                     <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="include">Include</label>
-                    <textarea id="include" name="include" rows="4" class="w-full rounded-2xl border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">{{ old('include', $paketTrip->include ?? '') }}</textarea>
+                    <textarea id="include" name="include" rows="4" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">{{ old('include', $paketTrip->include ?? '') }}</textarea>
                 </div>
                 <div>
                     <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="exclude">Exclude</label>
-                    <textarea id="exclude" name="exclude" rows="4" class="w-full rounded-2xl border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">{{ old('exclude', $paketTrip->exclude ?? '') }}</textarea>
+                    <textarea id="exclude" name="exclude" rows="4" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">{{ old('exclude', $paketTrip->exclude ?? '') }}</textarea>
                 </div>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
                 <div>
                     <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="foto">Foto Utama</label>
-                    <div class="rounded-2xl border border-gray-200 bg-white p-4 space-y-4">
-                        <div class="overflow-hidden rounded-2xl border border-dashed border-gray-200 bg-gray-50">
+                    <div class="rounded-lg border border-gray-200 bg-white p-4 space-y-4">
+                        <div class="overflow-hidden rounded-lg border border-dashed border-gray-200 bg-gray-50">
                             @if(!empty($paketTrip->foto))
                                 <img src="{{ $paketTrip->foto_url }}" alt="Foto utama saat ini" class="h-40 w-full object-cover">
                             @else
@@ -78,7 +78,7 @@
                         <div class="space-y-3">
                             <div>
                                 <label class="mb-2 block text-[10px] font-black uppercase tracking-[0.25em] text-gray-500" for="foto">Ganti foto utama</label>
-                                <input id="foto" name="foto" type="file" accept="image/*" class="w-full rounded-2xl border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">
+                                <input id="foto" name="foto" type="file" accept="image/*" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">
                             </div>
 
                             @if(!empty($paketTrip->foto))
@@ -94,8 +94,8 @@
                 </div>
                 <div>
                     <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="foto2">Foto 2</label>
-                    <div class="rounded-2xl border border-gray-200 bg-white p-4 space-y-4">
-                        <div class="overflow-hidden rounded-2xl border border-dashed border-gray-200 bg-gray-50">
+                    <div class="rounded-lg border border-gray-200 bg-white p-4 space-y-4">
+                        <div class="overflow-hidden rounded-lg border border-dashed border-gray-200 bg-gray-50">
                             @if(!empty($paketTrip->foto2))
                                 <img src="{{ $paketTrip->foto2_url }}" alt="Foto 2 saat ini" class="h-40 w-full object-cover">
                             @else
@@ -106,7 +106,7 @@
                         <div class="space-y-3">
                             <div>
                                 <label class="mb-2 block text-[10px] font-black uppercase tracking-[0.25em] text-gray-500" for="foto2">Ganti foto 2</label>
-                                <input id="foto2" name="foto2" type="file" accept="image/*" class="w-full rounded-2xl border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">
+                                <input id="foto2" name="foto2" type="file" accept="image/*" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">
                             </div>
 
                             @if(!empty($paketTrip->foto2))
@@ -121,8 +121,8 @@
                 </div>
                 <div>
                     <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="foto3">Foto 3</label>
-                    <div class="rounded-2xl border border-gray-200 bg-white p-4 space-y-4">
-                        <div class="overflow-hidden rounded-2xl border border-dashed border-gray-200 bg-gray-50">
+                    <div class="rounded-lg border border-gray-200 bg-white p-4 space-y-4">
+                        <div class="overflow-hidden rounded-lg border border-dashed border-gray-200 bg-gray-50">
                             @if(!empty($paketTrip->foto3))
                                 <img src="{{ $paketTrip->foto3_url }}" alt="Foto 3 saat ini" class="h-40 w-full object-cover">
                             @else
@@ -133,7 +133,7 @@
                         <div class="space-y-3">
                             <div>
                                 <label class="mb-2 block text-[10px] font-black uppercase tracking-[0.25em] text-gray-500" for="foto3">Ganti foto 3</label>
-                                <input id="foto3" name="foto3" type="file" accept="image/*" class="w-full rounded-2xl border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">
+                                <input id="foto3" name="foto3" type="file" accept="image/*" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">
                             </div>
 
                             @if(!empty($paketTrip->foto3))
@@ -148,8 +148,8 @@
                 </div>
                 <div>
                     <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="foto4">Foto 4</label>
-                    <div class="rounded-2xl border border-gray-200 bg-white p-4 space-y-4">
-                        <div class="overflow-hidden rounded-2xl border border-dashed border-gray-200 bg-gray-50">
+                    <div class="rounded-lg border border-gray-200 bg-white p-4 space-y-4">
+                        <div class="overflow-hidden rounded-lg border border-dashed border-gray-200 bg-gray-50">
                             @if(!empty($paketTrip->foto4))
                                 <img src="{{ $paketTrip->foto4_url }}" alt="Foto 4 saat ini" class="h-40 w-full object-cover">
                             @else
@@ -160,7 +160,7 @@
                         <div class="space-y-3">
                             <div>
                                 <label class="mb-2 block text-[10px] font-black uppercase tracking-[0.25em] text-gray-500" for="foto4">Ganti foto 4</label>
-                                <input id="foto4" name="foto4" type="file" accept="image/*" class="w-full rounded-2xl border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">
+                                <input id="foto4" name="foto4" type="file" accept="image/*" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">
                             </div>
 
                             @if(!empty($paketTrip->foto4))
@@ -175,7 +175,7 @@
                 </div>
             </div>
 
-            <label class="flex items-center gap-3 rounded-2xl border border-gray-200 bg-white px-4 py-4">
+            <label class="flex items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-4">
                 <input type="checkbox" name="aktif" value="1" {{ old('aktif', $paketTrip->aktif ?? true) ? 'checked' : '' }} class="rounded border-gray-300 text-primary focus:ring-primary">
                 <span>
                     <span class="block text-sm font-black uppercase tracking-[0.25em] text-gray-700">Aktif</span>

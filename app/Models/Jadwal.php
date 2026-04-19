@@ -28,4 +28,22 @@ class Jadwal extends Model
     {
         return $this->hasMany(Reservasi::class, 'jadwalId');
     }
+
+    public function syncQuotaFromPaidReservations(): self
+    {
+        $kuotaTerisi = (int) $this->reservasis()
+            ->where('status', 'paid')
+            ->sum('jml_peserta');
+
+        $status = $this->status === 'cancelled'
+            ? 'cancelled'
+            : ($kuotaTerisi >= (int) $this->kuota_max ? 'full' : 'open');
+
+        $this->update([
+            'kuota_terisi' => $kuotaTerisi,
+            'status' => $status,
+        ]);
+
+        return $this->fresh(['paketTrip']);
+    }
 }

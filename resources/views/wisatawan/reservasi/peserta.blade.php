@@ -63,37 +63,29 @@
                                     @endif
                                 </div>
 
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
                                     <div>
-                                        <label class="block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50 mb-2">Nama Lengkap</label>
+                                        <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50">Nama Lengkap</label>
                                         <input type="text" name="peserta[{{ $index }}][nama]" value="{{ old('peserta.' . $index . '.nama') }}" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary" required>
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50 mb-2">Jenis Identitas</label>
-                                        <select name="peserta[{{ $index }}][jenis_identitas]" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary" required>
-                                            <option value="ktp" @selected(old('peserta.' . $index . '.jenis_identitas') === 'ktp')>KTP</option>
-                                            <option value="paspor" @selected(old('peserta.' . $index . '.jenis_identitas') === 'paspor')>Paspor</option>
-                                            <option value="sim" @selected(old('peserta.' . $index . '.jenis_identitas') === 'sim')>SIM</option>
-                                        </select>
+                                        <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50">Email</label>
+                                        <input type="email" name="peserta[{{ $index }}][email]" value="{{ old('peserta.' . $index . '.email') }}" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary" required autocomplete="email">
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50 mb-2">Nomor Identitas</label>
-                                        <input type="text" name="peserta[{{ $index }}][no_identitas]" value="{{ old('peserta.' . $index . '.no_identitas') }}" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary" required>
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50 mb-2">Jenis Kelamin</label>
+                                        <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50">Jenis Kelamin</label>
                                         <select name="peserta[{{ $index }}][jenis_kelamin]" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary" required>
                                             <option value="laki-laki" @selected(old('peserta.' . $index . '.jenis_kelamin') === 'laki-laki')>Laki-laki</option>
                                             <option value="perempuan" @selected(old('peserta.' . $index . '.jenis_kelamin') === 'perempuan')>Perempuan</option>
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50 mb-2">Tanggal Lahir</label>
-                                        <input type="date" name="peserta[{{ $index }}][tanggal_lahir]" value="{{ old('peserta.' . $index . '.tanggal_lahir') }}" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary" required>
-                                    </div>
-                                    <div>
-                                        <label class="block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50 mb-2">No. HP</label>
+                                        <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50">No. HP</label>
                                         <input type="text" name="peserta[{{ $index }}][no_hp]" value="{{ old('peserta.' . $index . '.no_hp') }}" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary">
+                                    </div>
+                                    <div class="md:col-span-2">
+                                        <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50">Tanggal Lahir</label>
+                                        <input type="date" name="peserta[{{ $index }}][tanggal_lahir]" value="{{ old('peserta.' . $index . '.tanggal_lahir') }}" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary" required>
                                     </div>
                                 </div>
                             </div>
@@ -136,6 +128,7 @@
 @php
     $profileParticipantData = auth()->check() ? [
         'nama' => auth()->user()->nama,
+        'email' => auth()->user()->email,
         'no_hp' => auth()->user()->no_hp,
         'jenis_kelamin' => auth()->user()->jenis_kelamin,
         'tanggal_lahir' => auth()->user()->tanggal_lahir,
@@ -156,37 +149,29 @@
             </label>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
             <div>
-                <label class="block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50 mb-2">Nama Lengkap</label>
+                <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50">Nama Lengkap</label>
                 <input type="text" name="peserta[__INDEX__][nama]" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary" required>
             </div>
             <div>
-                <label class="block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50 mb-2">Jenis Identitas</label>
-                <select name="peserta[__INDEX__][jenis_identitas]" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary" required>
-                    <option value="ktp">KTP</option>
-                    <option value="paspor">Paspor</option>
-                    <option value="sim">SIM</option>
-                </select>
+                <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50">Email</label>
+                <input type="email" name="peserta[__INDEX__][email]" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary" required autocomplete="email">
             </div>
             <div>
-                <label class="block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50 mb-2">Nomor Identitas</label>
-                <input type="text" name="peserta[__INDEX__][no_identitas]" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary" required>
-            </div>
-            <div>
-                <label class="block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50 mb-2">Jenis Kelamin</label>
+                <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50">Jenis Kelamin</label>
                 <select name="peserta[__INDEX__][jenis_kelamin]" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary" required>
                     <option value="laki-laki">Laki-laki</option>
                     <option value="perempuan">Perempuan</option>
                 </select>
             </div>
             <div>
-                <label class="block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50 mb-2">Tanggal Lahir</label>
-                <input type="date" name="peserta[__INDEX__][tanggal_lahir]" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary" required>
-            </div>
-            <div>
-                <label class="block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50 mb-2">No. HP</label>
+                <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50">No. HP</label>
                 <input type="text" name="peserta[__INDEX__][no_hp]" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary">
+            </div>
+            <div class="md:col-span-2">
+                <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50">Tanggal Lahir</label>
+                <input type="date" name="peserta[__INDEX__][tanggal_lahir]" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary" required>
             </div>
         </div>
     </div>
@@ -231,6 +216,7 @@
 
             const fields = {
                 nama: profileData.nama || '',
+                email: profileData.email || '',
                 no_hp: profileData.no_hp || '',
                 jenis_kelamin: profileData.jenis_kelamin || '',
                 tanggal_lahir: profileData.tanggal_lahir ? profileData.tanggal_lahir.slice(0, 10) : '',
@@ -245,7 +231,7 @@
         }
 
         function clearProfile(card) {
-            ['nama', 'no_hp', 'tanggal_lahir'].forEach((fieldName) => {
+            ['nama', 'email', 'no_hp', 'tanggal_lahir'].forEach((fieldName) => {
                 const field = card.querySelector(`[name$="[${fieldName}]"]`);
                 if (field) {
                     field.value = '';

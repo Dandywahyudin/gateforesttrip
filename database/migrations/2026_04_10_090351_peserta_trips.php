@@ -17,8 +17,7 @@ return new class extends Migration
                   ->constrained('reservasis', 'reservasiId')
                   ->cascadeOnDelete();
             $table->string('nama');
-            $table->enum('jenis_identitas', ['ktp', 'paspor', 'sim'])->default('ktp');
-            $table->string('no_identitas', 30);
+            $table->string('email')->nullable();
             $table->enum('jenis_kelamin', ['laki-laki', 'perempuan']);
             $table->date('tanggal_lahir');
             $table->string('no_hp', 20)->nullable();

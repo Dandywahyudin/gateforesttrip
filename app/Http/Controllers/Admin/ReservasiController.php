@@ -3,11 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller as BaseController;
+use App\Models\Jadwal;
 use App\Models\PaketTrip;
 use App\Models\Reservasi;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -17,10 +19,32 @@ class ReservasiController extends BaseController
     {
         $status = (string) $request->input('status', '');
         $paketTrip = null;
+        $jadwalTrip = null;
+
+        $pakets = PaketTrip::orderBy('nama')->get();
 
         if ($request->filled('paket')) {
             $paketSlug = (string) $request->input('paket');
             $paketTrip = PaketTrip::where('slug', $paketSlug)->firstOrFail();
+        }
+
+        if ($request->filled('jadwal')) {
+            $jadwalTrip = Jadwal::with('paketTrip')->whereKey((int) $request->input('jadwal'))->firstOrFail();
+
+            if (! $paketTrip) {
+                $paketTrip = $jadwalTrip->paketTrip;
+            }
+        }
+
+        $jadwals = Jadwal::with('paketTrip')
+            ->when($paketTrip, function ($query) use ($paketTrip) {
+                $query->where('paketId', $paketTrip->paketId);
+            })
+            ->orderByDesc('tanggal_berangkat')
+            ->get();
+
+        if ($jadwalTrip && $paketTrip && (int) $jadwalTrip->paketId !== (int) $paketTrip->paketId) {
+            $jadwalTrip = null;
         }
 
         $reservasisQuery = Reservasi::with(['jadwal.paketTrip', 'user', 'pembayaran'])
@@ -32,44 +56,49 @@ class ReservasiController extends BaseController
                     $jadwalQuery->where('paketId', $paketTrip->paketId);
                 });
             })
+            ->when($jadwalTrip, function ($query) use ($jadwalTrip) {
+                $query->where('jadwalId', $jadwalTrip->jadwalId);
+            })
             ->latest('reservasiId');
 
         $reservasis = $reservasisQuery->paginate(10);
         $reservasis->withQueryString();
 
-        return view('admin.reservasi.index', compact('reservasis', 'status', 'paketTrip'));
+        return view('admin.reservasi.index', compact('reservasis', 'status', 'paketTrip', 'jadwalTrip', 'pakets', 'jadwals'));
     }
 
     public function exportPdf(Request $request)
     {
-        [$status, $paketTrip, $reservasis] = $this->resolveExportData($request);
+        [$status, $paketTrip, $jadwalTrip, $reservasis] = $this->resolveExportData($request);
 
         $pdf = Pdf::loadView('admin.reservasi.export-pdf', [
             'reservasis' => $reservasis,
             'status' => $status,
             'paketTrip' => $paketTrip,
+            'jadwalTrip' => $jadwalTrip,
             'generatedAt' => now(),
         ])->setPaper('a4', 'landscape');
 
-        $filename = 'reservasi-' . now()->format('Ymd-His') . '.pdf';
+        $filename = $this->buildExportFilename('pdf', $paketTrip, $jadwalTrip);
 
         return $pdf->download($filename);
     }
 
     public function exportCsv(Request $request): StreamedResponse
     {
-        [$status, $paketTrip, $reservasis] = $this->resolveExportData($request);
-        $filename = 'reservasi-' . now()->format('Ymd-His') . '.csv';
+        [$status, $paketTrip, $jadwalTrip, $reservasis] = $this->resolveExportData($request);
+        $filename = $this->buildExportFilename('csv', $paketTrip, $jadwalTrip);
 
         return response()->streamDownload(function () use ($reservasis) {
             $handle = fopen('php://output', 'w');
+            fwrite($handle, "\xEF\xBB\xBF");
 
             fputcsv($handle, [
                 'No',
                 'Kode Reservasi',
                 'Paket Trip',
+                'Jadwal',
                 'Wisatawan',
-                'Tanggal Berangkat',
                 'Peserta',
                 'Status Reservasi',
                 'Status Pembayaran',
@@ -81,8 +110,10 @@ class ReservasiController extends BaseController
                     $index + 1,
                     $reservasi->kode_reservasi,
                     $reservasi->jadwal?->paketTrip?->nama,
+                    $reservasi->jadwal?->jadwalId
+                        ? 'Jadwal #' . $reservasi->jadwal->jadwalId . ' - ' . ($reservasi->jadwal->tanggal_berangkat ? Carbon::parse($reservasi->jadwal->tanggal_berangkat)->format('Y-m-d') : '-')
+                        : '-',
                     $reservasi->user?->nama,
-                    $reservasi->jadwal?->tanggal_berangkat ? Carbon::parse($reservasi->jadwal->tanggal_berangkat)->format('Y-m-d') : '-',
                     $reservasi->jml_peserta,
                     $reservasi->status,
                     $reservasi->pembayaran?->status ?? 'belum ada',
@@ -105,26 +136,53 @@ class ReservasiController extends BaseController
 
     private function resolveExportData(Request $request): array
     {
-        $status = (string) $request->input('status', '');
+        $status = 'paid';
         $paketTrip = null;
+        $jadwalTrip = null;
 
         if ($request->filled('paket')) {
             $paketSlug = (string) $request->input('paket');
             $paketTrip = PaketTrip::where('slug', $paketSlug)->firstOrFail();
         }
 
+        if ($request->filled('jadwal')) {
+            $jadwalTrip = Jadwal::with('paketTrip')->whereKey((int) $request->input('jadwal'))->firstOrFail();
+
+            if (! $paketTrip) {
+                $paketTrip = $jadwalTrip->paketTrip;
+            }
+        }
+
         $reservasis = Reservasi::with(['jadwal.paketTrip', 'user', 'pembayaran'])
-            ->when($status !== '', function ($query) use ($status) {
-                $query->where('status', $status);
-            })
+            ->where('status', 'paid')
             ->when($paketTrip, function ($query) use ($paketTrip) {
                 $query->whereHas('jadwal', function ($jadwalQuery) use ($paketTrip) {
                     $jadwalQuery->where('paketId', $paketTrip->paketId);
                 });
             })
+            ->when($jadwalTrip, function ($query) use ($jadwalTrip) {
+                $query->where('jadwalId', $jadwalTrip->jadwalId);
+            })
             ->latest('reservasiId')
             ->get();
 
-        return [$status, $paketTrip, $reservasis];
+        return [$status, $paketTrip, $jadwalTrip, $reservasis];
+    }
+
+    private function buildExportFilename(string $extension, ?PaketTrip $paketTrip, ?Jadwal $jadwalTrip): string
+    {
+        $parts = ['reservasi-paid'];
+
+        if ($paketTrip) {
+            $parts[] = Str::slug($paketTrip->slug ?: $paketTrip->nama);
+        }
+
+        if ($jadwalTrip) {
+            $parts[] = 'jadwal-' . Carbon::parse($jadwalTrip->tanggal_berangkat)->format('Ymd');
+        }
+
+        $parts[] = now()->format('Ymd-His');
+
+        return implode('-', $parts) . '.' . $extension;
     }
 }

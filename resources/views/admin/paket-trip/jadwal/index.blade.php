@@ -5,7 +5,7 @@
 
 @section('content')
     <div class="space-y-6">
-        <div class="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+        <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
             <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
                     <p class="text-[10px] font-black uppercase tracking-[0.28em] text-primary">Jadwal untuk Paket Trip</p>
@@ -19,27 +19,27 @@
             </div>
 
             <div class="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <div class="rounded-2xl bg-gray-50 p-4">
+                <div class="rounded-lg bg-gray-50 p-4">
                     <p class="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400 mb-1">Harga Paket</p>
                     <p class="text-lg font-black text-gray-900">Rp {{ number_format($paketTrip->harga, 0, ',', '.') }}</p>
                 </div>
-                <div class="rounded-2xl bg-gray-50 p-4">
+                <div class="rounded-lg bg-gray-50 p-4">
                     <p class="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400 mb-1">Jadwal Total</p>
                     <p class="text-lg font-black text-gray-900">{{ $jadwals->count() }}</p>
                 </div>
-                <div class="rounded-2xl bg-gray-50 p-4">
+                <div class="rounded-lg bg-gray-50 p-4">
                     <p class="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400 mb-1">Lokasi</p>
                     <p class="text-lg font-black text-gray-900">{{ $paketTrip->lokasi }}</p>
                 </div>
-                <div class="rounded-2xl bg-gray-50 p-4">
+                <div class="rounded-lg bg-gray-50 p-4">
                     <p class="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400 mb-1">Status Paket</p>
                     <p class="text-lg font-black text-gray-900">{{ $paketTrip->aktif ? 'Aktif' : 'Nonaktif' }}</p>
                 </div>
             </div>
         </div>
 
-        <div class="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
-            <div class="overflow-x-auto rounded-2xl border border-gray-100">
+        <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
+            <div class="overflow-x-auto rounded-lg border border-gray-100">
                 <table class="min-w-[1000px] w-full divide-y divide-gray-100">
                     <thead class="bg-gray-50">
                         <tr>
@@ -53,13 +53,13 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100 bg-white">
                         @forelse($jadwals as $jadwal)
-                            <tr>
+                            <tr data-kuota-realtime-channel="jadwal.{{ $jadwal->jadwalId }}" data-jadwal-refresh-url="{{ route('jadwal.realtime', $jadwal) }}" data-jadwal-id="{{ $jadwal->jadwalId }}" data-jadwal-status="{{ $jadwal->status }}" data-jadwal-sisa-kuota="{{ max(0, $jadwal->kuota_max - $jadwal->kuota_terisi) }}">
                                 <td class="px-4 py-4 text-sm font-black text-gray-900">{{ \Illuminate\Support\Carbon::parse($jadwal->tanggal_berangkat)->translatedFormat('d M Y') }}</td>
                                 <td class="px-4 py-4 text-sm font-black text-gray-900">{{ \Illuminate\Support\Carbon::parse($jadwal->tanggal_kembali)->translatedFormat('d M Y') }}</td>
-                                <td class="px-4 py-4 text-sm text-gray-600">{{ $jadwal->kuota_terisi }} / {{ $jadwal->kuota_max }}</td>
+                                <td class="px-4 py-4 text-sm text-gray-600" data-jadwal-field="kuota">{{ $jadwal->kuota_terisi }} / {{ $jadwal->kuota_max }}</td>
                                 <td class="px-4 py-4 text-sm font-black text-gray-900">{{ $jadwal->harga_override ? 'Rp ' . number_format($jadwal->harga_override, 0, ',', '.') : '-' }}</td>
                                 <td class="px-4 py-4">
-                                    <span class="rounded-full {{ $jadwal->status === 'open' ? 'bg-green-100 text-green-700' : ($jadwal->status === 'full' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-200 text-gray-600') }} px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em]">
+                                    <span class="rounded-lg {{ $jadwal->status === 'open' ? 'bg-green-100 text-green-700' : ($jadwal->status === 'full' ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-200 text-gray-600') }} px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em]" data-jadwal-field="status">
                                         {{ $jadwal->status }}
                                     </span>
                                 </td>

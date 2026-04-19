@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\JadwalKuotaUpdated;
 use App\Http\Controllers\Controller as BaseController;
 use App\Models\Jadwal;
 use App\Models\PaketTrip;
@@ -34,7 +35,7 @@ class JadwalController extends BaseController
     {
         $validated = $this->validateData($request);
 
-        Jadwal::create([
+        $jadwal = Jadwal::create([
             'paketId' => $paketTrip->paketId,
             'tanggal_berangkat' => $validated['tanggal_berangkat'],
             'tanggal_kembali' => $validated['tanggal_kembali'],
@@ -46,6 +47,8 @@ class JadwalController extends BaseController
             'harga_override' => $validated['harga_override'],
             'cutoff_booking' => $validated['cutoff_booking'],
         ]);
+
+        event(JadwalKuotaUpdated::fromJadwal($jadwal->fresh(['paketTrip'])));
 
         return redirect()->route('admin.paket-trip.jadwal.index', $paketTrip)->with('success', 'Jadwal berhasil ditambahkan.');
     }
@@ -74,13 +77,18 @@ class JadwalController extends BaseController
             'cutoff_booking' => $validated['cutoff_booking'],
         ]);
 
+        event(JadwalKuotaUpdated::fromJadwal($jadwal->fresh(['paketTrip'])));
+
         return redirect()->route('admin.paket-trip.jadwal.index', $paketTrip)->with('success', 'Jadwal berhasil diperbarui.');
     }
 
     public function destroy(PaketTrip $paketTrip, int $jadwalId): RedirectResponse
     {
         $jadwal = Jadwal::where('paketId', $paketTrip->paketId)->where('jadwalId', $jadwalId)->firstOrFail();
+        $snapshot = $jadwal->fresh(['paketTrip']);
         $jadwal->delete();
+
+        event(JadwalKuotaUpdated::fromJadwal($snapshot, true));
 
         return redirect()->route('admin.paket-trip.jadwal.index', $paketTrip)->with('success', 'Jadwal berhasil dihapus.');
     }

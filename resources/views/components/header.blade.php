@@ -55,6 +55,10 @@
                             </x-dropdown-link>
                         @endif
 
+                        <x-dropdown-link :href="route('reservasi.riwayat')">
+                            Riwayat
+                        </x-dropdown-link>
+
                         <x-dropdown-link :href="route('profile.edit')">
                             Profil
                         </x-dropdown-link>
@@ -112,7 +116,10 @@
                             <p class="mt-1 text-sm font-bold text-white">{{ $user->nama }}</p>
                             <p class="mt-1 text-xs text-white/60">{{ $user->email }}</p>
                         </div>
-                        <a @click="open = false" href="{{ route('profile.edit') }}" class="rounded-full border border-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-white/80 hover:border-primary hover:text-primary transition-colors">Profil</a>
+                        <div class="flex flex-col gap-2">
+                            <a @click="open = false" href="{{ route('reservasi.riwayat') }}" class="rounded-full border border-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-white/80 hover:border-primary hover:text-primary transition-colors">Riwayat</a>
+                            <a @click="open = false" href="{{ route('profile.edit') }}" class="rounded-full border border-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-white/80 hover:border-primary hover:text-primary transition-colors">Profil</a>
+                        </div>
                     </div>
 
                     <form method="POST" action="{{ route('logout') }}" class="mt-4">

@@ -4,7 +4,7 @@
 @section('page-title', 'Edit Jadwal')
 
 @section('content')
-    <div class="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+    <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
         <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
                 <p class="text-[10px] font-black uppercase tracking-[0.28em] text-primary">Edit Jadwal</p>

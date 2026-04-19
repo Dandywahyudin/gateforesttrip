@@ -24,11 +24,17 @@ class ReservasiController extends Controller
                     ->orderBy('tanggal_berangkat');
             }]);
 
+        $jadwals = $paket->jadwals->map(function (Jadwal $jadwal) {
+            $jadwal->setAttribute('sisa_kuota_tersedia', $this->getSisaKuotaTersedia($jadwal));
+
+            return $jadwal;
+        });
+
         $sessionData = session(self::SESSION_KEY, []);
 
         return view('wisatawan.reservasi.create', [
             'paket' => $paket,
-            'jadwals' => $paket->jadwals,
+            'jadwals' => $jadwals,
             'sessionData' => $sessionData,
         ]);
     }
@@ -57,7 +63,7 @@ class ReservasiController extends Controller
             ]);
         }
 
-        $sisaKuota = max(0, (int) $jadwal->kuota_max - (int) $jadwal->kuota_terisi);
+        $sisaKuota = $this->getSisaKuotaTersedia($jadwal);
 
         if ((int) $validated['jml_peserta'] > $sisaKuota) {
             return back()->withInput()->withErrors([
@@ -124,8 +130,7 @@ class ReservasiController extends Controller
 
         for ($index = 0; $index < $jumlahPeserta; $index++) {
             $rules['peserta.' . $index . '.nama'] = ['required', 'string', 'max:255'];
-            $rules['peserta.' . $index . '.jenis_identitas'] = ['required', Rule::in(['ktp', 'paspor', 'sim'])];
-            $rules['peserta.' . $index . '.no_identitas'] = ['required', 'string', 'max:30'];
+            $rules['peserta.' . $index . '.email'] = ['required', 'email', 'max:255'];
             $rules['peserta.' . $index . '.jenis_kelamin'] = ['required', Rule::in(['laki-laki', 'perempuan'])];
             $rules['peserta.' . $index . '.tanggal_lahir'] = ['required', 'date'];
             $rules['peserta.' . $index . '.no_hp'] = ['nullable', 'string', 'max:20'];
@@ -177,7 +182,7 @@ class ReservasiController extends Controller
                     ->lockForUpdate()
                     ->firstOrFail();
 
-                $sisaKuota = (int) $jadwal->kuota_max - (int) $jadwal->kuota_terisi;
+                $sisaKuota = $this->getSisaKuotaTersedia($jadwal);
 
                 if ((int) $flow['jml_peserta'] > $sisaKuota) {
                     throw new \RuntimeException('Kuota jadwal tidak mencukupi lagi. Silakan pilih jadwal lain.');
@@ -199,18 +204,12 @@ class ReservasiController extends Controller
                     PesertaTrip::create([
                         'reservasiId' => $reservasi->reservasiId,
                         'nama' => $peserta['nama'],
-                        'jenis_identitas' => $peserta['jenis_identitas'],
-                        'no_identitas' => $peserta['no_identitas'],
+                        'email' => $peserta['email'],
                         'jenis_kelamin' => $peserta['jenis_kelamin'],
                         'tanggal_lahir' => $peserta['tanggal_lahir'],
                         'no_hp' => $peserta['no_hp'] ?? null,
                     ]);
                 }
-
-                $jadwal->update([
-                    'kuota_terisi' => $jadwal->kuota_terisi + (int) $flow['jml_peserta'],
-                    'status' => ($jadwal->kuota_terisi + (int) $flow['jml_peserta']) >= (int) $jadwal->kuota_max ? 'full' : $jadwal->status,
-                ]);
 
                 $midtransService->syncPayment($reservasi);
 
@@ -235,5 +234,26 @@ class ReservasiController extends Controller
             ->get();
 
         return view('wisatawan.reservasi.riwayat', compact('reservasis'));
+    }
+
+    private function getSisaKuotaTersedia(Jadwal $jadwal): int
+    {
+        $jadwal->loadMissing(['reservasis.pembayaran']);
+
+        $kuotaTerpakai = (int) $jadwal->reservasis
+            ->filter(function (Reservasi $reservasi) {
+                if ($reservasi->status === 'paid') {
+                    return true;
+                }
+
+                $expiredAt = $reservasi->pembayaran?->expired_at;
+
+                return $reservasi->status === 'unpaid'
+                    && $expiredAt
+                    && now()->lessThanOrEqualTo($expiredAt);
+            })
+            ->sum('jml_peserta');
+
+        return max(0, (int) $jadwal->kuota_max - $kuotaTerpakai);
     }
 }

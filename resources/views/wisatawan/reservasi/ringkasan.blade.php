@@ -64,10 +64,9 @@
                                         <p class="text-xs font-black uppercase tracking-[0.25em] text-primary">Peserta {{ $index + 1 }}</p>
                                         <h3 class="mt-1 text-lg font-black text-forest-green">{{ $peserta['nama'] }}</h3>
                                     </div>
-                                    <span class="text-xs font-black uppercase tracking-[0.2em] px-3 py-1 rounded-full bg-white text-forest-green">{{ $peserta['jenis_identitas'] }}</span>
                                 </div>
                                 <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-2 text-sm text-forest-green/70">
-                                    <p>No identitas: {{ $peserta['no_identitas'] }}</p>
+                                    <p>Email: {{ $peserta['email'] ?? '-' }}</p>
                                     <p>Jenis kelamin: {{ $peserta['jenis_kelamin'] }}</p>
                                     <p>Tanggal lahir: {{ \Illuminate\Support\Carbon::parse($peserta['tanggal_lahir'])->translatedFormat('d M Y') }}</p>
                                     <p>No HP: {{ $peserta['no_hp'] ?? '-' }}</p>

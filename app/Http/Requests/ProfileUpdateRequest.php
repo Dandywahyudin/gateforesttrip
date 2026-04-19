@@ -2,7 +2,6 @@
 
 namespace App\Http\Requests;
 
-use App\Models\User;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
@@ -17,15 +16,19 @@ class ProfileUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'nama' => ['required', 'string', 'max:255'],
             'email' => [
                 'required',
                 'string',
-                'lowercase',
                 'email',
                 'max:255',
-                Rule::unique(User::class)->ignore($this->user()->id),
+                Rule::unique('users', 'email')->ignore($this->user()?->userId, 'userId'),
             ],
+            'no_hp' => ['nullable', 'string', 'max:20', 'regex:/^[0-9+\-() ]+$/'],
+            'alamat' => ['nullable', 'string', 'max:255'],
+            'jenis_kelamin' => ['nullable', 'string'],
+            'tanggal_lahir' => ['nullable', 'date', 'before_or_equal:today'],
+            'foto_profil' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
         ];
     }
 }

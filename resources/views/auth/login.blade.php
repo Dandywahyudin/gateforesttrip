@@ -78,7 +78,7 @@
                         <label class="text-sm font-semibold text-gray-700 dark:text-gray-200" for="email">Email Address</label>
                         <div class="relative">
                             <input 
-                                class="w-full rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 px-4 py-3.5 text-base text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none @error('email') border-red-500 @enderror"
+                                class="w-full rounded-xl border bg-gray-50 dark:bg-white/5 px-4 py-3.5 text-base text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none {{ $errors->has('email') ? 'border-red-500 dark:border-red-500' : 'border-gray-200 dark:border-white/10' }}"
                                 id="email" 
                                 name="email"
                                 placeholder="nama@contoh.com" 
@@ -97,7 +97,7 @@
                         <label class="text-sm font-semibold text-gray-700 dark:text-gray-200" for="password">Password</label>
                         <div class="relative">
                             <input 
-                                class="w-full rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 px-4 py-3.5 text-base text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none @error('password') border-red-500 @enderror"
+                                class="w-full rounded-xl border bg-gray-50 dark:bg-white/5 px-4 py-3.5 text-base text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none {{ $errors->has('password') ? 'border-red-500 dark:border-red-500' : 'border-gray-200 dark:border-white/10' }}"
                                 id="password" 
                                 name="password"
                                 placeholder="Masukkan kata sandi" 
@@ -143,9 +143,9 @@
                 
                 <!-- Social Login -->
                 <div class="grid grid-cols-1 gap-4">
-                    <button 
+                    <a
+                        href="{{ route('auth.google.redirect', ['context' => 'login']) }}"
                         class="flex items-center justify-center gap-3 rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-white/5 px-4 py-3 text-sm font-semibold text-gray-700 dark:text-white shadow-sm hover:bg-gray-50 dark:hover:bg-white/10 transition-colors"
-                        type="button"
                     >
                         <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"></path>
@@ -153,8 +153,8 @@
                             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"></path>
                             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"></path>
                         </svg>
-                        Google
-                    </button>
+                        Masuk dengan Google
+                    </a>
                 </div>
                 
                 <!-- Sign Up Link -->

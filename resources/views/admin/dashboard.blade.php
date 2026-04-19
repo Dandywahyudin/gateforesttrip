@@ -6,31 +6,31 @@
 @section('content')
     <div class="mx-auto max-w-7xl space-y-8">
         <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
-            <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
                 <p class="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">Total Paket</p>
                 <p class="mt-3 text-3xl font-black text-gray-900">{{ $stats['total_paket'] }}</p>
             </div>
-            <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
                 <p class="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">Paket Aktif</p>
                 <p class="mt-3 text-3xl font-black text-gray-900">{{ $stats['paket_aktif'] }}</p>
             </div>
-            <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
                 <p class="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">Total Jadwal</p>
                 <p class="mt-3 text-3xl font-black text-gray-900">{{ $stats['total_jadwal'] }}</p>
             </div>
-            <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
                 <p class="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">Reservasi</p>
                 <p class="mt-3 text-3xl font-black text-gray-900">{{ $stats['total_reservasi'] }}</p>
             </div>
 
-            <div class="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
                 <p class="text-[10px] font-black uppercase tracking-[0.25em] text-gray-400">Omzet</p>
                 <p class="mt-3 text-lg font-black text-gray-900">Rp {{ number_format($stats['omzet'], 0, ',', '.') }}</p>
             </div>
         </div>
 
         <div class="grid gap-6 xl:grid-cols-[minmax(0,1.55fr)_minmax(320px,0.9fr)] xl:items-start">
-            <div class="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+            <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div class="min-w-0">
                         <p class="text-[10px] font-black uppercase tracking-[0.28em] text-primary">Kelola Paket Trip</p>
@@ -42,7 +42,7 @@
 
                 <div class="mt-5 grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
                     @foreach($paketTrips as $paket)
-                        <article class="flex h-full flex-col rounded-2xl border border-gray-100 bg-gray-50 p-5 transition hover:border-primary/20 hover:bg-white">
+                        <article class="flex h-full flex-col rounded-lg border border-gray-100 bg-gray-50 p-5 transition hover:border-primary/20 hover:bg-white">
                             <div class="flex items-start justify-between gap-4">
                                 <div class="min-w-0">
                                     <p class="text-[10px] font-black uppercase tracking-[0.25em] text-primary">{{ $paket->slug }}</p>
@@ -54,15 +54,15 @@
                             </div>
 
                             <dl class="mt-5 space-y-3 text-sm text-gray-600">
-                                <div class="flex items-center justify-between gap-4 rounded-xl bg-white px-4 py-3 shadow-sm">
+                                <div class="flex items-center justify-between gap-4 rounded-lg bg-white px-4 py-3 shadow-sm">
                                     <dt>Harga</dt>
                                     <dd class="font-black text-gray-900">Rp {{ number_format($paket->harga, 0, ',', '.') }}</dd>
                                 </div>
-                                <div class="flex items-center justify-between gap-4 rounded-xl bg-white px-4 py-3 shadow-sm">
+                                <div class="flex items-center justify-between gap-4 rounded-lg bg-white px-4 py-3 shadow-sm">
                                     <dt>Jadwal open</dt>
                                     <dd class="font-black text-gray-900">{{ $paket->jadwal_open_count }}</dd>
                                 </div>
-                                <div class="flex items-center justify-between gap-4 rounded-xl bg-white px-4 py-3 shadow-sm">
+                                <div class="flex items-center justify-between gap-4 rounded-lg bg-white px-4 py-3 shadow-sm">
                                     <dt>Reservasi</dt>
                                     <dd class="font-black text-gray-900">{{ $paket->reservasi_count }}</dd>
                                 </div>
@@ -73,7 +73,7 @@
             </div>
 
             <div class="grid gap-6 md:grid-cols-2 xl:grid-cols-1">
-                <div class="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+                <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
                     <div class="flex items-start justify-between gap-4">
                         <div class="min-w-0">
                             <p class="text-[10px] font-black uppercase tracking-[0.28em] text-primary">Kelola Jadwal</p>
@@ -84,7 +84,7 @@
                     </div>
                 </div>
 
-                <div class="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+                <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
                     <div class="flex items-start justify-between gap-4">
                         <div class="min-w-0">
                             <p class="text-[10px] font-black uppercase tracking-[0.28em] text-primary">Kelola Reservasi</p>
@@ -97,7 +97,7 @@
             </div>
         </div>
 
-        <div class="rounded-3xl border border-gray-100 bg-white p-6 shadow-sm">
+        <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
             <div class="flex items-center justify-between gap-4">
                 <div>
                     <p class="text-[10px] font-black uppercase tracking-[0.28em] text-primary">Aktivitas Terbaru</p>
@@ -107,7 +107,7 @@
 
             <div class="mt-5 space-y-3">
                 @forelse($reservasis as $reservasi)
-                    <div class="rounded-2xl bg-gray-50 p-4">
+                    <div class="rounded-lg bg-gray-50 p-4">
                         <div class="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                             <div class="min-w-0">
                                 <p class="text-xs font-black uppercase tracking-[0.22em] text-primary">{{ $reservasi->kode_reservasi }}</p>
@@ -120,7 +120,7 @@
                         </div>
                     </div>
                 @empty
-                    <div class="rounded-2xl border border-dashed border-gray-200 p-4 text-sm text-gray-500">Belum ada reservasi yang masuk.</div>
+                    <div class="rounded-lg border border-dashed border-gray-200 p-4 text-sm text-gray-500">Belum ada reservasi yang masuk.</div>
                 @endforelse
             </div>
         </div>

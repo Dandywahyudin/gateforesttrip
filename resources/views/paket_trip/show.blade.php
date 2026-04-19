@@ -263,7 +263,6 @@
                     title="{{ $related->nama }}"
                     description="{{ Str::limit($related->deskripsi, 80) }}"
                     price="Rp {{ number_format($related->harga, 0, ',', '.') }}"
-                    rating="4.9"
                 />
             @endforeach
         </div>

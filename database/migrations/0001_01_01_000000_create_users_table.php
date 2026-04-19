@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id('userId');
             $table->string('nama');
             $table->string('email')->unique();
+            $table->string('google_id')->nullable()->unique();
+            $table->string('google_avatar')->nullable();
             $table->string('password');
             $table->string('no_hp', 20)->nullable();
             $table->string('foto_profil')->nullable();

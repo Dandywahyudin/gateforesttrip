@@ -74,8 +74,7 @@
                         category="{{ strtoupper($paket->kategori) }}"
                         title="{{ $paket->nama }}"
                         description="{{ Str::limit($paket->deskripsi, 80) }}"
-                            price="Rp {{ number_format($paket->harga, 0, ',', '.') }}"
-                        rating="4.9"
+                        price="Rp {{ number_format($paket->harga, 0, ',', '.') }}"
                     />
                 </div>
             @empty
