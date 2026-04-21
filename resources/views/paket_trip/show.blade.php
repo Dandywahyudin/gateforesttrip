@@ -3,6 +3,14 @@
 @section('title', $paket->nama . ' - GateForestTrip')
 
 @section('content')
+@php
+    $galleryImages = array_values(array_filter([
+        $paket->foto_url,
+        $paket->foto2_url,
+        $paket->foto3_url,
+        $paket->foto4_url,
+    ]));
+@endphp
 <section class="w-full pt-24 pb-10 bg-[radial-gradient(circle_at_top_left,_rgba(21,128,61,0.12),_transparent_35%),linear-gradient(to_bottom,_#ffffff,_#f8faf7)]">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
         <div class="mb-6">
@@ -27,7 +35,16 @@
                     </div>
 
                     <div class="aspect-[16/11] w-full">
-                        <img id="gallery-main" src="{{ $paket->foto_url ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=600&fit=crop' }}" alt="{{ $paket->nama }}" class="h-full w-full object-cover transition-transform duration-700 hover:scale-105">
+                        @if(count($galleryImages))
+                            <img id="gallery-main" src="{{ $galleryImages[0] }}" alt="{{ $paket->nama }}" class="h-full w-full object-cover transition-transform duration-700 hover:scale-105">
+                        @else
+                            <div id="gallery-main" class="flex h-full w-full items-center justify-center bg-gradient-to-br from-forest-green/10 via-white to-primary/10 px-6 text-center">
+                                <div class="space-y-3 max-w-md">
+                                    <p class="text-[10px] font-black uppercase tracking-[0.35em] text-forest-green/50">Foto belum tersedia</p>
+                                    <h2 class="text-2xl md:text-4xl font-display font-black uppercase text-forest-green leading-tight">{{ $paket->nama }}</h2>
+                                </div>
+                            </div>
+                        @endif
                     </div>
 
                     <div class="absolute inset-x-0 bottom-0 z-20 p-5 md:p-7">
@@ -41,20 +58,19 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-4 gap-3">
-                    <button type="button" class="gallery-thumb overflow-hidden rounded-2xl border border-primary ring-2 ring-primary/10 aspect-square transition" onclick="updateGallery('{{ $paket->foto_url ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=600&fit=crop' }}')">
-                        <img src="{{ $paket->foto_url ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=200&h=200&fit=crop' }}" alt="Foto 1" class="h-full w-full object-cover">
-                    </button>
-                    <button type="button" class="gallery-thumb overflow-hidden rounded-2xl border border-forest-green/10 ring-0 aspect-square transition hover:border-primary/60" onclick="updateGallery('{{ $paket->foto2_url ?? 'https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=200&h=200&fit=crop' }}')">
-                        <img src="{{ $paket->foto2_url ?? 'https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=200&h=200&fit=crop' }}" alt="Foto 2" class="h-full w-full object-cover">
-                    </button>
-                    <button type="button" class="gallery-thumb overflow-hidden rounded-2xl border border-forest-green/10 ring-0 aspect-square transition hover:border-primary/60" onclick="updateGallery('{{ $paket->foto3_url ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=200&h=200&fit=crop' }}')">
-                        <img src="{{ $paket->foto3_url ?? 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?w=200&h=200&fit=crop' }}" alt="Foto 3" class="h-full w-full object-cover">
-                    </button>
-                    <button type="button" class="gallery-thumb overflow-hidden rounded-2xl border border-forest-green/10 ring-0 aspect-square transition hover:border-primary/60" onclick="updateGallery('{{ $paket->foto4_url ?? 'https://images.unsplash.com/photo-1511316695145-4992006ffddb?w=200&h=200&fit=crop' }}')">
-                        <img src="{{ $paket->foto4_url ?? 'https://images.unsplash.com/photo-1511316695145-4992006ffddb?w=200&h=200&fit=crop' }}" alt="Foto 4" class="h-full w-full object-cover">
-                    </button>
-                </div>
+                @if(count($galleryImages))
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        @foreach($galleryImages as $index => $image)
+                            <button type="button" class="gallery-thumb overflow-hidden rounded-2xl border {{ $loop->first ? 'border-primary ring-2 ring-primary/10' : 'border-forest-green/10 ring-0 hover:border-primary/60' }} aspect-square transition" onclick="updateGallery(this, @js($image))">
+                                <img src="{{ $image }}" alt="Foto {{ $index + 1 }}" class="h-full w-full object-cover">
+                            </button>
+                        @endforeach
+                    </div>
+                @else
+                    <div class="rounded-[24px] border border-dashed border-forest-green/15 bg-white px-6 py-8 text-center text-sm text-forest-green/60">
+                        Belum ada foto paket yang diunggah.
+                    </div>
+                @endif
             </div>
 
             <div class="lg:sticky lg:top-28 space-y-4">
@@ -258,7 +274,7 @@
             @foreach($paketSerupa ?? [] as $related)
                 <x-trip-card 
                     :paket="$related"
-                    image="{{ $related->foto_url ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=400&fit=crop' }}"
+                    :image="$related->foto_url"
                     category="{{ strtoupper($related->kategori) }}"
                     title="{{ $related->nama }}"
                     description="{{ Str::limit($related->deskripsi, 80) }}"
@@ -285,17 +301,25 @@
 @push('scripts')
 <script>
     // Gallery Functionality
-    function updateGallery(imageSrc) {
+    function updateGallery(button, imageSrc) {
         const mainImage = document.getElementById('gallery-main');
-        mainImage.src = imageSrc.replace('w=200', 'w=1200').replace('h=200', 'h=600');
+        if (!mainImage || !imageSrc) {
+            return;
+        }
+
+        if (mainImage.tagName === 'IMG') {
+            mainImage.src = imageSrc;
+        }
         
         document.querySelectorAll('.gallery-thumb').forEach(thumb => {
             thumb.classList.remove('border-primary');
             thumb.classList.add('border-forest-green/20');
         });
-        
-        event.target.closest('.gallery-thumb').classList.remove('border-forest-green/20');
-        event.target.closest('.gallery-thumb').classList.add('border-primary');
+
+        if (button) {
+            button.classList.remove('border-forest-green/20');
+            button.classList.add('border-primary');
+        }
     }
 
     // Keyboard navigation

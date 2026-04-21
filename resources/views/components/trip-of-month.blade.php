@@ -12,7 +12,11 @@
 
         @if($tripOfTheMonth)
             <div class="relative w-full rounded-2xl overflow-hidden shadow-[0_30px_100px_rgba(27,67,50,0.15)] group mb-12">
-                <div class="aspect-[21/9] min-h-[500px] w-full bg-cover bg-center transition-transform duration-1000 group-hover:scale-105" style='background-image: url("{{ $tripOfTheMonth->foto_url ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=500&fit=crop' }}");'></div>
+                @if($tripOfTheMonth->foto_url)
+                    <div class="aspect-[21/9] min-h-[500px] w-full bg-cover bg-center transition-transform duration-1000 group-hover:scale-105" style='background-image: url("{{ $tripOfTheMonth->foto_url }}");'></div>
+                @else
+                    <div class="aspect-[21/9] min-h-[500px] w-full bg-gradient-to-br from-forest-green via-forest-green/85 to-primary"></div>
+                @endif
 
                 <div class="absolute inset-0 bg-gradient-to-t from-forest-green via-forest-green/20 to-transparent"></div>
 
@@ -45,7 +49,7 @@
             @forelse($featuredPakets as $paket)
                 <x-trip-card
                     :paket="$paket"
-                    image="{{ $paket->foto_url ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=300&fit=crop' }}"
+                    :image="$paket->foto_url"
                     category="{{ $paket->kategori ? strtoupper($paket->kategori) : 'PAKET AKTIF' }}"
                     title="{{ $paket->nama }}"
                     description="{{ \Illuminate\Support\Str::limit($paket->deskripsi, 90) }}"

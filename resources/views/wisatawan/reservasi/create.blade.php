@@ -110,7 +110,16 @@
 
                     <div class="rounded-3xl overflow-hidden border border-forest-green/10 bg-gradient-to-br from-forest-green to-primary text-white">
                         <div class="aspect-[4/3] w-full">
-                            <img src="{{ $paket->foto_url ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=900&fit=crop' }}" alt="{{ $paket->nama }}" class="h-full w-full object-cover opacity-85">
+                            @if($paket->foto_url)
+                                <img src="{{ $paket->foto_url }}" alt="{{ $paket->nama }}" class="h-full w-full object-cover opacity-85">
+                            @else
+                                <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-forest-green via-forest-green/90 to-primary px-6 text-center">
+                                    <div class="space-y-3">
+                                        <p class="text-[10px] font-black uppercase tracking-[0.35em] text-white/70">Foto belum diunggah</p>
+                                        <h3 class="text-2xl font-display font-black uppercase leading-tight">{{ $paket->nama }}</h3>
+                                    </div>
+                                </div>
+                            @endif
                         </div>
                         <div class="p-5 space-y-3">
                             <p class="text-[10px] font-black uppercase tracking-[0.28em] text-white/70">Preview Paket</p>

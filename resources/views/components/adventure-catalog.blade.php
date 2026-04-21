@@ -21,7 +21,7 @@
             @forelse($pakets->take(6) as $paket)
                 <x-trip-card 
                     :paket="$paket"
-                    image="{{ $paket->foto_url ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=400&fit=crop' }}"
+                    :image="$paket->foto_url"
                     category="{{ $paket->kategori ? strtoupper($paket->kategori) : 'PAKET AKTIF' }}"
                     title="{{ $paket->nama }}"
                     description="{{ \Illuminate\Support\Str::limit($paket->deskripsi, 80) }}"

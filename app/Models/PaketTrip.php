@@ -68,10 +68,6 @@ class PaketTrip extends Model
             return null;
         }
 
-        if (filter_var($path, FILTER_VALIDATE_URL)) {
-            return $path;
-        }
-
         return asset('storage/' . ltrim($path, '/'));
     }
 }

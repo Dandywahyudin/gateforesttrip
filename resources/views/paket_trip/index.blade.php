@@ -70,7 +70,7 @@
                 <div class="paket-card" data-kategori="{{ strtolower($paket->kategori) }}" data-harga="{{ $paket->harga }}">
                     <x-trip-card 
                         :paket="$paket"
-                        image="{{ $paket->foto_url ?? 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=500&h=400&fit=crop' }}"
+                        :image="$paket->foto_url"
                         category="{{ strtoupper($paket->kategori) }}"
                         title="{{ $paket->nama }}"
                         description="{{ Str::limit($paket->deskripsi, 80) }}"
