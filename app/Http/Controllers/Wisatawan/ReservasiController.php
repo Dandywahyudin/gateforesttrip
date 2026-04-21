@@ -46,6 +46,15 @@ class ReservasiController extends Controller
             'jadwal_id' => ['required', 'integer', Rule::exists('jadwals', 'jadwalId')],
             'jml_peserta' => ['required', 'integer', 'min:1', 'max:20'],
             'catatan' => ['nullable', 'string', 'max:1000'],
+        ], [
+            'paket_id.required' => 'ID paket trip diperlukan.',
+            'paket_id.exists' => 'Paket trip tidak ditemukan.',
+            'jadwal_id.required' => 'Silakan pilih jadwal keberangkatan terlebih dahulu.',
+            'jadwal_id.exists' => 'Jadwal yang dipilih tidak ditemukan.',
+            'jml_peserta.required' => 'Jumlah peserta diperlukan.',
+            'jml_peserta.min' => 'Jumlah peserta minimal 1 orang.',
+            'jml_peserta.max' => 'Jumlah peserta maksimal 20 orang.',
+            'catatan.max' => 'Catatan tidak boleh lebih dari 1000 karakter.',
         ]);
 
         $paket = PaketTrip::findOrFail($validated['paket_id']);
@@ -116,6 +125,11 @@ class ReservasiController extends Controller
 
         $validated = $request->validate([
             'jml_peserta' => ['required', 'integer', 'min:1', 'max:20'],
+        ], [
+            'jml_peserta.required' => 'Jumlah peserta diperlukan.',
+            'jml_peserta.integer' => 'Jumlah peserta harus berupa angka.',
+            'jml_peserta.min' => 'Jumlah peserta minimal 1 orang.',
+            'jml_peserta.max' => 'Jumlah peserta maksimal 20 orang.',
         ]);
 
         $jumlahPeserta = (int) $validated['jml_peserta'];
@@ -136,7 +150,20 @@ class ReservasiController extends Controller
             $rules['peserta.' . $index . '.no_hp'] = ['nullable', 'string', 'max:20'];
         }
 
-        $validatedPeserta = $request->validate($rules);
+        $messages = [];
+        for ($index = 0; $index < $jumlahPeserta; $index++) {
+            $messages['peserta.' . $index . '.nama.required'] = 'Nama peserta ' . ($index + 1) . ' diperlukan.';
+            $messages['peserta.' . $index . '.nama.max'] = 'Nama peserta ' . ($index + 1) . ' tidak boleh lebih dari 255 karakter.';
+            $messages['peserta.' . $index . '.email.required'] = 'Email peserta ' . ($index + 1) . ' diperlukan.';
+            $messages['peserta.' . $index . '.email.email'] = 'Format email peserta ' . ($index + 1) . ' tidak valid.';
+            $messages['peserta.' . $index . '.jenis_kelamin.required'] = 'Jenis kelamin peserta ' . ($index + 1) . ' diperlukan.';
+            $messages['peserta.' . $index . '.jenis_kelamin.in'] = 'Jenis kelamin peserta ' . ($index + 1) . ' harus laki-laki atau perempuan.';
+            $messages['peserta.' . $index . '.tanggal_lahir.required'] = 'Tanggal lahir peserta ' . ($index + 1) . ' diperlukan.';
+            $messages['peserta.' . $index . '.tanggal_lahir.date'] = 'Tanggal lahir peserta ' . ($index + 1) . ' tidak valid.';
+            $messages['peserta.' . $index . '.no_hp.max'] = 'Nomor HP peserta ' . ($index + 1) . ' tidak boleh lebih dari 20 karakter.';
+        }
+
+        $validatedPeserta = $request->validate($rules, $messages);
 
         $flow['jml_peserta'] = $jumlahPeserta;
         $flow['total_harga'] = (float) ($flow['harga_per_pax'] ?? 0) * $jumlahPeserta;
