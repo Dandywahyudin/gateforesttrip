@@ -106,15 +106,13 @@
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16 text-center space-y-8">
         <h2 class="text-4xl md:text-5xl font-display font-black uppercase">Siap untuk Petualangan?</h2>
         <p class="text-lg text-white/80 max-w-2xl mx-auto">
-            Jangan lewatkan momen spesial bersama komunitas petualang. Daftar sekarang dan dapatkan early bird discount hingga 20%!
+            Jangan lewatkan momen spesial bersama GateForestTrip. Temukan paket trip yang sesuai dengan impian petualanganmu dan buat kenangan tak terlupakan bersama kami.
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="{{ route('login') }}" class="px-12 py-4 bg-white text-forest-green font-black uppercase tracking-widest rounded-full hover:shadow-2xl transition-all">
+            <a href="{{ route('paket-trip.index') }}" class="px-12 py-4 bg-white text-forest-green font-black uppercase tracking-widest rounded-full hover:shadow-2xl transition-all">
                 Mulai Sekarang
             </a>
-            <button class="px-12 py-4 border-2 border-white text-white font-black uppercase tracking-widest rounded-full hover:bg-white hover:text-forest-green transition-all">
-                Hubungi Kami
-            </button>
+            
         </div>
     </div>
 </section>

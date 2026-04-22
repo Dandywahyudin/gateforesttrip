@@ -29,7 +29,7 @@
                             ['label' => 'Pilih Jadwal', 'url' => null],
                         ]" />
                         <h3 class="text-3xl font-display font-black uppercase text-forest-green">Pilih tanggal keberangkatan</h3>
-                        <p class="max-w-2xl text-sm leading-relaxed text-forest-green/70">Jadwal tampil sebagai daftar agar pengguna bisa membandingkan tanggal, harga, dan kuota dengan cepat.</p>
+                        <p class="max-w-2xl text-sm leading-relaxed text-forest-green/70">Pilih Salah Satu Tanggal Yang Tersedia.</p>
                     </div>
 
                     <div class="space-y-3">

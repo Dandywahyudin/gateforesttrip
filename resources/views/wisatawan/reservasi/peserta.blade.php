@@ -2,6 +2,16 @@
 
 @section('title', 'Isi Peserta - ' . $paket->nama)
 
+@php
+    $profileParticipantData = auth()->check() ? [
+        'nama' => auth()->user()->nama,
+        'email' => auth()->user()->email,
+        'no_hp' => auth()->user()->no_hp,
+        'jenis_kelamin' => auth()->user()->jenis_kelamin,
+        'tanggal_lahir' => auth()->user()->tanggal_lahir,
+    ] : null;
+@endphp
+
 @section('content')
 <section class="w-full pt-32 pb-16 bg-white">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
@@ -35,8 +45,8 @@
                         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
                             <div>
                                 <p class="text-xs font-black uppercase tracking-[0.25em] text-primary">Jumlah Peserta</p>
-                                <h3 class="mt-2 text-2xl font-display font-black uppercase text-forest-green">Atur peserta langsung di halaman ini</h3>
-                                <p class="mt-2 text-sm text-forest-green/60">Tambahkan atau kurangi peserta tanpa kembali ke halaman sebelumnya.</p>
+                                <h3 class="mt-2 text-2xl font-display font-black uppercase text-forest-green">Sesuaikan dengan kebutuhan Anda</h3>
+                                <p class="mt-2 text-sm text-forest-green/60">Tambahkan atau kurangi peserta</p>
                             </div>
                             <div class="flex items-stretch overflow-hidden rounded-2xl border border-forest-green/10 bg-white lg:w-[240px]">
                                 <button type="button" id="decrement-peserta" class="w-14 shrink-0 border-r border-forest-green/10 text-2xl font-black text-forest-green transition hover:bg-background-light hover:text-primary" aria-label="Kurangi jumlah peserta">−</button>
@@ -55,9 +65,9 @@
                                         <h3 class="text-2xl font-display font-black uppercase text-forest-green">Data Peserta</h3>
                                     </div>
 
-                                    @if(auth()->check())
+                                    @if($index === 0 && auth()->check())
                                         <label class="inline-flex items-center gap-3 rounded-full border border-forest-green/10 bg-background-light px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-forest-green">
-                                            <input type="checkbox" class="use-profile rounded border-forest-green/20 text-primary focus:ring-primary" {{ $index === 0 ? '' : 'disabled' }}>
+                                            <input type="checkbox" class="use-profile rounded border-forest-green/20 text-primary focus:ring-primary">
                                             <span>Gunakan data profil</span>
                                         </label>
                                     @endif
@@ -74,9 +84,12 @@
                                     </div>
                                     <div>
                                         <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-forest-green/50">Jenis Kelamin</label>
+                                        @php
+                                            $selectedJenisKelamin = old('peserta.' . $index . '.jenis_kelamin', 'laki-laki');
+                                        @endphp
                                         <select name="peserta[{{ $index }}][jenis_kelamin]" class="participant-field w-full rounded-xl border-forest-green/10 focus:border-primary focus:ring-primary" required>
-                                            <option value="laki-laki" @selected(old('peserta.' . $index . '.jenis_kelamin') === 'laki-laki')>Laki-laki</option>
-                                            <option value="perempuan" @selected(old('peserta.' . $index . '.jenis_kelamin') === 'perempuan')>Perempuan</option>
+                                            <option value="laki-laki" @selected($selectedJenisKelamin === 'laki-laki')>Laki-laki</option>
+                                            <option value="perempuan" @selected($selectedJenisKelamin === 'perempuan')>Perempuan</option>
                                         </select>
                                     </div>
                                     <div>
@@ -125,16 +138,6 @@
 </section>
 @endsection
 
-@php
-    $profileParticipantData = auth()->check() ? [
-        'nama' => auth()->user()->nama,
-        'email' => auth()->user()->email,
-        'no_hp' => auth()->user()->no_hp,
-        'jenis_kelamin' => auth()->user()->jenis_kelamin,
-        'tanggal_lahir' => auth()->user()->tanggal_lahir,
-    ] : null;
-@endphp
-
 <template id="participant-template">
     <div class="participant-card rounded-2xl border border-forest-green/10 bg-white p-6 shadow-sm space-y-4" data-index="__INDEX__">
         <div class="flex flex-wrap items-center justify-between gap-4">
@@ -142,11 +145,6 @@
                 <p class="text-xs font-black uppercase tracking-[0.25em] text-primary">Peserta __NUMBER__</p>
                 <h3 class="text-2xl font-display font-black uppercase text-forest-green">Data Peserta</h3>
             </div>
-
-            <label class="inline-flex items-center gap-3 rounded-full border border-forest-green/10 bg-background-light px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-forest-green">
-                <input type="checkbox" class="use-profile rounded border-forest-green/20 text-primary focus:ring-primary" __PROFILE_DISABLED__>
-                <span>Gunakan data profil</span>
-            </label>
         </div>
 
         <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -218,16 +216,16 @@
                 nama: profileData.nama || '',
                 email: profileData.email || '',
                 no_hp: profileData.no_hp || '',
-                jenis_kelamin: profileData.jenis_kelamin || '',
+                jenis_kelamin: profileData.jenis_kelamin || 'laki-laki',
                 tanggal_lahir: profileData.tanggal_lahir ? profileData.tanggal_lahir.slice(0, 10) : '',
             };
 
-            for (const [fieldName, fieldValue] of Object.entries(fields)) {
+            Object.entries(fields).forEach(([fieldName, fieldValue]) => {
                 const field = card.querySelector(`[name$="[${fieldName}]"]`);
                 if (field) {
                     field.value = fieldValue;
                 }
-            }
+            });
         }
 
         function clearProfile(card) {
@@ -240,7 +238,7 @@
 
             const genderField = card.querySelector('[name$="[jenis_kelamin]"]');
             if (genderField) {
-                genderField.value = '';
+                genderField.value = 'laki-laki';
             }
         }
 
@@ -262,8 +260,7 @@
         function createParticipantCard(index) {
             const html = template.innerHTML
                 .replaceAll('__INDEX__', index)
-                .replaceAll('__NUMBER__', index + 1)
-                .replaceAll('__PROFILE_DISABLED__', index === 0 ? '' : 'disabled');
+                .replaceAll('__NUMBER__', index + 1);
 
             const wrapper = document.createElement('div');
             wrapper.innerHTML = html.trim();
