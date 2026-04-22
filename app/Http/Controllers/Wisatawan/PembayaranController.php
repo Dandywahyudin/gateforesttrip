@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Wisatawan;
 
 use App\Http\Controllers\Controller;
+use App\Models\Pembayaran;
 use App\Models\Reservasi;
 use App\Models\User;
 use App\Services\MidtransService;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -53,6 +55,16 @@ class PembayaranController extends Controller
 		return view('wisatawan.pembayaran.status', compact('reservasi', 'pembayaran', 'adminWhatsappUrl'));
 	}
 
+	public function downloadTicket(string $kodeReservasi, MidtransService $midtransService)
+	{
+		return $this->downloadCombinedDocument($kodeReservasi, $midtransService);
+	}
+
+	public function downloadReceipt(string $kodeReservasi, MidtransService $midtransService)
+	{
+		return $this->downloadCombinedDocument($kodeReservasi, $midtransService);
+	}
+
 	public function notification(Request $request, MidtransService $midtransService)
 	{
 		$pembayaran = $midtransService->handleNotification();
@@ -62,6 +74,30 @@ class PembayaranController extends Controller
 		}
 
 		return response()->json(['message' => 'Notification processed successfully.']);
+	}
+
+	private function isPaymentCompleted(Reservasi $reservasi, Pembayaran $pembayaran): bool
+	{
+		return in_array($pembayaran->status, ['settlement', 'capture'], true) || $reservasi->status === 'paid';
+	}
+
+	private function downloadCombinedDocument(string $kodeReservasi, MidtransService $midtransService)
+	{
+		$reservasi = $this->resolveReservasi($kodeReservasi);
+		$pembayaran = $midtransService->refreshPaymentStatus($reservasi);
+
+		if (! $this->isPaymentCompleted($reservasi, $pembayaran)) {
+			return redirect()
+				->route('reservasi.status', $reservasi->kode_reservasi)
+				->with('error', 'Dokumen hanya bisa diunduh setelah pembayaran selesai.');
+		}
+
+		$pdf = Pdf::loadView('wisatawan.pembayaran.pdf.bukti-transaksi', [
+			'reservasi' => $reservasi,
+			'pembayaran' => $pembayaran,
+		])->setPaper('a4', 'portrait');
+
+		return $pdf->download('dokumen-' . $reservasi->kode_reservasi . '.pdf');
 	}
 
 	private function resolveReservasi(string $kodeReservasi): Reservasi

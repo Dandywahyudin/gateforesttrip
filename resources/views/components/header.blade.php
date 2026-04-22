@@ -6,7 +6,9 @@
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/>
                 </svg>
             </div> --}}
-            <img src="{{ asset('/images/logo/logo.png') }}" alt="GateForestTrip Logo" class="w-10 h-10 object-contain">
+            <a href="{{ url('/') }}">
+                <img src="{{ asset('/images/logo/logo.png') }}" alt="GateForestTrip Logo" class="w-10 h-10 object-contain">
+            </a>
             <h3 class="text-2xl font-black font-display uppercase text-white">GateForestTrip</h3>
         </div>
 
@@ -15,16 +17,9 @@
         @endphp
 
         <nav class="hidden md:flex items-center gap-10">
-            <a class="text-xs font-bold text-white hover:text-primary transition-colors uppercase tracking-[0.2em]" href="/">Beranda</a>
-            <a class="text-xs font-bold text-white/70 hover:text-primary transition-colors uppercase tracking-[0.2em]" href="{{ route('paket-trip.index') }}">PAKET TRIP</a>
-            @auth
-                @if($user->isAdmin())
-                    <a class="text-xs font-bold text-white/70 hover:text-primary transition-colors uppercase tracking-[0.2em]" href="{{ route('admin.jadwal.index') }}">Jadwal</a>
-                    <a class="text-xs font-bold text-white/70 hover:text-primary transition-colors uppercase tracking-[0.2em]" href="{{ route('admin.reservasi.index') }}">Reservasi</a>
-                @endif
-            @else
-                <a class="text-xs font-bold text-white/70 hover:text-primary transition-colors uppercase tracking-[0.2em]" href="#hubungi-kami">Hubungi Kami</a>
-            @endauth
+            <a class="text-xs font-bold text-white hover:text-primary transition-colors uppercase tracking-[0.2em]" href="{{ url('/#top') }}">Beranda</a>
+            <a class="text-xs font-bold text-white/70 hover:text-primary transition-colors uppercase tracking-[0.2em]" href="{{ route('paket-trip.index') }}">Paket Trip</a>
+            <a class="text-xs font-bold text-white/70 hover:text-primary transition-colors uppercase tracking-[0.2em]" href="{{ url('/#hubungi-kami') }}">Hubungi Kami</a>
         </nav>
 
         <div class="flex items-center gap-6">
@@ -89,22 +84,19 @@
         </div>
     </div>
 
-    <div x-show="open" x-transition class="md:hidden border-t border-white/10 bg-slate-950/95 backdrop-blur-md">
+        <div x-show="open" x-transition class="md:hidden border-t border-white/10 bg-slate-950/95 backdrop-blur-md">
         <div class="max-w-[1440px] mx-auto px-6 lg:px-16 py-5 space-y-5">
             <nav class="space-y-3">
-                <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] text-white hover:bg-white/5 hover:text-primary transition-colors" href="/">Beranda</a>
+                <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] text-white hover:bg-white/5 hover:text-primary transition-colors" href="{{ url('/#top') }}">Beranda</a>
                 <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] text-white/80 hover:bg-white/5 hover:text-primary transition-colors" href="{{ route('paket-trip.index') }}">Paket Trip</a>
+                <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] text-white/80 hover:bg-white/5 hover:text-primary transition-colors" href="{{ url('/#hubungi-kami') }}">Hubungi Kami</a>
 
                 @auth
                     @if($user->isAdmin())
-                        <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] text-white/80 hover:bg-white/5 hover:text-primary transition-colors" href="{{ route('admin.jadwal.index') }}">Jadwal</a>
-                        <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] text-white/80 hover:bg-white/5 hover:text-primary transition-colors" href="{{ route('admin.reservasi.index') }}">Reservasi</a>
-                        <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] text-white/80 hover:bg-white/5 hover:text-primary transition-colors" href="{{ route('admin.paket-trip.index') }}">Paket Trip</a>
-                    @else
-                        <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] text-white/80 hover:bg-white/5 hover:text-primary transition-colors" href="{{ route('paket-trip.index') }}">Katalog</a>
+                        <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] text-white/80 hover:bg-white/5 hover:text-primary transition-colors" href="{{ route('admin.dashboard') }}">Dashboard</a>
                     @endif
                 @else
-                    <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] text-white/80 hover:bg-white/5 hover:text-primary transition-colors" href="#hubungi-kami">Hubungi Kami</a>
+                    <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] text-white/80 hover:bg-white/5 hover:text-primary transition-colors" href="{{ url('/#hubungi-kami') }}">Hubungi Kami</a>
                 @endauth
             </nav>
 
@@ -117,6 +109,9 @@
                             <p class="mt-1 text-xs text-white/60">{{ $user->email }}</p>
                         </div>
                         <div class="flex flex-col gap-2">
+                            @if($user->isAdmin())
+                                <a @click="open = false" href="{{ route('admin.dashboard') }}" class="rounded-full border border-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-white/80 hover:border-primary hover:text-primary transition-colors">Dashboard</a>
+                            @endif
                             <a @click="open = false" href="{{ route('reservasi.riwayat') }}" class="rounded-full border border-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-white/80 hover:border-primary hover:text-primary transition-colors">Riwayat</a>
                             <a @click="open = false" href="{{ route('profile.edit') }}" class="rounded-full border border-white/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-white/80 hover:border-primary hover:text-primary transition-colors">Profil</a>
                         </div>

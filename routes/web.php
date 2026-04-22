@@ -70,6 +70,8 @@ Route::middleware(['auth', 'role:wisatawan'])->prefix('reservasi')->name('reserv
     Route::get('/riwayat', [ReservasiController::class, 'riwayat'])->name('riwayat');
 
     Route::get('/{kodeReservasi}/pembayaran', [PembayaranController::class, 'show'])->name('pembayaran');
+    Route::get('/{kodeReservasi}/tiket', [PembayaranController::class, 'downloadTicket'])->name('tiket');
+    Route::get('/{kodeReservasi}/bukti-transaksi', [PembayaranController::class, 'downloadReceipt'])->name('bukti-transaksi');
     Route::get('/{kodeReservasi}/status', [PembayaranController::class, 'status'])->name('status');
 });
 

@@ -14,6 +14,11 @@
             ]" />
             <h1 class="mt-2 text-4xl md:text-5xl font-display font-black uppercase text-forest-green">Status Reservasi</h1>
             <p class="mt-3 text-forest-green/70 max-w-2xl">Pantau status reservasi dan pembayaran Anda di halaman ini.</p>
+            @if(session('error'))
+                <div class="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                    {{ session('error') }}
+                </div>
+            @endif
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -77,6 +82,21 @@
                         <p>Jika status masih <span class="font-black text-forest-green">pending</span>, silakan selesaikan pembayaran terlebih dahulu.</p>
                         <p>Jika status sudah <span class="font-black text-forest-green">paid</span>, reservasi Anda sudah masuk proses verifikasi dan tiket akan disiapkan.</p>
                     </div>
+
+                    @if(in_array($pembayaran->status, ['settlement', 'capture'], true) || $reservasi->status === 'paid')
+                        <div class="rounded-xl border border-forest-green/10 bg-forest-green/5 p-4 space-y-3">
+                            <div>
+                                <h3 class="mt-2 text-lg font-black uppercase text-forest-green">Transaksi Berhasil</h3>
+                                <p class="mt-2 text-sm leading-relaxed text-forest-green/70">Unduh file PDF berisi bukti transaksi yang sudah selesai sebagai arsip.</p>
+                            </div>
+
+                            <div class="grid grid-cols-1 gap-3">
+                                <a href="{{ route('reservasi.tiket', $reservasi->kode_reservasi) }}" class="inline-flex items-center justify-center rounded-xl bg-forest-green px-4 py-3 text-sm font-black uppercase tracking-[0.25em] text-white transition hover:bg-forest-green/90">
+                                    Unduh Transaksi
+                                </a>
+                            </div>
+                        </div>
+                    @endif
 
                     <div class="rounded-xl border border-dashed border-primary/20 bg-primary/5 p-4 space-y-3">
                         <div>

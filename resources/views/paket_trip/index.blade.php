@@ -5,67 +5,69 @@
 @section('content')
 
 <!-- Search & Filter Section -->
-<section class="w-full py-20 bg-white border-b border-forest-green/10">
+<section class="w-full pt-32 pb-10 bg-white border-b border-forest-green/10 lg:pt-36">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
-        <div class="flex flex-col lg:flex-row gap-6 items-end">
-            <!-- Search Input -->
-            <div class="flex-1">
-                <label class="block text-xs font-black text-forest-green/70 uppercase tracking-widest mb-2">
-                    Cari Paket Trip
-                </label>
-                <input 
-                    type="text" 
-                    id="search-input"
-                    placeholder="Ketik nama paket atau destinasi..."
-                    class="w-full px-6 py-4 rounded-lg border border-forest-green/20 bg-forest-green/5 text-forest-green placeholder-forest-green/40 focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all"
-                />
-            </div>
+        <div class="rounded-3xl border border-forest-green/10 bg-forest-green/5 px-5 py-5 shadow-sm lg:px-8 lg:py-6">
+            <div class="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-end lg:gap-5">
+                <!-- Search Input -->
+                <div class="lg:col-span-6">
+                    <label class="mb-2 block text-xs font-black uppercase tracking-widest text-forest-green/70">
+                        Cari Paket Trip
+                    </label>
+                    <input
+                        type="text"
+                        id="search-input"
+                        placeholder="Ketik nama paket atau destinasi..."
+                        class="w-full rounded-2xl border border-forest-green/15 bg-white px-5 py-4 text-forest-green placeholder-forest-green/40 transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    />
+                </div>
 
-            <!-- Category Filter -->
-            <div>
-                <label class="block text-xs font-black text-forest-green/70 uppercase tracking-widest mb-2">
-                    Kategori
-                </label>
-                <select id="category-filter" class="px-6 py-4 rounded-lg border border-forest-green/20 bg-white text-forest-green font-medium focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
-                    <option value="">Semua Kategori</option>
-                    <option value="gunung">Gunung</option>
-                    <option value="hutan">Hutan</option>
-                    <option value="pantai">Pantai</option>
-                    <option value="Trekking">Trekking</option>
-                    <option value="Ca">Canyoneering</option>
-                    <option value="camping">Camping</option>
-                </select>
-            </div>
+                <!-- Category Filter -->
+                <div class="lg:col-span-3">
+                    <label class="mb-2 block text-xs font-black uppercase tracking-widest text-forest-green/70">
+                        Kategori
+                    </label>
+                    <select id="category-filter" class="w-full rounded-2xl border border-forest-green/15 bg-white px-5 py-4 font-medium text-forest-green transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
+                        <option value="">Semua Kategori</option>
+                        <option value="gunung">Gunung</option>
+                        <option value="hutan">Hutan</option>
+                        <option value="pantai">Pantai</option>
+                        <option value="trekking">Trekking</option>
+                        <option value="ca">Canyoneering</option>
+                        <option value="camping">Camping</option>
+                    </select>
+                </div>
 
-            <!-- Price Range -->
-            <div>
-                <label class="block text-xs font-black text-forest-green/70 uppercase tracking-widest mb-2">
-                    Harga
-                </label>
-                <select id="price-filter" class="px-6 py-4 rounded-lg border border-forest-green/20 bg-white text-forest-green font-medium focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all">
-                    <option value="">Semua Harga</option>
-                    <option value="0-1000000">Rp 0 - 1 Juta</option>
-                    <option value="1000000-2500000">Rp 1 - 2.5 Juta</option>
-                    <option value="2500000-5000000">Rp 2.5 - 5 Juta</option>
-                    <option value="5000000">Rp 5+ Juta</option>
-                </select>
+                <!-- Price Range -->
+                <div class="lg:col-span-3">
+                    <label class="mb-2 block text-xs font-black uppercase tracking-widest text-forest-green/70">
+                        Harga
+                    </label>
+                    <select id="price-filter" class="w-full rounded-2xl border border-forest-green/15 bg-white px-5 py-4 font-medium text-forest-green transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
+                        <option value="">Semua Harga</option>
+                        <option value="0-1000000">Rp 0 - 1 Juta</option>
+                        <option value="1000000-2500000">Rp 1 - 2.5 Juta</option>
+                        <option value="2500000-5000000">Rp 2.5 - 5 Juta</option>
+                        <option value="5000000">Rp 5+ Juta</option>
+                    </select>
+                </div>
             </div>
         </div>
     </div>
 </section>
 
 <!-- Katalog List -->
-<section class="w-full py-24 bg-background-light">
+<section class="w-full py-14 bg-background-light lg:py-16">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
         <!-- Status Display -->
-        <div id="status-display" class="mb-8 flex items-center justify-between">
+        <div id="status-display" class="mb-6 flex items-center justify-between">
             <p class="text-forest-green/70 font-medium">
                 Menampilkan <span id="count-display" class="font-black text-forest-green">{{ count($pakets) }}</span> paket trip
             </p>
         </div>
 
         <!-- Katalog Grid -->
-        <div id="katalog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
+        <div id="katalog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
             @forelse($pakets as $paket)
                 <div class="paket-card" data-kategori="{{ strtolower($paket->kategori) }}" data-harga="{{ $paket->harga }}">
                     <x-trip-card 
@@ -153,7 +155,7 @@
             }
 
             const isVisible = matchSearch && matchCategory && matchPrice;
-            card.style.display = isVisible ? 'block' : 'none';
+            card.style.display = isVisible ? '' : 'none';
 
             if (isVisible) visibleCount++;
         });
