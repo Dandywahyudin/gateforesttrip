@@ -24,21 +24,7 @@ class JadwalKuotaUpdated implements ShouldBroadcastNow
         $jadwal->loadMissing(['paketTrip', 'reservasis.pembayaran']);
 
         $harga = $jadwal->harga_override ?? $jadwal->paketTrip?->harga ?? 0;
-        $kuotaTerpakai = (int) $jadwal->reservasis
-            ->filter(function ($reservasi) {
-                if ($reservasi->status === 'paid') {
-                    return true;
-                }
-
-                $expiredAt = $reservasi->pembayaran?->expired_at;
-
-                return $reservasi->status === 'unpaid'
-                    && $expiredAt
-                    && now()->lessThanOrEqualTo($expiredAt);
-            })
-            ->sum('jml_peserta');
-
-        $sisaKuota = max(0, (int) $jadwal->kuota_max - $kuotaTerpakai);
+        $sisaKuota = max(0, (int) $jadwal->kuota_max - (int) $jadwal->kuota_terisi);
 
         return new self($jadwal->jadwalId, [
             'jadwal_id' => $jadwal->jadwalId,

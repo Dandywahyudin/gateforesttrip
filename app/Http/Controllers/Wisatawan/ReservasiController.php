@@ -265,22 +265,6 @@ class ReservasiController extends Controller
 
     private function getSisaKuotaTersedia(Jadwal $jadwal): int
     {
-        $jadwal->loadMissing(['reservasis.pembayaran']);
-
-        $kuotaTerpakai = (int) $jadwal->reservasis
-            ->filter(function (Reservasi $reservasi) {
-                if ($reservasi->status === 'paid') {
-                    return true;
-                }
-
-                $expiredAt = $reservasi->pembayaran?->expired_at;
-
-                return $reservasi->status === 'unpaid'
-                    && $expiredAt
-                    && now()->lessThanOrEqualTo($expiredAt);
-            })
-            ->sum('jml_peserta');
-
-        return max(0, (int) $jadwal->kuota_max - $kuotaTerpakai);
+        return max(0, (int) $jadwal->kuota_max - (int) $jadwal->kuota_terisi);
     }
 }

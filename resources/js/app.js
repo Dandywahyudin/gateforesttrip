@@ -27,7 +27,7 @@ function updateJadwalRealtimeCard(root, payload) {
 	setText('tanggal-kembali', payload.tanggal_kembali_label ?? '');
 	setText('harga', payload.harga_label ?? '');
 	setText('kuota', `${payload.kuota_terisi ?? 0} / ${payload.kuota_max ?? 0}`);
-	setText('sisa-kuota', `${payload.sisa_kuota ?? 0} kursi`);
+	setText('sisa-kuota', `${payload.sisa_kuota ?? 0} dari ${payload.kuota_max ?? 0} kursi`);
 	setText('status', payload.status ?? '');
 
 	const badge = root.querySelector('[data-jadwal-field="kuota-badge"]');

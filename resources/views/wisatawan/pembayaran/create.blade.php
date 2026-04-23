@@ -79,20 +79,23 @@
 @if($pembayaran->snap_token)
     <script src="https://app{{ filter_var(config('services.midtrans.is_production'), FILTER_VALIDATE_BOOL) ? '' : '.sandbox' }}.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
     <script>
+        const statusUrl = @json(route('reservasi.status', $reservasi->kode_reservasi));
+
+        function redirectToStatus() {
+            if (window.top && window.top.location) {
+                window.top.location.replace(statusUrl);
+                return;
+            }
+
+            window.location.replace(statusUrl);
+        }
+
         function payNow() {
             snap.pay(@json($pembayaran->snap_token), {
-                onSuccess: function () {
-                    window.location.href = @json(route('reservasi.status', $reservasi->kode_reservasi));
-                },
-                onPending: function () {
-                    window.location.href = @json(route('reservasi.status', $reservasi->kode_reservasi));
-                },
-                onError: function () {
-                    window.location.href = @json(route('reservasi.status', $reservasi->kode_reservasi));
-                },
-                onClose: function () {
-                    window.location.href = @json(route('reservasi.status', $reservasi->kode_reservasi));
-                }
+                onSuccess: redirectToStatus,
+                onPending: redirectToStatus,
+                onError: redirectToStatus,
+                onClose: redirectToStatus
             });
         }
     </script>

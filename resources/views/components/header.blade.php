@@ -1,5 +1,26 @@
 @php
     $isLandingPage = request()->is('/') || request()->is('');
+    $hubungiKamiUrl = url('/#hubungi-kami');
+
+    $adminWhatsapp = \App\Models\User::query()
+        ->where('role', 'admin')
+        ->whereNotNull('no_hp')
+        ->orderBy('userId')
+        ->first();
+
+    if ($adminWhatsapp?->no_hp) {
+        $phoneNumber = preg_replace('/\D+/', '', (string) $adminWhatsapp->no_hp);
+
+        if ($phoneNumber !== '') {
+            if (str_starts_with($phoneNumber, '0')) {
+                $phoneNumber = '62' . substr($phoneNumber, 1);
+            } elseif (str_starts_with($phoneNumber, '8')) {
+                $phoneNumber = '62' . $phoneNumber;
+            }
+
+            $hubungiKamiUrl = 'https://wa.me/' . $phoneNumber . '?text=' . rawurlencode('Halo Admin GateForestTrip, saya ingin bertanya mengenai trip yang tersedia.');
+        }
+    }
 @endphp
 
 <header x-data="{ open: false }" x-on:keydown.escape.window="open = false" class="fixed top-0 z-[100] w-full transition-all duration-300 {{ $isLandingPage ? 'bg-black/10 backdrop-blur-md border-b border-white/5' : 'bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm' }}">
@@ -23,7 +44,7 @@
         <nav class="hidden md:flex items-center gap-10">
             <a class="text-xs font-bold transition-colors uppercase tracking-[0.2em] {{ $isLandingPage ? 'text-white hover:text-primary' : 'text-gray-700 hover:text-primary' }}" href="{{ url('/#top') }}">Beranda</a>
             <a class="text-xs font-bold transition-colors uppercase tracking-[0.2em] {{ $isLandingPage ? 'text-white/70 hover:text-primary' : 'text-gray-600 hover:text-primary' }}" href="{{ route('paket-trip.index') }}">Paket Trip</a>
-            <a class="text-xs font-bold transition-colors uppercase tracking-[0.2em] {{ $isLandingPage ? 'text-white/70 hover:text-primary' : 'text-gray-600 hover:text-primary' }}" href="{{ url('/#hubungi-kami') }}">Hubungi Kami</a>
+            <a class="text-xs font-bold transition-colors uppercase tracking-[0.2em] {{ $isLandingPage ? 'text-white/70 hover:text-primary' : 'text-gray-600 hover:text-primary' }}" href="{{ $hubungiKamiUrl }}" target="_blank" rel="noopener noreferrer">Hubungi Kami</a>
         </nav>
 
         <div class="flex items-center gap-6">
@@ -93,14 +114,14 @@
             <nav class="space-y-3">
             <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors {{ $isLandingPage ? 'text-white hover:bg-white/5 hover:text-primary' : 'text-gray-900 hover:bg-gray-100 hover:text-primary' }}" href="{{ url('/#top') }}">Beranda</a>
             <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors {{ $isLandingPage ? 'text-white/80 hover:bg-white/5 hover:text-primary' : 'text-gray-700 hover:bg-gray-100 hover:text-primary' }}" href="{{ route('paket-trip.index') }}">Paket Trip</a>
-            <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors {{ $isLandingPage ? 'text-white/80 hover:bg-white/5 hover:text-primary' : 'text-gray-700 hover:bg-gray-100 hover:text-primary' }}" href="{{ url('/#hubungi-kami') }}">Hubungi Kami</a>
+            <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors {{ $isLandingPage ? 'text-white/80 hover:bg-white/5 hover:text-primary' : 'text-gray-700 hover:bg-gray-100 hover:text-primary' }}" href="{{ $hubungiKamiUrl }}" target="_blank" rel="noopener noreferrer">Hubungi Kami</a>
 
                 @auth
                     @if($user->isAdmin())
                         <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors {{ $isLandingPage ? 'text-white/80 hover:bg-white/5 hover:text-primary' : 'text-gray-700 hover:bg-gray-100 hover:text-primary' }}" href="{{ route('admin.dashboard') }}">Dashboard</a>
                     @endif
                 @else
-                    <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors {{ $isLandingPage ? 'text-white/80 hover:bg-white/5 hover:text-primary' : 'text-gray-700 hover:bg-gray-100 hover:text-primary' }}" href="{{ url('/#hubungi-kami') }}">Hubungi Kami</a>
+                    <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors {{ $isLandingPage ? 'text-white/80 hover:bg-white/5 hover:text-primary' : 'text-gray-700 hover:bg-gray-100 hover:text-primary' }}" href="{{ $hubungiKamiUrl }}" target="_blank" rel="noopener noreferrer">Hubungi Kami</a>
                 @endauth
             </nav>
 

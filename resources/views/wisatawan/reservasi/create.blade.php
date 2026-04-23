@@ -61,14 +61,13 @@
                                                     Rp {{ number_format($hargaJadwal, 0, ',', '.') }}
                                                 </span>
                                                 <span class="inline-flex rounded-full bg-background-light px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-forest-green" data-jadwal-field="sisa-kuota">
-                                                    {{ $sisaKuota }} kursi
+                                                    {{ $sisaKuota }} dari {{ $jadwal->kuota_max }} kursi
                                                 </span>
                                             </div>
                                         </div>
 
                                         <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-dashed border-forest-green/10 px-4 py-3 text-xs font-black uppercase tracking-[0.22em] {{ $sisaKuota > 0 ? 'text-forest-green/60' : 'text-red-600' }}" data-jadwal-field="kuota-badge">
                                             <span>{{ $sisaKuota > 0 ? 'Tersedia' : 'Penuh' }}</span>
-                                            <span>{{ $sisaKuota > 0 ? 'Pilihan siap dipakai' : 'Pilih jadwal lain' }}</span>
                                         </div>
                                     </div>
                                 </div>
