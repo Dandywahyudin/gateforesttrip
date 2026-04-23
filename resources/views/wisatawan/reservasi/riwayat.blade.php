@@ -26,7 +26,6 @@
                 @foreach($reservasis as $reservasi)
                     @php
                         $isPaid = in_array(optional($reservasi->pembayaran)->status, ['settlement', 'capture'], true) || $reservasi->status === 'paid';
-                        $paymentStatus = $reservasi->pembayaran?->status ?? 'pending';
                     @endphp
                     <article class="rounded-[28px] border border-white/60 bg-white/90 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-md">
                         <div class="flex flex-col xl:flex-row xl:items-start xl:justify-between gap-6">
@@ -56,9 +55,6 @@
                             <div class="flex flex-col items-start xl:items-end gap-3">
                                 <span class="px-4 py-2 rounded-full text-xs font-black uppercase tracking-[0.25em] {{ $isPaid ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">
                                     Reservasi: {{ $reservasi->status }}
-                                </span>
-                                <span class="px-4 py-2 rounded-full text-xs font-black uppercase tracking-[0.25em] {{ $isPaid ? 'bg-green-100 text-green-700' : 'bg-primary/10 text-primary' }}">
-                                    Pembayaran: {{ $paymentStatus }}
                                 </span>
                                 <p class="text-xs uppercase tracking-[0.25em] text-forest-green/40">Order: {{ $reservasi->pembayaran?->orderId ?? '-' }}</p>
                             </div>
