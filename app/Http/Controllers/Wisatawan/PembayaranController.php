@@ -10,6 +10,8 @@ use App\Services\MidtransService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
+
 
 class PembayaranController extends Controller
 {
@@ -115,15 +117,22 @@ class PembayaranController extends Controller
 	}
 
 	public function notification(Request $request, MidtransService $midtransService)
-	{
-		$pembayaran = $midtransService->handleNotification();
+{
+    try {
+        $pembayaran = $midtransService->handleNotification();
 
-		if (! $pembayaran) {
-			return response()->json(['message' => 'Pembayaran tidak ditemukan.'], 404);
-		}
+        if (! $pembayaran) {
+			Log::warning('Pembayaran tidak ditemukan', $request->all());
+        }
 
-		return response()->json(['message' => 'Notification processed successfully.']);
-	}
+        return response()->json(['message' => 'OK'], 200);
+
+    } catch (\Exception $e) {
+		Log::error('Midtrans Callback Error: ' . $e->getMessage());
+
+        return response()->json(['message' => 'Error handled'], 200);
+    }
+}
 
 	private function isPaymentCompleted(Reservasi $reservasi, Pembayaran $pembayaran): bool
 	{
