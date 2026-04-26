@@ -29,12 +29,9 @@
                     </label>
                     <select id="category-filter" class="w-full rounded-2xl border border-forest-green/15 bg-white px-5 py-4 font-medium text-forest-green transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
                         <option value="">Semua Kategori</option>
-                        <option value="gunung">Gunung</option>
-                        <option value="hutan">Hutan</option>
-                        <option value="pantai">Pantai</option>
-                        <option value="trekking">Trekking</option>
-                        <option value="ca">Canyoneering</option>
-                        <option value="camping">Camping</option>
+                        @foreach(\App\Enums\PaketTripKategori::options() as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
                     </select>
                 </div>
 
@@ -69,11 +66,11 @@
         <!-- Katalog Grid -->
         <div id="katalog-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10">
             @forelse($pakets as $paket)
-                <div class="paket-card" data-kategori="{{ strtolower($paket->kategori) }}" data-harga="{{ $paket->harga }}">
+                <div class="paket-card" data-kategori="{{ $paket->kategori_value }}" data-harga="{{ $paket->harga }}">
                     <x-trip-card 
                         :paket="$paket"
                         :image="$paket->foto_url"
-                        category="{{ strtoupper($paket->kategori) }}"
+                        category="{{ strtoupper($paket->kategori_label ?? 'PAKET AKTIF') }}"
                         title="{{ $paket->nama }}"
                         description="{{ Str::limit($paket->deskripsi, 80) }}"
                         price="Rp {{ number_format($paket->harga, 0, ',', '.') }}"

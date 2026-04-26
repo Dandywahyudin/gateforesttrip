@@ -23,7 +23,7 @@
                 <div class="absolute bottom-0 left-0 w-full p-8 md:p-16 flex flex-col md:flex-row items-end justify-between gap-8">
                     <div class="space-y-6 max-w-[800px]">
                         <div class="flex gap-4 flex-wrap">
-                            <span class="bg-primary text-white text-[10px] font-black uppercase tracking-widest px-6 py-2 rounded-full">{{ $highlightPaket->kategori ?: 'Direkomendasikan' }}</span>
+                            <span class="bg-primary text-white text-[10px] font-black uppercase tracking-widest px-6 py-2 rounded-full">{{ $highlightPaket->kategori_label ?? 'Direkomendasikan' }}</span>
                             <span class="bg-white/20 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest px-6 py-2 rounded-full border border-white/20">{{ $highlightPaket->jadwal_open_count ?? 0 }} jadwal aktif</span>
                         </div>
 
@@ -50,7 +50,7 @@
                 <x-trip-card
                     :paket="$paket"
                     :image="$paket->foto_url"
-                    category="{{ $paket->kategori ? strtoupper($paket->kategori) : 'PAKET AKTIF' }}"
+                    category="{{ strtoupper($paket->kategori_label ?? 'PAKET AKTIF') }}"
                     title="{{ $paket->nama }}"
                     description="{{ \Illuminate\Support\Str::limit($paket->deskripsi, 90) }}"
                     price="Rp {{ number_format($paket->harga, 0, ',', '.') }}"

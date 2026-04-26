@@ -1,5 +1,6 @@
 @php
     $isEdit = $paketTrip->exists ?? false;
+    $selectedKategori = old('kategori', $paketTrip->kategori_value ?? '');
 @endphp
 
 <form action="{{ $action }}" method="POST" enctype="multipart/form-data" class="space-y-6">
@@ -22,7 +23,13 @@
 
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="kategori">Kategori</label>
-                <input id="kategori" name="kategori" type="text" value="{{ old('kategori', $paketTrip->kategori ?? '') }}" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" placeholder="Contoh: Camping, Pantai, Hiking">
+                <select id="kategori" name="kategori" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">
+                    <option value="">Pilih kategori</option>
+                    @foreach(\App\Enums\PaketTripKategori::options() as $value => $label)
+                        <option value="{{ $value }}" @selected($selectedKategori === $value)>{{ $label }}</option>
+                    @endforeach
+                </select>
+                <p class="mt-2 text-xs text-gray-500">Gunakan kategori baku agar data katalog tetap konsisten.</p>
             </div>
 
             <div>

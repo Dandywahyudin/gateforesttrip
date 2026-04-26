@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\PaketTripKategori;
 use App\Models\PaketTrip;
 use Illuminate\Database\Seeder;
 
@@ -19,7 +20,7 @@ class PaketTripSeeder extends Seeder
             'deskripsi' => 'Rasakan keheningan malam di bawah jutaan bintang pada ketinggian 2.500 mdpl. Petualangan ini menawarkan pengalaman camping eksklusif dengan pemandangan danau yang tak terlupakan.',
             'fasilitas' => 'Tenda berkualitas, Sleeping bag, Perlengkapan camping, Guide profesional, Asuransi perjalanan, Snack & minuman',
             'lokasi' => 'Danau Tolire, Ternate, Maluku Utara',
-            'kategori' => 'Camping & Hiking',
+            'kategori' => PaketTripKategori::Camping->value,
             'meeting_point' => 'Bandara Ternate, jam 06:00 pagi',
             'include' => 'Transportasi, Akomodasi kemah, Makan 3x, Pemandu wisata, Asuransi perjalanan',
             'exclude' => 'Perjalanan ke Ternate, Minuman beralkohol, Biaya pribadi tambahan, Foto profesional',
@@ -39,7 +40,7 @@ class PaketTripSeeder extends Seeder
             'deskripsi' => 'Taklukkan medan menantang melalui hutan tropis basah menuju samudera awan yang ikonik. Rute pendakian ini terkenal dengan keindahan sunrise dari puncak gunung.',
             'fasilitas' => 'Peralatan pendakian lengkap, Pemandu gunung, Tenda, Sleeping bag, Dapur lapangan, Medis kit',
             'lokasi' => 'Gunung Kerinci, Sumatera Barat',
-            'kategori' => 'Pendakian',
+            'kategori' => PaketTripKategori::Pendakian->value,
             'meeting_point' => 'Pos Pendakian, Sungai Penuh, jam 09:00 pagi',
             'include' => 'Pemandu gunung bersertifikat, Transportasi, Akomodasi pondok, Makan 3x, Peralatan dasar',
             'exclude' => 'Perlengkapan pribadi, Konsumsi di luar jadwal, Perjalanan ke Sungai Penuh',
@@ -59,7 +60,7 @@ class PaketTripSeeder extends Seeder
             'deskripsi' => 'Memburu momen magis Ray of Light di kedalaman hutan purba bersama fotografer ahli. Workshop fotografi alam dengan teknik pencahayaan profesional.',
             'fasilitas' => 'Grup max 8 org, Fotografer profesional, Transportasi, Akomodasi, Meals',
             'lokasi' => 'Hutan Tanjung Puting, Kalimantan Tengah',
-            'kategori' => 'Fotografi',
+            'kategori' => PaketTripKategori::Fotografi->value,
             'meeting_point' => 'Hotel Pangkalan, jam 07:00 pagi',
             'include' => 'Workshop fotografi, Transportasi, Akomodasi, Makan 3x, Pemandu foto',
             'exclude' => 'Peralatan fotografi pribadi, Asuransi, Perjalanan ke Pangkalan',
@@ -79,7 +80,7 @@ class PaketTripSeeder extends Seeder
             'deskripsi' => 'Menyusuri labirin sungai di kedalaman hutan saat kabut pagi menyelimuti pepohonan. Pengalaman meditasi dengan activitas kayaking yang menantang.',
             'fasilitas' => 'Kayak, Life jacket, Paddle, Shelter, Peralatan camping, Medis kit',
             'lokasi' => 'Sungai Sekonyer, Kalimantan Barat',
-            'kategori' => 'Adventure',
+            'kategori' => PaketTripKategori::Petualangan->value,
             'meeting_point' => 'Dermaga Kubu Raya, jam 06:00 pagi',
             'include' => 'Kayak & peralatan, Pemandu lokal, Akomodasi rumah pohon, Makan 3x, Asuransi',
             'exclude' => 'Perjalanan ke Kubu Raya, Peralatan foto underwater, Aktivitas tambahan',
@@ -99,7 +100,7 @@ class PaketTripSeeder extends Seeder
             'deskripsi' => 'Pendakian santai dengan pemandangan hutan pinus memukau. Cocok untuk keluarga pemula dengan rute yang tidak terlalu berat.',
             'fasilitas' => 'Pemandu wisata, Tenda, Akomodasi shelter, Makanan, Peralatan dasar',
             'lokasi' => 'Gunung Bromo, Jawa Timur',
-            'kategori' => 'Hiking',
+            'kategori' => PaketTripKategori::Hiking->value,
             'meeting_point' => 'Desa Cemoro Lawang, jam 03:00 pagi',
             'include' => 'Jeep basecamp, Pemandu lokal, Breakfast, Snack, Sunset & sunrise',
             'exclude' => 'Hotel Malang, Makan malam, Biaya masuk taman nasional',
@@ -119,7 +120,7 @@ class PaketTripSeeder extends Seeder
             'deskripsi' => 'Petualangan eksklusif mencari fenomena Rays di tengah hutan kuno dengan pengalaman spiritual.',
             'fasilitas' => 'Pemandu ahli alam, Perlengkapan outdoor, Eco-lodge, Makanan organik',
             'lokasi' => 'Hutan Belantara, Kalimantan Timur',
-            'kategori' => 'Eksplorasi',
+            'kategori' => PaketTripKategori::Eksplorasi->value,
             'meeting_point' => 'Samarinda, transportasi 2 jam ke basecamp',
             'include' => 'Pemandu bilingual, Akomodasi ramah lingkungan, Makanan tradisional lokal',
             'exclude' => 'Pemandu fotografi profesional, Asuransi ekstra, Adventure activities',
@@ -139,7 +140,7 @@ class PaketTripSeeder extends Seeder
             'deskripsi' => 'Berkemah di tepi danau dengan pemandangan pegunungan menakjubkan dan bintang langka.',
             'fasilitas' => 'Tenda premium, Sleeping bag -5C, Camping stove, Lampu LED, First aid kit',
             'lokasi' => 'Danau Pegunungan Dieng, Jawa Tengah',
-            'kategori' => 'Camping',
+            'kategori' => PaketTripKategori::Camping->value,
             'meeting_point' => 'Wonosobo, perjalanan 1.5 jam ke lokasi',
             'include' => 'Transportasi, Kemah premium, Makan 3x, Pemandu nature, Stargazing',
             'exclude' => 'Perjalanan ke Wonosobo, Adventure activities, Dokumentasi profesional',
@@ -159,7 +160,7 @@ class PaketTripSeeder extends Seeder
             'deskripsi' => 'Jelajahi keindahan terumbu karang dan ikan eksotis di pantai pasir pink langka.',
             'fasilitas' => 'Peralatan snorkeling, Perahu tradisional, Life jacket, Instruktur bersertifikat',
             'lokasi' => 'Pantai Pink, Pulau Komodo, NTT',
-            'kategori' => 'Pantai',
+            'kategori' => PaketTripKategori::Pantai->value,
             'meeting_point' => 'Labuan Bajo, 20 menit ke dermaga',
             'include' => 'Perjalanan laut, Snorkeling 3 lokasi, Lunch seafood, Instruktur, Dokumentasi',
             'exclude' => 'Penerbangan Labuan Bajo, Hotel, Biaya taman nasional, Aktivitas lain',

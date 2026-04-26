@@ -9,7 +9,7 @@
             </div>
             <div class="flex flex-wrap gap-3">
                 <button class="px-8 py-3 rounded-full bg-forest-green text-white font-black text-xs uppercase tracking-widest hover:bg-primary transition-all">Semua</button>
-                @foreach($pakets->pluck('kategori')->filter()->unique()->values() as $kategori)
+                @foreach($pakets->pluck('kategori_label')->filter()->unique()->values() as $kategori)
                     <button class="px-8 py-3 rounded-full bg-white border border-forest-green/10 text-forest-green font-black text-xs uppercase tracking-widest hover:bg-forest-green hover:text-white transition-all">
                         {{ $kategori }}
                     </button>
@@ -22,7 +22,7 @@
                 <x-trip-card 
                     :paket="$paket"
                     :image="$paket->foto_url"
-                    category="{{ $paket->kategori ? strtoupper($paket->kategori) : 'PAKET AKTIF' }}"
+                    category="{{ strtoupper($paket->kategori_label ?? 'PAKET AKTIF') }}"
                     title="{{ $paket->nama }}"
                     description="{{ \Illuminate\Support\Str::limit($paket->deskripsi, 80) }}"
                     price="Rp {{ number_format($paket->harga, 0, ',', '.') }}"

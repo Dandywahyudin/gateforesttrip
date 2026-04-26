@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Enums\PaketTripKategori;
 use App\Http\Controllers\Controller as BaseController;
 use App\Models\PaketTrip;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 
 class PaketTripController extends BaseController
@@ -81,7 +83,7 @@ class PaketTripController extends BaseController
             'deskripsi' => ['required', 'string'],
             'fasilitas' => ['required', 'string'],
             'lokasi' => ['required', 'string', 'max:255'],
-            'kategori' => ['nullable', 'string', 'max:255'],
+            'kategori' => ['nullable', Rule::enum(PaketTripKategori::class)],
             'meeting_point' => ['nullable', 'string'],
             'include' => ['nullable', 'string'],
             'exclude' => ['nullable', 'string'],

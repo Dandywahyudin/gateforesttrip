@@ -27,7 +27,7 @@
                     <div class="absolute inset-0 bg-gradient-to-t from-black/35 via-black/5 to-transparent z-10"></div>
                     <div class="absolute left-5 top-5 z-20 flex flex-wrap gap-2">
                         <span class="inline-flex items-center rounded-full bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.28em] text-forest-green backdrop-blur-sm">
-                            {{ $paket->kategori }}
+                            {{ $paket->kategori_label ?? 'Paket Aktif' }}
                         </span>
                         <span class="inline-flex items-center rounded-full bg-primary/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.28em] text-white backdrop-blur-sm">
                             Open Trip
@@ -166,7 +166,7 @@
                         </div>
                         <div class="rounded-3xl border border-forest-green/10 bg-white p-5 shadow-sm">
                             <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-2">Kategori</p>
-                            <p class="text-3xl font-display font-black text-forest-green">{{ strtoupper($paket->kategori) }}</p>
+                            <p class="text-3xl font-display font-black text-forest-green">{{ strtoupper($paket->kategori_label ?? 'PAKET AKTIF') }}</p>
                             <p class="mt-1 text-sm text-forest-green/60">Konsep perjalanan</p>
                         </div>
                         <div class="rounded-3xl border border-forest-green/10 bg-white p-5 shadow-sm">
@@ -275,7 +275,7 @@
                 <x-trip-card 
                     :paket="$related"
                     :image="$related->foto_url"
-                    category="{{ strtoupper($related->kategori) }}"
+                        category="{{ strtoupper($related->kategori_label ?? 'PAKET AKTIF') }}"
                     title="{{ $related->nama }}"
                     description="{{ Str::limit($related->deskripsi, 80) }}"
                     price="Rp {{ number_format($related->harga, 0, ',', '.') }}"

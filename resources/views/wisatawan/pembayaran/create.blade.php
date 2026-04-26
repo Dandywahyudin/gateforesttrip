@@ -14,6 +14,11 @@
             ]" />
             <h1 class="mt-2 text-4xl md:text-5xl font-display font-black uppercase text-forest-green">Pembayaran</h1>
             <p class="mt-3 text-forest-green/70 max-w-2xl">Lanjutkan pembayaran untuk menyelesaikan reservasi open trip Anda.</p>
+            @if(session('error'))
+                <div class="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
+                    {{ session('error') }}
+                </div>
+            @endif
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -79,23 +84,33 @@
 @if($pembayaran->snap_token)
     <script src="https://app{{ filter_var(config('services.midtrans.is_production'), FILTER_VALIDATE_BOOL) ? '' : '.sandbox' }}.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
     <script>
-        const statusUrl = @json(route('reservasi.status', $reservasi->kode_reservasi));
+        const finishUrl = @json(route('reservasi.pembayaran.finish') . '?order_id=' . rawurlencode($pembayaran->orderId));
+        const unfinishUrl = @json(route('reservasi.pembayaran.unfinish') . '?order_id=' . rawurlencode($pembayaran->orderId));
+        const errorUrl = @json(route('reservasi.pembayaran.error') . '?order_id=' . rawurlencode($pembayaran->orderId));
 
-        function redirectToStatus() {
+        function redirectTo(url) {
             if (window.top && window.top.location) {
-                window.top.location.replace(statusUrl);
+                window.top.location.replace(url);
                 return;
             }
 
-            window.location.replace(statusUrl);
+            window.location.replace(url);
         }
 
         function payNow() {
             snap.pay(@json($pembayaran->snap_token), {
-                onSuccess: redirectToStatus,
-                onPending: redirectToStatus,
-                onError: redirectToStatus,
-                onClose: redirectToStatus
+                onSuccess: function () {
+                    redirectTo(finishUrl);
+                },
+                onPending: function () {
+                    redirectTo(unfinishUrl);
+                },
+                onError: function () {
+                    redirectTo(errorUrl);
+                },
+                onClose: function () {
+                    redirectTo(unfinishUrl);
+                }
             });
         }
     </script>

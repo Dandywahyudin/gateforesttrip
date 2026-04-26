@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PaketTripKategori;
 use Illuminate\Database\Eloquent\Model;
 
 class PaketTrip extends Model
@@ -60,6 +61,16 @@ class PaketTrip extends Model
     public function getFoto4UrlAttribute(): ?string
     {
         return $this->resolveImageUrl($this->foto4);
+    }
+
+    public function getKategoriLabelAttribute(): ?string
+    {
+        return PaketTripKategori::labelFor($this->kategori);
+    }
+
+    public function getKategoriValueAttribute(): ?string
+    {
+        return PaketTripKategori::valueFor($this->kategori);
     }
 
     private function resolveImageUrl(?string $path): ?string

@@ -48,10 +48,11 @@ class MidtransService
 	{
 		try {
 			$this->configure();
+			$resolvedOrderId = $orderId ?? ('ORD-' . $reservasi->kode_reservasi);
 
 			$payload = [
 				'transaction_details' => [
-					'order_id' => $orderId ?? ('ORD-' . $reservasi->kode_reservasi),
+					'order_id' => $resolvedOrderId,
 					'gross_amount' => (int) round($reservasi->total_harga),
 				],
 
@@ -75,9 +76,9 @@ class MidtransService
 					],
 				],
 				'notification_url' => route('midtrans.notification'),
-				'callbacks' => [
-					'finish' => route('reservasi.status', $reservasi->kode_reservasi),
-				],
+				'finish_redirect_url' => route('reservasi.pembayaran.finish') . '?order_id=' . rawurlencode($resolvedOrderId),
+				'unfinish_redirect_url' => route('reservasi.pembayaran.unfinish') . '?order_id=' . rawurlencode($resolvedOrderId),
+				'error_redirect_url' => route('reservasi.pembayaran.error') . '?order_id=' . rawurlencode($resolvedOrderId),
                 
 			];
 
