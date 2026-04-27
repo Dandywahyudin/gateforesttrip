@@ -19,6 +19,7 @@ class PembayaranController extends Controller
 	{
 		$reservasi = $this->resolveReservasi($kodeReservasi);
 		$pembayaran = $midtransService->syncPayment($reservasi);
+		$this->storeGatewayPaymentContext($reservasi, $pembayaran);
 
 		if (in_array($pembayaran->status, ['settlement', 'capture'], true) || $reservasi->status === 'paid') {
 			return redirect()->route('reservasi.status', $reservasi->kode_reservasi);
@@ -29,51 +30,51 @@ class PembayaranController extends Controller
 
 	public function finish(Request $request, MidtransService $midtransService)
 	{
-		$reservasi = $this->resolveReservasiFromGateway($request);
+		$reservasi = $this->resolveReservasiFromGateway();
 
 		if (! $reservasi) {
-			return redirect()->route('reservasi.riwayat')->with('error', 'Data pembayaran tidak ditemukan pada tautan pembayaran.');
+			return redirect()->route('dashboard')->with('error', 'Data pembayaran tidak ditemukan pada tautan pembayaran.');
 		}
 
 		$pembayaran = $midtransService->refreshPaymentStatus($reservasi);
 
-		if ($this->isPaymentCompleted($reservasi, $pembayaran)) {
-			return redirect()->route('reservasi.status', $reservasi->kode_reservasi);
-		}
+		$message = $this->isPaymentCompleted($reservasi, $pembayaran)
+			? 'Pembayaran berhasil diproses. Berikut status reservasi Anda.'
+			: 'Pembayaran belum terkonfirmasi sepenuhnya. Status reservasi akan tetap diperbarui.';
 
 		return redirect()
-			->route('reservasi.pembayaran', $reservasi->kode_reservasi)
-			->with('error', 'Pembayaran belum terkonfirmasi sepenuhnya. Silakan tunggu sebentar atau ulangi proses pembayaran.');
+			->route('reservasi.status', $reservasi->kode_reservasi)
+			->with('error', $message);
 	}
 
 	public function unfinish(Request $request, MidtransService $midtransService)
 	{
-		$reservasi = $this->resolveReservasiFromGateway($request);
+		$reservasi = $this->resolveReservasiFromGateway();
 
 		if (! $reservasi) {
-			return redirect()->route('reservasi.riwayat')->with('error', 'Data pembayaran tidak ditemukan pada tautan pembayaran.');
+			return redirect()->route('dashboard')->with('error', 'Data pembayaran tidak ditemukan pada tautan pembayaran.');
 		}
 
 		$midtransService->refreshPaymentStatus($reservasi);
 
 		return redirect()
-			->route('reservasi.pembayaran', $reservasi->kode_reservasi)
-			->with('error', 'Pembayaran belum selesai. Anda dapat melanjutkan pembayaran dari halaman ini.');
+			->route('reservasi.status', $reservasi->kode_reservasi)
+			->with('error', 'Pembayaran belum selesai. Silakan cek status reservasi Anda.');
 	}
 
 	public function error(Request $request, MidtransService $midtransService)
 	{
-		$reservasi = $this->resolveReservasiFromGateway($request);
+		$reservasi = $this->resolveReservasiFromGateway();
 
 		if (! $reservasi) {
-			return redirect()->route('reservasi.riwayat')->with('error', 'Data pembayaran tidak ditemukan pada tautan pembayaran.');
+			return redirect()->route('dashboard')->with('error', 'Data pembayaran tidak ditemukan pada tautan pembayaran.');
 		}
 
 		$midtransService->refreshPaymentStatus($reservasi);
 
 		return redirect()
-			->route('reservasi.pembayaran', $reservasi->kode_reservasi)
-			->with('error', 'Terjadi kendala saat memproses pembayaran. Silakan coba lagi.');
+			->route('reservasi.status', $reservasi->kode_reservasi)
+			->with('error', 'Terjadi kendala saat memproses pembayaran. Silakan cek status reservasi Anda.');
 	}
 
 	// public function show(string $kodeReservasi, MidtransService $midtransService)
@@ -166,23 +167,41 @@ class PembayaranController extends Controller
 			->firstOrFail();
 	}
 
-	private function resolveReservasiFromGateway(Request $request): ?Reservasi
+	private function resolveReservasiFromGateway(): ?Reservasi
 	{
-		$orderId = $request->query('order_id');
+		$orderId = session('midtrans_payment.order_id');
+		$kodeReservasi = session('midtrans_payment.kode_reservasi');
 
-		if (! $orderId) {
-			return null;
+		if ($orderId) {
+			$pembayaran = Pembayaran::with(['reservasi.jadwal.paketTrip'])
+				->where('orderId', $orderId)
+				->first();
+
+			if ($pembayaran?->reservasi && (int) $pembayaran->reservasi->userId === (int) Auth::id()) {
+				return $pembayaran->reservasi;
+			}
 		}
 
-		$pembayaran = Pembayaran::with(['reservasi.jadwal.paketTrip'])
-			->where('orderId', $orderId)
-			->first();
+		if ($kodeReservasi) {
+			$reservasi = Reservasi::with(['jadwal.paketTrip', 'user', 'peserta', 'pembayaran'])
+				->where('kode_reservasi', $kodeReservasi)
+				->where('userId', Auth::id())
+				->first();
 
-		if (! $pembayaran?->reservasi || (int) $pembayaran->reservasi->userId !== (int) Auth::id()) {
-			return null;
+			if ($reservasi) {
+				return $reservasi;
+			}
 		}
 
-		return $pembayaran->reservasi;
+		return null;
+	}
+
+	private function storeGatewayPaymentContext(Reservasi $reservasi, Pembayaran $pembayaran): void
+	{
+		session()->put('midtrans_payment', [
+			'order_id' => $pembayaran->orderId,
+			'kode_reservasi' => $reservasi->kode_reservasi,
+		]);
 	}
 
 	private function resolveAdminWhatsappUrl(Reservasi $reservasi): ?string

@@ -13,18 +13,15 @@
         <div class="flex flex-col gap-8">
             <h4 class="font-display font-black text-xl uppercase">Petualangan</h4>
             <nav class="flex flex-col gap-4 text-white/50 text-sm">
-                <a class="hover:text-primary transition-colors" href="#">Open Trip Gunung</a>
-                <a class="hover:text-primary transition-colors" href="#">Ekspedisi Hutan</a>
-                <a class="hover:text-primary transition-colors" href="#">Wildlife Photography</a>
-                <a class="hover:text-primary transition-colors" href="#">Private Expedition</a>
+                <a class="hover:text-primary transition-colors" href="#">Open Trip</a>
+                <a class="hover:text-primary transition-colors" href="#">Private Trip</a>
             </nav>
         </div>
 
         <div class="flex flex-col gap-8">
             <h4 class="font-display font-black text-xl uppercase">Bantuan</h4>
             <nav class="flex flex-col gap-4 text-white/50 text-sm">
-                <a class="hover:text-primary transition-colors" href="#">Panduan Persiapan</a>
-                <a class="hover:text-primary transition-colors" href="#">Kebijakan Pembatalan</a>
+
                 <a class="hover:text-primary transition-colors" href="#">Kontak</a>
             </nav>
         </div>

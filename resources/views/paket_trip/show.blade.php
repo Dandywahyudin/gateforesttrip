@@ -77,28 +77,27 @@
                 <div class="rounded-[28px] border border-white/70 bg-white/90 p-6 shadow-[0_20px_60px_rgba(15,23,42,0.08)] backdrop-blur-md space-y-6">
                     <div class="space-y-4">
                         <div class="flex flex-wrap items-center gap-2">
-                            <span class="inline-flex items-center rounded-full bg-forest-green/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.28em] text-forest-green">Detail Paket</span>
-                            <span class="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-[10px] font-black uppercase tracking-[0.28em] text-primary">{{ $paket->durasi_hari }} Hari</span>
+                            <span class="inline-flex items-center rounded-full text-[15px] font-black uppercase tracking-[0.12em] text-forest-green">Detail Paket</span>
                         </div>
 
                         <div>
-                            <p class="text-xs font-black uppercase tracking-[0.28em] text-forest-green/40">Harga mulai</p>
-                            <p class="mt-2 text-4xl font-display font-black text-forest-green">Rp {{ number_format($paket->harga, 0, ',', '.') }}</p>
-                            <p class="mt-1 text-xs text-forest-green/50">Per orang</p>
+                            <p class="text-xs font-black uppercase tracking-[0.28em] text-black">Harga mulai</p>
+                            <p class="mt-2 text-4xl font-display font-black text-black">Rp {{ number_format($paket->harga, 0, ',', '.') }}</p>
+                            <p class="mt-1 text-xs black">Per orang</p>
                         </div>
 
                         <div class="grid grid-cols-2 gap-3">
-                            <div class="rounded-2xl bg-background-light p-4">
+                            <div class="rounded-lg bg-background-light p-4">
                                 <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-2">Lokasi</p>
                                 <p class="text-sm font-bold text-forest-green leading-snug">{{ $paket->lokasi }}</p>
                             </div>
-                            <div class="rounded-2xl bg-background-light p-4">
+                            <div class="rounded-lg bg-background-light p-4">
                                 <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-2">Durasi</p>
                                 <p class="text-sm font-bold text-forest-green leading-snug">{{ $paket->durasi_hari }} Hari</p>
                             </div>
                         </div>
 
-                        <div class="rounded-2xl border border-dashed border-forest-green/15 bg-white p-4">
+                        <div class="rounded-lg border border-dashed border-forest-green/15 bg-white p-4">
                             <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-2">Meeting Point</p>
                             <p class="text-sm leading-relaxed text-forest-green/70">{{ $paket->meeting_point ?? '-' }}</p>
                         </div>
@@ -180,12 +179,12 @@
                 <div class="rounded-[28px] border border-forest-green/10 bg-white p-6 shadow-sm">
                     <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-4">Highlight</p>
                     <div class="space-y-4">
-                        <div class="rounded-2xl bg-background-light p-4">
-                            <p class="text-xs font-black uppercase tracking-[0.25em] text-forest-green/40 mb-1">Fasilitas Utama</p>
+                        <div class="rounded-lg bg-background-light p-4">
+                            <p class="text-xs font-black uppercase tracking-[0.25em] text-black/70 mb-1">Fasilitas Utama</p>
                             <p class="text-sm leading-relaxed text-forest-green/70">{{ \Illuminate\Support\Str::limit($paket->fasilitas, 160) }}</p>
                         </div>
-                        <div class="rounded-2xl bg-background-light p-4">
-                            <p class="text-xs font-black uppercase tracking-[0.25em] text-forest-green/40 mb-1">Meeting Point</p>
+                        <div class="rounded-lg bg-background-light p-4">
+                            <p class="text-xs font-black uppercase tracking-[0.25em] text-black/70 mb-1">Meeting Point</p>
                             <p class="text-sm leading-relaxed text-forest-green/70">{{ $paket->meeting_point ?? '-' }}</p>
                         </div>
                     </div>
@@ -259,42 +258,6 @@
                 </div>
             </div>
         </div>
-    </div>
-</section>
-
-<!-- What's Included Section -->
-<!-- Related Trips Section -->
-<section class="w-full py-24 bg-gradient-to-b from-[#fbfcfa] to-white">
-    <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
-        <div class="mb-10 max-w-2xl space-y-3">
-            <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Rekomendasi</p>
-            <h2 class="text-4xl font-display font-black text-forest-green uppercase">Paket Serupa</h2>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-            @foreach($paketSerupa ?? [] as $related)
-                <x-trip-card 
-                    :paket="$related"
-                    :image="$related->foto_url"
-                        category="{{ strtoupper($related->kategori_label ?? 'PAKET AKTIF') }}"
-                    title="{{ $related->nama }}"
-                    description="{{ Str::limit($related->deskripsi, 80) }}"
-                    price="Rp {{ number_format($related->harga, 0, ',', '.') }}"
-                />
-            @endforeach
-        </div>
-    </div>
-</section>
-
-<!-- CTA Section -->
-<section class="w-full py-20 bg-gradient-to-r from-forest-green to-primary text-white">
-    <div class="max-w-[1440px] mx-auto px-6 lg:px-16 text-center space-y-8">
-        <h2 class="text-4xl md:text-5xl font-display font-black uppercase">Jangan Ketinggalan Slot Terbatas Ini!</h2>
-        <p class="text-lg text-white/80 max-w-2xl mx-auto">
-            Tempat terbatas dan sering cepat habis. Amankan slot Anda sekarang dan mulai petualangan impian Anda.
-        </p>
-        <a href="{{ route('login') }}" class="inline-block px-16 py-4 bg-white text-forest-green font-black uppercase tracking-widest rounded-full hover:shadow-2xl transition-all">
-            Pesan Sekarang
-        </a>
     </div>
 </section>
 

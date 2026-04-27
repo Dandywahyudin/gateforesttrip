@@ -3,6 +3,9 @@
 @section('title', 'Pembayaran - ' . $reservasi->kode_reservasi)
 
 @section('content')
+@php
+    $paymentDeadline = $pembayaran->expired_at?->timezone('Asia/Jakarta');
+@endphp
 <section class="w-full pt-32 pb-16 bg-[radial-gradient(circle_at_top_right,_rgba(21,128,61,0.12),_transparent_30%),linear-gradient(to_bottom,_#f8faf7,_#ffffff)]">
     <div class="max-w-[1200px] mx-auto px-6 lg:px-16">
         <div class="mb-8">
@@ -36,20 +39,32 @@
                 <div class="rounded-2xl border border-forest-green/10 bg-white p-6 shadow-sm">
                     <h2 class="text-2xl font-display font-black uppercase text-forest-green">Cara Pembayaran</h2>
                     <ol class="mt-6 space-y-4 text-sm text-forest-green/70 list-decimal list-inside">
-                        <li>Klik tombol bayar untuk membuka halaman Midtrans Snap.</li>
+                        <li>Klik tombol bayar sekarang untuk membuka PopUp Pembayaran.</li>
                         <li>Selesaikan pembayaran dengan metode yang Anda pilih.</li>
                         <li>Status akan berubah otomatis setelah notifikasi pembayaran masuk.</li>
                     </ol>
+
+                    
                 </div>
             </div>
 
             <div class="lg:col-span-5">
                 <div class="rounded-2xl border border-forest-green/10 bg-white p-6 shadow-lg space-y-6">
                     <div class="space-y-2">
-                        <p class="text-xs font-black uppercase tracking-[0.25em] text-forest-green/50">Payment Summary</p>
+                        <p class="text-xs font-black uppercase tracking-[0.25em] text-forest-green/50">Status Pembayaran</p>
                         <h2 class="text-2xl font-display font-black uppercase text-forest-green">{{ $reservasi->jadwal?->paketTrip?->nama }}</h2>
                     </div>
-
+                    @if($paymentDeadline)
+                        <div class="mt-6 rounded-xl border border-primary/15 bg-primary/5 p-4">
+                            <p class="text-[10px] font-black uppercase tracking-[0.25em] text-red-600">Batas Pembayaran</p>
+                            <p class="mt-2 text-sm font-semibold text-forest-green">
+                                {{ $paymentDeadline->translatedFormat('d M Y, H:i') }} WIB
+                            </p>
+                            <p class="mt-1 text-sm text-forest-green/60">
+                                Sisa waktu: <span id="payment-countdown" class="font-black text-forest-green">--:--:--</span>
+                            </p>
+                        </div>
+                    @endif
                     <div class="rounded-xl bg-background-light p-4 text-sm text-forest-green/70 space-y-2">
                         <div class="flex justify-between gap-4"><span>Jumlah peserta</span><span class="font-black text-forest-green">{{ $reservasi->jml_peserta }}</span></div>
                         <div class="flex justify-between gap-4"><span>Status pembayaran</span><span class="font-black text-forest-green uppercase">{{ $pembayaran->status }}</span></div>
@@ -84,9 +99,10 @@
 @if($pembayaran->snap_token)
     <script src="https://app{{ filter_var(config('services.midtrans.is_production'), FILTER_VALIDATE_BOOL) ? '' : '.sandbox' }}.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
     <script>
-        const finishUrl = @json(route('reservasi.pembayaran.finish') . '?order_id=' . rawurlencode($pembayaran->orderId));
-        const unfinishUrl = @json(route('reservasi.pembayaran.unfinish') . '?order_id=' . rawurlencode($pembayaran->orderId));
-        const errorUrl = @json(route('reservasi.pembayaran.error') . '?order_id=' . rawurlencode($pembayaran->orderId));
+        const finishUrl = @json(route('reservasi.pembayaran.finish'));
+        const unfinishUrl = @json(route('reservasi.pembayaran.unfinish'));
+        const errorUrl = @json(route('reservasi.pembayaran.error'));
+        const paymentDeadline = @json($paymentDeadline?->toIso8601String());
 
         function redirectTo(url) {
             if (window.top && window.top.location) {
@@ -113,6 +129,43 @@
                 }
             });
         }
+
+        function formatCountdown(totalSeconds) {
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+
+            return [hours, minutes, seconds]
+                .map((value) => String(value).padStart(2, '0'))
+                .join(':');
+        }
+
+        function startCountdown() {
+            const countdownElement = document.getElementById('payment-countdown');
+            let timer = null;
+
+            if (!countdownElement || !paymentDeadline) {
+                return;
+            }
+
+            const deadline = new Date(paymentDeadline);
+
+            const updateCountdown = () => {
+                const remainingSeconds = Math.max(0, Math.floor((deadline.getTime() - Date.now()) / 1000));
+
+                countdownElement.textContent = formatCountdown(remainingSeconds);
+
+                if (remainingSeconds <= 0 && timer) {
+                    clearInterval(timer);
+                    countdownElement.textContent = '00:00:00';
+                }
+            };
+
+            updateCountdown();
+            timer = setInterval(updateCountdown, 1000);
+        }
+
+        startCountdown();
     </script>
 @endif
 @endsection

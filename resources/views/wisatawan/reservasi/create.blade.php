@@ -12,13 +12,13 @@
                     <input type="hidden" name="paket_id" value="{{ $paket->paketId }}">
 
                     @error('jadwal_id')
-                        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{{ $message }}</div>
+                        <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{{ $message }}</div>
                     @enderror
                     @error('jml_peserta')
-                        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{{ $message }}</div>
+                        <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{{ $message }}</div>
                     @enderror
                     @error('catatan')
-                        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{{ $message }}</div>
+                        <div class="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">{{ $message }}</div>
                     @enderror
 
                     <div class="space-y-2">
@@ -91,8 +91,8 @@
                     </div>
 
                     <div class="flex flex-col gap-3 sm:flex-row">
-                        <a href="{{ route('paket-trip.show', $paket) }}" class="inline-flex flex-1 items-center justify-center rounded-2xl border border-forest-green/10 px-5 py-4 text-sm font-black uppercase tracking-[0.25em] text-forest-green transition hover:border-primary/40">Kembali ke Detail</a>
                         <button type="submit" class="inline-flex flex-1 items-center justify-center rounded-2xl bg-forest-green px-5 py-4 text-sm font-black uppercase tracking-[0.25em] text-white transition hover:-translate-y-0.5 hover:bg-forest-green/90 hover:shadow-lg hover:shadow-forest-green/20">Lanjut ke Data Peserta</button>
+                        <a href="{{ route('paket-trip.show', $paket) }}" class="inline-flex flex-1 items-center justify-center rounded-2xl border border-forest-green/10 px-5 py-4 text-sm font-black uppercase tracking-[0.25em] text-forest-green transition hover:border-primary/40">Kembali ke Detail</a>
                     </div>
                 </form>
             </div>
@@ -100,39 +100,38 @@
             <aside class="lg:sticky lg:top-28">
                 <div class="rounded-[28px] border border-white/60 bg-white/90 p-6 shadow-[0_18px_60px_rgba(15,23,42,0.08)] backdrop-blur-md space-y-6">
                     <div class="space-y-4">
-                        <span class="inline-flex rounded-full bg-primary/10 px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em] text-primary">Ringkasan</span>
                         <div>
                             <h1 class="text-3xl md:text-4xl font-display font-black uppercase text-forest-green leading-tight">{{ $paket->nama }}</h1>
                             <p class="mt-3 text-sm leading-relaxed text-forest-green/70">Ringkasan paket berada di sisi kanan agar form tetap dominan di kiri.</p>
                         </div>
                     </div>
 
-                    <div class="rounded-3xl overflow-hidden border border-forest-green/10 bg-gradient-to-br from-forest-green to-primary text-white">
+                    <div class="rounded-3xl overflow-hidden border border-forest-green/10 from-forest-green to-primary text-white">
                         <div class="aspect-[4/3] w-full">
                             @if($paket->foto_url)
                                 <img src="{{ $paket->foto_url }}" alt="{{ $paket->nama }}" class="h-full w-full object-cover opacity-85">
                             @else
-                                <div class="flex h-full w-full items-center justify-center bg-gradient-to-br from-forest-green via-forest-green/90 to-primary px-6 text-center">
+                                <div class="flex h-full w-full items-center justify-center from-forest-green via-forest-green/90 to-primary px-6 text-center">
                                     <div class="space-y-3">
                                         <p class="text-[10px] font-black uppercase tracking-[0.35em] text-white/70">Foto belum diunggah</p>
-                                        <h3 class="text-2xl font-display font-black uppercase leading-tight">{{ $paket->nama }}</h3>
+                                        <h3 class="text-lg font-display font-black uppercase leading-tight">{{ $paket->nama }}</h3>
                                     </div>
                                 </div>
                             @endif
                         </div>
                         <div class="p-5 space-y-3">
                             <p class="text-[10px] font-black uppercase tracking-[0.28em] text-white/70">Preview Paket</p>
-                            <h2 class="text-2xl font-display font-black uppercase leading-tight">{{ $paket->nama }}</h2>
+                            <h2 class="text-lg font-display font-black uppercase leading-tight">{{ $paket->nama }}</h2>
                             <p class="text-sm text-white/80">{{ $paket->lokasi }}</p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
-                        <div class="rounded-3xl border border-forest-green/10 bg-background-light p-4">
+                        <div class="rounded-lg border border-forest-green/10 bg-background-light p-4">
                             <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-1">Harga mulai</p>
                             <p class="text-base font-black text-forest-green leading-tight">Rp {{ number_format($paket->harga, 0, ',', '.') }}</p>
                         </div>
-                        <div class="rounded-3xl border border-forest-green/10 bg-background-light p-4">
+                        <div class="rounded-lg border border-forest-green/10 bg-background-light p-4">
                             <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-1">Jadwal</p>
                             <p class="text-base font-black text-forest-green leading-tight">{{ $jadwals->count() }} tersedia</p>
                         </div>

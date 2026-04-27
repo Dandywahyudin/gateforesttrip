@@ -260,11 +260,56 @@ class ReservasiController extends Controller
             ->latest('reservasiId')
             ->get();
 
+        $this->syncExpiredPayments($reservasis);
+
+        $reservasis->load(['jadwal.paketTrip', 'pembayaran']);
+
         return view('wisatawan.reservasi.riwayat', compact('reservasis'));
     }
 
     private function getSisaKuotaTersedia(Jadwal $jadwal): int
     {
         return max(0, (int) $jadwal->kuota_max - (int) $jadwal->kuota_terisi);
+    }
+
+    private function syncExpiredPayments($reservasis): void
+    {
+        $now = now('Asia/Jakarta');
+
+        foreach ($reservasis as $reservasi) {
+            $pembayaran = $reservasi->pembayaran;
+
+            if (! $pembayaran || ! in_array($pembayaran->status, ['pending'], true) || ! $pembayaran->expired_at) {
+                continue;
+            }
+
+            $expiredAt = $pembayaran->expired_at->timezone('Asia/Jakarta');
+
+            if ($now->lt($expiredAt)) {
+                continue;
+            }
+
+            DB::transaction(function () use ($reservasi) {
+                $pembayaran = $reservasi->pembayaran()->lockForUpdate()->first();
+
+                if (! $pembayaran || ! in_array($pembayaran->status, ['pending'], true)) {
+                    return;
+                }
+
+                $pembayaran->update([
+                    'status' => 'expire',
+                ]);
+
+                $reservasi = Reservasi::whereKey($reservasi->reservasiId)
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($reservasi && $reservasi->status !== 'paid') {
+                    $reservasi->update([
+                        'status' => 'cancelled',
+                    ]);
+                }
+            });
+        }
     }
 }

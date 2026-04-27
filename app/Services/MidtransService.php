@@ -76,9 +76,9 @@ class MidtransService
 					],
 				],
 				'notification_url' => route('midtrans.notification'),
-				'finish_redirect_url' => route('reservasi.pembayaran.finish') . '?order_id=' . rawurlencode($resolvedOrderId),
-				'unfinish_redirect_url' => route('reservasi.pembayaran.unfinish') . '?order_id=' . rawurlencode($resolvedOrderId),
-				'error_redirect_url' => route('reservasi.pembayaran.error') . '?order_id=' . rawurlencode($resolvedOrderId),
+				'callbacks' => [
+					'finish' => route('reservasi.pembayaran.finish'),
+				],
                 
 			];
 

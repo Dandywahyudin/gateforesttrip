@@ -37,15 +37,15 @@
                                 </div>
 
                                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
-                                    <div class="rounded-2xl bg-background-light p-4">
+                                    <div class="rounded-lg bg-background-light p-4">
                                         <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-1">Jadwal</p>
                                         <p class="font-black text-forest-green">{{ \Illuminate\Support\Carbon::parse($reservasi->jadwal?->tanggal_berangkat)->translatedFormat('d M Y') }}</p>
                                     </div>
-                                    <div class="rounded-2xl bg-background-light p-4">
+                                    <div class="rounded-lg bg-background-light p-4">
                                         <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-1">Peserta</p>
                                         <p class="font-black text-forest-green">{{ $reservasi->jml_peserta }} orang</p>
                                     </div>
-                                    <div class="rounded-2xl bg-background-light p-4">
+                                    <div class="rounded-lg bg-background-light p-4">
                                         <p class="text-[10px] font-black uppercase tracking-[0.25em] text-forest-green/40 mb-1">Total</p>
                                         <p class="font-black text-forest-green">Rp {{ number_format($reservasi->total_harga, 0, ',', '.') }}</p>
                                     </div>
@@ -62,7 +62,7 @@
 
                         <div class="mt-6 flex flex-col sm:flex-row gap-3">
                             <a href="{{ route('reservasi.status', $reservasi->kode_reservasi) }}" class="inline-flex flex-1 items-center justify-center rounded-2xl border border-forest-green/10 px-5 py-4 text-sm font-black uppercase tracking-[0.25em] text-forest-green transition hover:border-primary/40">Lihat Status</a>
-                            @if(! $isPaid)
+                            @if($reservasi->status === 'unpaid')
                                 <a href="{{ route('reservasi.pembayaran', $reservasi->kode_reservasi) }}" class="inline-flex flex-1 items-center justify-center rounded-2xl bg-forest-green px-5 py-4 text-sm font-black uppercase tracking-[0.25em] text-white transition hover:-translate-y-0.5 hover:bg-forest-green/90">Lanjut Bayar</a>
                             @endif
                         </div>

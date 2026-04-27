@@ -106,8 +106,8 @@
                     </div>
 
                     <div class="flex flex-col md:flex-row gap-3">
-                        <a href="{{ route('reservasi.jadwal', $paket) }}" class="flex-1 rounded-xl border border-forest-green/10 py-3 px-4 text-center text-sm font-black uppercase tracking-[0.25em] text-forest-green hover:border-primary/40 transition">Kembali ke Jadwal</a>
                         <button type="submit" class="flex-1 rounded-xl bg-forest-green py-3 px-4 text-white font-black uppercase tracking-[0.25em] text-sm hover:bg-forest-green/90 transition">Lanjut ke Ringkasan</button>
+                        <a href="{{ route('reservasi.jadwal', $paket) }}" class="flex-1 rounded-xl border border-forest-green/10 py-3 px-4 text-center text-sm font-black uppercase tracking-[0.25em] text-forest-green hover:border-primary/40 transition">Kembali ke Jadwal</a>
                     </div>
                 </form>
             </div>
