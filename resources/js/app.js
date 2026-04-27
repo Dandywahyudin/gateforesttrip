@@ -23,33 +23,43 @@ function updateJadwalRealtimeCard(root, payload) {
 		}
 	};
 
+	const participantInput = document.getElementById('jml_peserta');
+	const selectedParticipants = Math.max(1, Number(participantInput?.value || 1));
+	const baseSisaKuota = Number(payload.sisa_kuota ?? root.dataset.jadwalBaseSisaKuota ?? root.dataset.jadwalSisaKuota ?? 0);
+	const totalKuota = Number(payload.kuota_max ?? root.dataset.jadwalTotalKuota ?? 0);
+	const radio = root.querySelector('[data-jadwal-field="radio"]');
+	const isSelected = Boolean(radio?.checked || root.dataset.jadwalSelected === '1');
+	const displaySisaKuota = isSelected ? Math.max(0, baseSisaKuota - selectedParticipants) : baseSisaKuota;
+
+	root.dataset.jadwalBaseSisaKuota = String(baseSisaKuota);
+	root.dataset.jadwalTotalKuota = String(totalKuota);
+	root.dataset.jadwalSisaKuota = String(baseSisaKuota);
+
 	setText('tanggal-berangkat', payload.tanggal_berangkat_label ?? '');
 	setText('tanggal-kembali', payload.tanggal_kembali_label ?? '');
 	setText('harga', payload.harga_label ?? '');
 	setText('kuota', `${payload.kuota_terisi ?? 0} / ${payload.kuota_max ?? 0}`);
-	setText('sisa-kuota', `${payload.sisa_kuota ?? 0} dari ${payload.kuota_max ?? 0} kursi`);
+	setText('sisa-kuota', `${displaySisaKuota} dari ${totalKuota || payload.kuota_max || 0} kursi`);
 	setText('status', payload.status ?? '');
 
 	const badge = root.querySelector('[data-jadwal-field="kuota-badge"]');
 	if (badge) {
-		const sisaKuota = Number(payload.sisa_kuota ?? 0);
-		const statusText = sisaKuota > 0 ? 'Tersedia' : 'Penuh';
-		const detailText = sisaKuota > 0 ? 'Pilihan siap dipakai' : 'Pilih jadwal lain';
+		const statusText = displaySisaKuota > 0 ? 'Tersedia' : 'Penuh';
+		const detailText = displaySisaKuota > 0 ? 'Pilihan siap dipakai' : 'Pilih jadwal lain';
 
 		if (badge.dataset.mode === 'compact') {
-			badge.textContent = `${payload.kuota_terisi ?? 0} / ${payload.kuota_max ?? 0}`;
+			badge.textContent = `${displaySisaKuota} / ${totalKuota || payload.kuota_max || 0}`;
 		} else {
 			badge.innerHTML = `<span>${statusText}</span><span>${detailText}</span>`;
 		}
 	}
 
-	const radio = root.querySelector('[data-jadwal-field="radio"]');
 	if (radio) {
-		radio.disabled = Number(payload.sisa_kuota ?? 0) <= 0;
+		radio.disabled = baseSisaKuota <= 0;
 	}
 
 	root.dataset.jadwalStatus = payload.status ?? '';
-	root.dataset.jadwalSisaKuota = String(payload.sisa_kuota ?? 0);
+	root.dataset.jadwalSelected = isSelected ? '1' : '0';
 }
 
 async function refreshJadwalRealtimeCard(root) {

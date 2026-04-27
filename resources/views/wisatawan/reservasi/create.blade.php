@@ -44,7 +44,10 @@
                                 data-jadwal-refresh-url="{{ route('jadwal.realtime', $jadwal) }}"
                                 data-jadwal-id="{{ $jadwal->jadwalId }}"
                                 data-jadwal-status="{{ $jadwal->status }}"
-                                data-jadwal-sisa-kuota="{{ $sisaKuota }}">
+                                data-jadwal-sisa-kuota="{{ $sisaKuota }}"
+                                data-jadwal-base-sisa-kuota="{{ $sisaKuota }}"
+                                data-jadwal-total-kuota="{{ $jadwal->kuota_max }}"
+                                data-jadwal-selected="{{ $isSelected ? '1' : '0' }}">
                                 <div class="flex items-start gap-4">
                                     <input type="radio" name="jadwal_id" value="{{ $jadwal->jadwalId }}" class="mt-1 h-5 w-5 border-forest-green/20 text-primary focus:ring-primary" {{ $isSelected ? 'checked' : '' }} {{ $sisaKuota <= 0 ? 'disabled' : '' }} data-jadwal-field="radio">
 
@@ -154,30 +157,111 @@
         const input = document.getElementById('jml_peserta');
         const decrementButton = document.getElementById('decrement-peserta');
         const incrementButton = document.getElementById('increment-peserta');
+        const scheduleCards = Array.from(document.querySelectorAll('[data-kuota-realtime-channel]'));
 
-        if (!input || !decrementButton || !incrementButton) {
+        if (!input || !decrementButton || !incrementButton || !scheduleCards.length) {
             return;
         }
 
         const min = Number(input.getAttribute('min') || 1);
-        const max = Number(input.getAttribute('max') || 20);
+        const fallbackMax = Number(input.getAttribute('max') || 20);
 
-        function setValue(nextValue) {
+        function getSelectedCard() {
+            return scheduleCards.find((card) => card.querySelector('[data-jadwal-field="radio"]')?.checked) || null;
+        }
+
+        function getCardBaseSisa(card) {
+            return Number(card?.dataset.jadwalBaseSisaKuota ?? card?.dataset.jadwalSisaKuota ?? 0);
+        }
+
+        function getCardTotalKuota(card) {
+            return Number(card?.dataset.jadwalTotalKuota ?? 0);
+        }
+
+        function setValue(nextValue, upperBound) {
+            const max = Number.isFinite(upperBound) && upperBound > 0 ? upperBound : fallbackMax;
             const boundedValue = Math.min(max, Math.max(min, nextValue));
             input.value = boundedValue;
         }
 
+        function syncSelectedCardState() {
+            const selectedCard = getSelectedCard();
+
+            scheduleCards.forEach((card) => {
+                card.dataset.jadwalSelected = card === selectedCard ? '1' : '0';
+            });
+
+            if (!selectedCard) {
+                input.max = String(fallbackMax);
+                scheduleCards.forEach((card) => {
+                    const baseSisa = getCardBaseSisa(card);
+                    const totalKuota = getCardTotalKuota(card) || baseSisa;
+                    const sisaElement = card.querySelector('[data-jadwal-field="sisa-kuota"]');
+
+                    if (sisaElement) {
+                        sisaElement.textContent = `${baseSisa} dari ${totalKuota} kursi`;
+                    }
+                });
+
+                return;
+            }
+
+            const baseSisa = getCardBaseSisa(selectedCard);
+            const totalKuota = getCardTotalKuota(selectedCard) || baseSisa;
+
+            input.max = String(Math.max(min, baseSisa));
+            setValue(Number(input.value || min), baseSisa);
+
+            scheduleCards.forEach((card) => {
+                const base = getCardBaseSisa(card);
+                const total = getCardTotalKuota(card) || base;
+                const radio = card.querySelector('[data-jadwal-field="radio"]');
+                const sisaElement = card.querySelector('[data-jadwal-field="sisa-kuota"]');
+
+                if (!sisaElement) {
+                    return;
+                }
+
+                const isSelected = radio?.checked;
+                const selectedQuantity = Number(input.value || min);
+                const displaySisa = isSelected ? Math.max(0, base - selectedQuantity) : base;
+
+                sisaElement.textContent = `${displaySisa} dari ${total || base} kursi`;
+            });
+        }
+
         decrementButton.addEventListener('click', () => {
-            setValue(Number(input.value || min) - 1);
+            setValue(Number(input.value || min) - 1, Number(input.max || fallbackMax));
+            syncSelectedCardState();
         });
 
         incrementButton.addEventListener('click', () => {
-            setValue(Number(input.value || min) + 1);
+            setValue(Number(input.value || min) + 1, Number(input.max || fallbackMax));
+            syncSelectedCardState();
+        });
+
+        input.addEventListener('input', () => {
+            syncSelectedCardState();
         });
 
         input.addEventListener('blur', () => {
-            setValue(Number(input.value || min));
+            setValue(Number(input.value || min), Number(input.max || fallbackMax));
+            syncSelectedCardState();
         });
+
+        scheduleCards.forEach((card) => {
+            const radio = card.querySelector('[data-jadwal-field="radio"]');
+
+            if (!radio) {
+                return;
+            }
+
+            radio.addEventListener('change', () => {
+                syncSelectedCardState();
+            });
+        });
+
+        syncSelectedCardState();
     })();
 </script>
 @endpush
