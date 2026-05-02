@@ -26,11 +26,6 @@
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="kuota_max">Kuota Maksimal</label>
                 <input id="kuota_max" name="kuota_max" type="number" min="1" value="{{ old('kuota_max', $jadwal->kuota_max ?? 1) }}" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>
             </div>
-
-            <div>
-                <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="kuota_terisi">Kuota Terisi</label>
-                <input id="kuota_terisi" name="kuota_terisi" type="number" min="0" value="{{ old('kuota_terisi', $jadwal->kuota_terisi ?? 0) }}" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>
-            </div>
         </div>
 
         <div class="space-y-6">

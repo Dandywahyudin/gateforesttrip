@@ -10,6 +10,7 @@ use App\Services\MidtransService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -206,8 +207,10 @@ class ReservasiController extends Controller
         try {
             $reservasi = DB::transaction(function () use ($flow, $midtransService) {
                 $jadwal = Jadwal::whereKey($flow['jadwal_id'])
+                    ->with('paketTrip')
                     ->lockForUpdate()
                     ->firstOrFail();
+                $paket = $jadwal->paketTrip ?? PaketTrip::whereKey($jadwal->paketId)->firstOrFail();
 
                 $sisaKuota = $this->getSisaKuotaTersedia($jadwal);
 
@@ -215,7 +218,7 @@ class ReservasiController extends Controller
                     throw new \RuntimeException('Kuota jadwal tidak mencukupi lagi. Silakan pilih jadwal lain.');
                 }
 
-                $kodeReservasi = 'OT-' . now()->format('ymd') . '-' . strtoupper(Str::random(6));
+                $kodeReservasi = $this->generateReservasiCode($paket, $jadwal);
 
                 $reservasi = Reservasi::create([
                     'userId' => Auth::id(),
@@ -270,6 +273,55 @@ class ReservasiController extends Controller
     private function getSisaKuotaTersedia(Jadwal $jadwal): int
     {
         return max(0, (int) $jadwal->kuota_max - (int) $jadwal->kuota_terisi);
+    }
+
+    private function generateReservasiCode(PaketTrip $paket, Jadwal $jadwal): string
+{
+    $prefix = 'OT';
+    $tanggal = Carbon::parse($jadwal->tanggal_berangkat)->format('Ymd'); 
+
+    // Ambil reservasi terakhir di tanggal yang sama
+    $lastReservasi = Reservasi::where('kode_reservasi', 'like', "{$prefix}-{$tanggal}-%")
+        ->orderBy('kode_reservasi', 'desc')
+        ->lockForUpdate()
+        ->first();
+
+    if ($lastReservasi) {
+        // Ambil angka terakhir (0001)
+        $lastNumber = (int) substr($lastReservasi->kode_reservasi, -4);
+        $nextNumber = $lastNumber + 1;
+    } else {
+        $nextNumber = 1;
+    }
+
+    // Format jadi 4 digit
+    $urutan = str_pad($nextNumber, 4, '0', STR_PAD_LEFT);
+
+    // Generate kode
+    $kodeReservasi = "{$prefix}-{$tanggal}-{$urutan}";
+
+    return $kodeReservasi;
+}
+
+    private function buildPaketCode(PaketTrip $paket): string
+    {
+        $words = preg_split('/[^A-Za-z0-9]+/', (string) $paket->nama, -1, PREG_SPLIT_NO_EMPTY) ?: [];
+        $code = '';
+
+        foreach ($words as $word) {
+            $code .= strtoupper(Str::substr($word, 0, 1));
+
+            if (strlen($code) === 3) {
+                break;
+            }
+        }
+
+        if ($code === '') {
+            $fallback = preg_replace('/[^A-Za-z0-9]+/', '', (string) ($paket->slug ?: $paket->nama));
+            $code = strtoupper(Str::substr($fallback, 0, 3));
+        }
+
+        return str_pad(substr($code, 0, 3), 3, 'X');
     }
 
     private function syncExpiredPayments($reservasis): void

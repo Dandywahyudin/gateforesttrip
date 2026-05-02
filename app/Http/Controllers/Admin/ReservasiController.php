@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Events\JadwalKuotaUpdated;
 use App\Http\Controllers\Controller as BaseController;
 use App\Models\Jadwal;
 use App\Models\PaketTrip;
 use App\Models\Reservasi;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -132,6 +135,70 @@ class ReservasiController extends BaseController
         $reservasi->load(['jadwal.paketTrip', 'user', 'pembayaran', 'peserta']);
 
         return view('admin.reservasi.show', compact('reservasi'));
+    }
+
+    public function cancelByPaketTrip(PaketTrip $paketTrip): RedirectResponse
+    {
+        $result = DB::transaction(function () use ($paketTrip) {
+            $jadwals = Jadwal::where('paketId', $paketTrip->paketId)
+                ->lockForUpdate()
+                ->get();
+
+            $reservasis = Reservasi::with('pembayaran')
+                ->whereHas('jadwal', function ($query) use ($paketTrip) {
+                    $query->where('paketId', $paketTrip->paketId);
+                })
+                ->lockForUpdate()
+                ->get();
+
+            $cancelledReservasiCount = 0;
+            $cancelledPaymentCount = 0;
+
+            foreach ($reservasis as $reservasi) {
+                if ($reservasi->status !== 'cancelled') {
+                    $reservasi->update([
+                        'status' => 'cancelled',
+                    ]);
+                    $cancelledReservasiCount++;
+                }
+
+                $pembayaran = $reservasi->pembayaran;
+
+                if ($pembayaran && ! in_array($pembayaran->status, ['settlement', 'capture'], true)) {
+                    $pembayaran->update([
+                        'status' => 'cancel',
+                    ]);
+                    $cancelledPaymentCount++;
+                }
+            }
+
+            foreach ($jadwals as $jadwal) {
+                $jadwal->update([
+                    'kuota_terisi' => 0,
+                    'status' => 'cancelled',
+                ]);
+
+                event(JadwalKuotaUpdated::fromJadwal($jadwal->fresh(['paketTrip', 'reservasis.pembayaran'])));
+            }
+
+            $paketTrip->update([
+                'aktif' => false,
+            ]);
+
+            return [$cancelledReservasiCount, $cancelledPaymentCount, $jadwals->count()];
+        });
+
+        [$cancelledReservasiCount, $cancelledPaymentCount, $jadwalCount] = $result;
+
+        return redirect()
+            ->route('admin.reservasi.index', ['paket' => $paketTrip->slug, 'status' => 'cancelled'])
+            ->with('success', sprintf(
+                'Berhasil cancel %d reservasi, %d pembayaran, dan %d jadwal untuk paket %s.',
+                $cancelledReservasiCount,
+                $cancelledPaymentCount,
+                $jadwalCount,
+                $paketTrip->nama,
+            ));
     }
 
     private function resolveExportData(Request $request): array

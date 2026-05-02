@@ -14,6 +14,10 @@
                 </div>
                 <div class="flex flex-wrap gap-3">
                     @if($paketTrip)
+                        <form method="POST" action="{{ route('admin.reservasi.cancel-by-paket', $paketTrip) }}" onsubmit="return confirm('Cancel semua reservasi untuk paket ini? Jadwal akan dinonaktifkan dan paket trip dijadikan nonaktif.');">
+                            @csrf
+                            <button type="submit" class="rounded-full border border-red-200 px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-red-600 transition hover:border-red-300 hover:bg-red-50">Cancel Paket</button>
+                        </form>
                         <a href="{{ route('admin.reservasi.index') }}" class="rounded-full border border-gray-200 px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-gray-700 transition hover:border-primary hover:text-primary">Semua Reservasi</a>
                     @endif
                     <a href="{{ route('admin.dashboard') }}" class="rounded-full bg-primary px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-white transition hover:bg-primary-dark">Dashboard</a>
@@ -78,7 +82,6 @@
                     </span>
                 </div>
             @endif
-
             <div class="mt-6 flex flex-wrap gap-2">
                 <a href="{{ route('admin.reservasi.index', array_filter(['paket' => $paketTrip?->slug, 'jadwal' => $jadwalTrip?->jadwalId])) }}" class="rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] {{ $status === '' ? 'border-primary bg-primary/10 text-primary' : 'border-gray-200 text-gray-700 hover:border-primary hover:text-primary' }}">Semua</a>
                 <a href="{{ route('admin.reservasi.index', array_filter(['paket' => $paketTrip?->slug, 'jadwal' => $jadwalTrip?->jadwalId, 'status' => 'unpaid'])) }}" class="rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] {{ $status === 'unpaid' ? 'border-primary bg-primary/10 text-primary' : 'border-gray-200 text-gray-700 hover:border-primary hover:text-primary' }}">Unpaid</a>

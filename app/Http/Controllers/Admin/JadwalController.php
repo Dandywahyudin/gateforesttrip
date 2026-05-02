@@ -34,14 +34,15 @@ class JadwalController extends BaseController
     public function store(Request $request, PaketTrip $paketTrip): RedirectResponse
     {
         $validated = $this->validateData($request);
+        $kuotaTerisi = 0;
 
         $jadwal = Jadwal::create([
             'paketId' => $paketTrip->paketId,
             'tanggal_berangkat' => $validated['tanggal_berangkat'],
             'tanggal_kembali' => $validated['tanggal_kembali'],
             'kuota_max' => $validated['kuota_max'],
-            'kuota_terisi' => $validated['kuota_terisi'],
-            'status' => $validated['kuota_terisi'] >= $validated['kuota_max']
+            'kuota_terisi' => $kuotaTerisi,
+            'status' => $kuotaTerisi >= $validated['kuota_max']
                 ? 'full'
                 : $validated['status'],
             'harga_override' => $validated['harga_override'],
@@ -63,14 +64,15 @@ class JadwalController extends BaseController
     public function update(Request $request, PaketTrip $paketTrip, int $jadwalId): RedirectResponse
     {
         $jadwal = Jadwal::where('paketId', $paketTrip->paketId)->where('jadwalId', $jadwalId)->firstOrFail();
-        $validated = $this->validateData($request);
+        $validated = $this->validateData($request, $jadwal);
+        $kuotaTerisi = (int) $jadwal->kuota_terisi;
 
         $jadwal->update([
             'tanggal_berangkat' => $validated['tanggal_berangkat'],
             'tanggal_kembali' => $validated['tanggal_kembali'],
             'kuota_max' => $validated['kuota_max'],
-            'kuota_terisi' => $validated['kuota_terisi'],
-            'status' => $validated['kuota_terisi'] >= $validated['kuota_max']
+            'kuota_terisi' => $kuotaTerisi,
+            'status' => $kuotaTerisi >= $validated['kuota_max']
                 ? 'full'
                 : $validated['status'],
             'harga_override' => $validated['harga_override'],
@@ -93,19 +95,20 @@ class JadwalController extends BaseController
         return redirect()->route('admin.paket-trip.jadwal.index', $paketTrip)->with('success', 'Jadwal berhasil dihapus.');
     }
 
-    private function validateData(Request $request): array
+    private function validateData(Request $request, ?Jadwal $jadwal = null): array
     {
         $validated = $request->validate([
             'tanggal_berangkat' => ['required', 'date'],
             'tanggal_kembali' => ['required', 'date', 'after_or_equal:tanggal_berangkat'],
             'kuota_max' => ['required', 'integer', 'min:1'],
-            'kuota_terisi' => ['required', 'integer', 'min:0'],
             'status' => ['required', Rule::in(['open', 'full', 'cancelled'])],
             'harga_override' => ['nullable', 'numeric', 'min:0'],
             'cutoff_booking' => ['nullable', 'date'],
         ]);
 
-        if ($validated['kuota_terisi'] > $validated['kuota_max']) {
+        $kuotaTerisi = (int) ($jadwal?->kuota_terisi ?? 0);
+
+        if ($kuotaTerisi > $validated['kuota_max']) {
             abort(422, 'Kuota terisi tidak boleh lebih besar dari kuota maksimal.');
         }
 
@@ -113,7 +116,7 @@ class JadwalController extends BaseController
             'tanggal_berangkat' => Carbon::parse($validated['tanggal_berangkat'])->toDateString(),
             'tanggal_kembali' => Carbon::parse($validated['tanggal_kembali'])->toDateString(),
             'kuota_max' => (int) $validated['kuota_max'],
-            'kuota_terisi' => (int) $validated['kuota_terisi'],
+            'kuota_terisi' => $kuotaTerisi,
             'status' => $validated['status'],
             'harga_override' => $validated['harga_override'] ?: null,
             'cutoff_booking' => ! empty($validated['cutoff_booking']) ? Carbon::parse($validated['cutoff_booking']) : null,

@@ -44,7 +44,7 @@ class PembayaranController extends Controller
 
 		return redirect()
 			->route('reservasi.status', $reservasi->kode_reservasi)
-			->with('error', $message);
+			->with('success', $message);
 	}
 
 	public function unfinish(Request $request, MidtransService $midtransService)
@@ -77,27 +77,6 @@ class PembayaranController extends Controller
 			->with('error', 'Terjadi kendala saat memproses pembayaran. Silakan cek status reservasi Anda.');
 	}
 
-	// public function show(string $kodeReservasi, MidtransService $midtransService)
-	// {
-	// 	$reservasi = $this->resolveReservasi($kodeReservasi);
-	// 	$pembayaran = $reservasi->pembayaran;
-
-	// 	if ($pembayaran && $pembayaran->expired_at && now()->gt($pembayaran->expired_at)) {
-    //     $pembayaran->update(['status' => 'expire']);
-    //     $reservasi->update(['status' => 'expired']);
-
-    //     return redirect()->route('reservasi.status', $reservasi->kode_reservasi)
-    //         ->with('error', 'Waktu pembayaran telah habis.');
-    // }
-
-	// 	$pembayaran = $midtransService->syncPayment($reservasi);
-	// if (in_array($pembayaran->status, ['settlement', 'capture'], true) || $reservasi->status === 'paid') {
-	// 	return redirect()->route('reservasi.status', $reservasi->kode_reservasi);
-	// }
-
-	// 	return view('wisatawan.pembayaran.create', compact('reservasi', 'pembayaran'));
-	// }
-
 	public function status(string $kodeReservasi, MidtransService $midtransService)
 	{
 		$reservasi = $this->resolveReservasi($kodeReservasi);
@@ -118,22 +97,22 @@ class PembayaranController extends Controller
 	}
 
 	public function notification(Request $request, MidtransService $midtransService)
-{
-    try {
-        $pembayaran = $midtransService->handleNotification();
+	{
+		try {
+			$pembayaran = $midtransService->handleNotification();
 
-        if (! $pembayaran) {
-			Log::warning('Pembayaran tidak ditemukan', $request->all());
-        }
+			if (! $pembayaran) {
+				Log::warning('Pembayaran tidak ditemukan', $request->all());
+			}
 
-        return response()->json(['message' => 'OK'], 200);
+			return response()->json(['message' => 'OK'], 200);
 
-    } catch (\Exception $e) {
-		Log::error('Midtrans Callback Error: ' . $e->getMessage());
+		} catch (\Exception $e) {
+			Log::error('Midtrans Callback Error: ' . $e->getMessage());
 
-        return response()->json(['message' => 'Error handled'], 200);
-    }
-}
+			return response()->json(['message' => 'Error handled'], 200);
+		}
+	}
 
 	private function isPaymentCompleted(Reservasi $reservasi, Pembayaran $pembayaran): bool
 	{

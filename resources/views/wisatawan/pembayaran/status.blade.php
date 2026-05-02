@@ -14,6 +14,12 @@
             ]" />
             <h1 class="mt-2 text-4xl md:text-5xl font-display font-black uppercase text-forest-green">Status Reservasi</h1>
             <p class="mt-3 text-forest-green/70 max-w-2xl">Pantau status reservasi Anda di halaman ini.</p>
+            @if(session('success'))
+                <div class="mt-4 rounded-xl border border-green-200 bg-green-50 px-4 py-3 text-sm font-semibold text-green-700">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             @if(session('error'))
                 <div class="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-semibold text-red-700">
                     {{ session('error') }}

@@ -94,6 +94,7 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
     Route::get('/jadwal', [AdminController::class, 'jadwal'])->name('jadwal.index');
     Route::get('/reservasi', [AdminReservasiController::class, 'index'])->name('reservasi.index');
+    Route::post('/reservasi/paket/{paketTrip}/cancel', [AdminReservasiController::class, 'cancelByPaketTrip'])->name('reservasi.cancel-by-paket');
     Route::get('/reservasi/export/pdf', [AdminReservasiController::class, 'exportPdf'])->name('reservasi.export.pdf');
     Route::get('/reservasi/export/csv', [AdminReservasiController::class, 'exportCsv'])->name('reservasi.export.csv');
     Route::get('/reservasi/{reservasi}', [AdminReservasiController::class, 'show'])->name('reservasi.show');

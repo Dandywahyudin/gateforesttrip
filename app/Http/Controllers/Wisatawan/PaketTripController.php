@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Http\Controllers\Wisatawan;
-
-use Illuminate\Http\Request;
 use App\Models\PaketTrip;
 
 class PaketTripController extends Controller
@@ -40,23 +38,8 @@ class PaketTripController extends Controller
         return view('paket_trip.create');
     }
 
-    public function store(Request $request)
-    {
-        // Implementation for storing paket trip
-    }
-
-    public function edit($id)
-    {
-        return view('paket_trip.edit', compact('id'));
-    }
-
-    public function update(Request $request, $id)
-    {
-        // Implementation for updating paket trip
-    }
-
-    public function destroy($id)
-    {
-        // Implementation for deleting paket trip
-    }
+    // public function edit($id)
+    // {
+    //     return view('paket_trip.edit', compact('id'));
+    // }
 }

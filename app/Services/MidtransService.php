@@ -167,6 +167,11 @@ class MidtransService
 			$status = $pembayaran->status ?? 'pending';
 			$reservasiStatus = $pembayaran->reservasi?->status ?? 'unpaid';
 			$jadwalDiperbarui = false;
+			$isManuallyCancelled = $pembayaran->reservasi?->status === 'cancelled';
+
+			if ($isManuallyCancelled && in_array($transactionStatus, ['settlement', 'capture'], true)) {
+				return $pembayaran->fresh(['reservasi.jadwal.paketTrip']);
+			}
 
 			if ($transactionStatus === 'settlement') {
 				$status = 'settlement';
