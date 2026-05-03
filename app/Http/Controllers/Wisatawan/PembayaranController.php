@@ -30,7 +30,7 @@ class PembayaranController extends Controller
 
 	public function finish(Request $request, MidtransService $midtransService)
 	{
-		$reservasi = $this->resolveReservasiFromGateway();
+		$reservasi = $this->resolveReservasiFromGateway($request);
 
 		if (! $reservasi) {
 			return redirect()->route('dashboard')->with('error', 'Data pembayaran tidak ditemukan pada tautan pembayaran.');
@@ -49,7 +49,7 @@ class PembayaranController extends Controller
 
 	public function unfinish(Request $request, MidtransService $midtransService)
 	{
-		$reservasi = $this->resolveReservasiFromGateway();
+		$reservasi = $this->resolveReservasiFromGateway($request);
 
 		if (! $reservasi) {
 			return redirect()->route('dashboard')->with('error', 'Data pembayaran tidak ditemukan pada tautan pembayaran.');
@@ -64,7 +64,7 @@ class PembayaranController extends Controller
 
 	public function error(Request $request, MidtransService $midtransService)
 	{
-		$reservasi = $this->resolveReservasiFromGateway();
+		$reservasi = $this->resolveReservasiFromGateway($request);
 
 		if (! $reservasi) {
 			return redirect()->route('dashboard')->with('error', 'Data pembayaran tidak ditemukan pada tautan pembayaran.');
@@ -146,10 +146,21 @@ class PembayaranController extends Controller
 			->firstOrFail();
 	}
 
-	private function resolveReservasiFromGateway(): ?Reservasi
+	private function resolveReservasiFromGateway(?Request $request = null): ?Reservasi
 	{
+		$kodeReservasi = $request?->query('kode_reservasi');
 		$orderId = session('midtrans_payment.order_id');
-		$kodeReservasi = session('midtrans_payment.kode_reservasi');
+
+		if ($kodeReservasi) {
+			$reservasi = Reservasi::with(['jadwal.paketTrip', 'user', 'peserta', 'pembayaran'])
+				->where('kode_reservasi', $kodeReservasi)
+				->where('userId', Auth::id())
+				->first();
+
+			if ($reservasi) {
+				return $reservasi;
+			}
+		}
 
 		if ($orderId) {
 			$pembayaran = Pembayaran::with(['reservasi.jadwal.paketTrip'])
@@ -160,6 +171,8 @@ class PembayaranController extends Controller
 				return $pembayaran->reservasi;
 			}
 		}
+
+		$kodeReservasi = session('midtrans_payment.kode_reservasi');
 
 		if ($kodeReservasi) {
 			$reservasi = Reservasi::with(['jadwal.paketTrip', 'user', 'peserta', 'pembayaran'])

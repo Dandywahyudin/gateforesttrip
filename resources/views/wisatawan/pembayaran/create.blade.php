@@ -99,9 +99,9 @@
 @if($pembayaran->snap_token)
     <script src="https://app{{ filter_var(config('services.midtrans.is_production'), FILTER_VALIDATE_BOOL) ? '' : '.sandbox' }}.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
     <script>
-        const finishUrl = @json(route('reservasi.pembayaran.finish'));
-        const unfinishUrl = @json(route('reservasi.pembayaran.unfinish'));
-        const errorUrl = @json(route('reservasi.pembayaran.error'));
+        const finishUrl = @json(route('reservasi.pembayaran.finish', ['kode_reservasi' => $reservasi->kode_reservasi]));
+        const unfinishUrl = @json(route('reservasi.pembayaran.unfinish', ['kode_reservasi' => $reservasi->kode_reservasi]));
+        const errorUrl = @json(route('reservasi.pembayaran.error', ['kode_reservasi' => $reservasi->kode_reservasi]));
         const paymentDeadline = @json($paymentDeadline?->toIso8601String());
 
         function redirectTo(url) {
