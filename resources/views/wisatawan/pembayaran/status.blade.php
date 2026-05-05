@@ -3,7 +3,7 @@
 @section('title', 'Status - ' . $reservasi->kode_reservasi)
 
 @section('content')
-<section class="w-full pt-32 pb-16 bg-[radial-gradient(circle_at_top_right,_rgba(21,128,61,0.12),_transparent_30%),linear-gradient(to_bottom,_#f8faf7,_#ffffff)]">
+<section class="w-full pt-32 pb-16 bg-white">
     <div class="max-w-[1200px] mx-auto px-6 lg:px-16">
         <div class="mb-8">
             <x-breadcrumbs :items="[

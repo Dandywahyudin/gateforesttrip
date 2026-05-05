@@ -13,7 +13,6 @@
     </div> --}}
 <div class="absolute inset-0 z-0">
     <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent z-10"></div>
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(34,197,94,0.15),transparent_40%)]"></div>
     
     <div class="w-full h-full bg-cover bg-center scale-110"
         style='background-image: url("https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1600");'>

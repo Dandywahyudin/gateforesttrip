@@ -3,7 +3,7 @@
 @section('title', 'Pilih Jadwal - ' . $paket->nama)
 
 @section('content')
-<section class="w-full pt-32 pb-16 bg-[radial-gradient(circle_at_top_right,_rgba(21,128,61,0.12),_transparent_30%),linear-gradient(to_bottom,_#f8faf7,_#ffffff)]">
+<section class="w-full pt-32 pb-16 bg-white">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
         <div class="grid grid-cols-1 lg:grid-cols-[1.25fr_0.75fr] gap-8 items-start">
             <div>

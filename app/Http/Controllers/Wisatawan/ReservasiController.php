@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Wisatawan;
 
+use App\Events\JadwalKuotaUpdated;
 use App\Models\Jadwal;
 use App\Models\PaketTrip;
 use App\Models\PesertaTrip;
+use App\Models\Pembayaran;
 use App\Models\Reservasi;
 use App\Services\MidtransService;
 use Illuminate\Http\Request;
@@ -20,6 +22,8 @@ class ReservasiController extends Controller
 
     public function create(PaketTrip $paketTrip)
     {
+        $this->syncExpiredPaymentsForAllReservations();
+
         $paket = $paketTrip->load(['jadwals' => function ($query) {
                 $query->where('status', 'open')
                     ->orderBy('tanggal_berangkat');
@@ -42,6 +46,8 @@ class ReservasiController extends Controller
 
     public function store(Request $request)
     {
+        $this->syncExpiredPaymentsForAllReservations();
+
         $validated = $request->validate([
             'paket_id' => ['required', 'integer', Rule::exists('paket_trips', 'paketId')],
             'jadwal_id' => ['required', 'integer', Rule::exists('jadwals', 'jadwalId')],
@@ -100,6 +106,8 @@ class ReservasiController extends Controller
 
     public function createPeserta()
     {
+        $this->syncExpiredPaymentsForAllReservations();
+
         $flow = session(self::SESSION_KEY);
 
         if (! $flow) {
@@ -176,6 +184,8 @@ class ReservasiController extends Controller
 
     public function ringkasan()
     {
+        $this->syncExpiredPaymentsForAllReservations();
+
         $flow = session(self::SESSION_KEY);
 
         if (! $flow) {
@@ -192,6 +202,8 @@ class ReservasiController extends Controller
 
     public function checkout(Request $request, MidtransService $midtransService)
     {
+        $this->syncExpiredPaymentsForAllReservations();
+
         $flow = session(self::SESSION_KEY);
 
         if (! $flow) {
@@ -241,6 +253,13 @@ class ReservasiController extends Controller
                     ]);
                 }
 
+                $jadwal = $jadwal->syncQuotaFromActiveReservations();
+                event(
+                    \App\Events\JadwalKuotaUpdated::fromJadwal(
+                        $jadwal->fresh(['paketTrip', 'reservasis.pembayaran'])
+                    )
+                );
+
                 $midtransService->syncPayment($reservasi);
 
                 return $reservasi;
@@ -258,6 +277,8 @@ class ReservasiController extends Controller
 
     public function riwayat()
     {
+        $this->syncExpiredPaymentsForAllReservations();
+
         $reservasis = Reservasi::with(['jadwal.paketTrip', 'pembayaran'])
             ->where('userId', Auth::id())
             ->latest('reservasiId')
@@ -273,6 +294,64 @@ class ReservasiController extends Controller
     private function getSisaKuotaTersedia(Jadwal $jadwal): int
     {
         return max(0, (int) $jadwal->kuota_max - (int) $jadwal->kuota_terisi);
+    }
+
+    private function syncExpiredPaymentsForAllReservations(): void
+    {
+        $expiredPembayarans = Pembayaran::with(['reservasi.jadwal.paketTrip'])
+            ->where('status', 'pending')
+            ->whereNotNull('expired_at')
+            ->where('expired_at', '<=', now())
+            ->get();
+
+        if ($expiredPembayarans->isEmpty()) {
+            return;
+        }
+
+        $affectedJadwalIds = [];
+
+        foreach ($expiredPembayarans as $pembayaran) {
+            DB::transaction(function () use ($pembayaran, &$affectedJadwalIds) {
+                $pembayaran = Pembayaran::with(['reservasi.jadwal.paketTrip'])
+                    ->lockForUpdate()
+                    ->find($pembayaran->pembayaranId);
+
+                if (! $pembayaran || ! $pembayaran->reservasi) {
+                    return;
+                }
+
+                if ($pembayaran->reservasi->status === 'paid') {
+                    return;
+                }
+
+                $reservasi = $pembayaran->reservasi;
+
+                $pembayaran->update([
+                    'status' => 'expire',
+                ]);
+
+                $reservasi->update([
+                    'status' => 'cancelled',
+                ]);
+
+                $jadwal = Jadwal::whereKey($reservasi->jadwalId)
+                    ->lockForUpdate()
+                    ->first();
+
+                if ($jadwal) {
+                    $affectedJadwalIds[] = $jadwal->jadwalId;
+                }
+            });
+        }
+
+        $jadwals = Jadwal::with('paketTrip')
+            ->whereIn('jadwalId', array_values(array_unique($affectedJadwalIds)))
+            ->get();
+
+        foreach ($jadwals as $jadwal) {
+            $jadwal = $jadwal->syncQuotaFromActiveReservations();
+            event(JadwalKuotaUpdated::fromJadwal($jadwal));
+        }
     }
 
     private function generateReservasiCode(PaketTrip $paket, Jadwal $jadwal): string

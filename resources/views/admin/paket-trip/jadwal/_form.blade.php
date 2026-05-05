@@ -21,7 +21,6 @@
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="tanggal_kembali">Tanggal Kembali</label>
                 <input id="tanggal_kembali" name="tanggal_kembali" type="date" value="{{ $tanggalKembaliValue }}" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>
             </div>
-
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="kuota_max">Kuota Maksimal</label>
                 <input id="kuota_max" name="kuota_max" type="number" min="1" value="{{ old('kuota_max', $jadwal->kuota_max ?? 1) }}" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>

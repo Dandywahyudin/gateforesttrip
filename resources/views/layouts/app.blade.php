@@ -17,7 +17,7 @@
 
     @stack('styles')
 </head>
-<body class="bg-background-light dark:bg-background-dark font-body text-text-main-light dark:text-text-main-dark overflow-x-hidden">
+<body class="bg-white dark:bg-background-dark font-body text-text-main-light dark:text-text-main-dark overflow-x-hidden">
     <x-header />
 
     <main class="flex flex-col w-full">

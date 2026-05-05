@@ -61,7 +61,7 @@ Artisan::command('reservasi:sync-kuota', function () {
         ->get();
 
     foreach ($jadwals as $jadwal) {
-        $jadwal = $jadwal->syncQuotaFromPaidReservations();
+        $jadwal = $jadwal->syncQuotaFromActiveReservations();
         event(JadwalKuotaUpdated::fromJadwal($jadwal));
     }
 

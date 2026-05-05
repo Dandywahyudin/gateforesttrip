@@ -10,6 +10,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class JadwalController extends BaseController
@@ -109,7 +110,9 @@ class JadwalController extends BaseController
         $kuotaTerisi = (int) ($jadwal?->kuota_terisi ?? 0);
 
         if ($kuotaTerisi > $validated['kuota_max']) {
-            abort(422, 'Kuota terisi tidak boleh lebih besar dari kuota maksimal.');
+            throw ValidationException::withMessages([
+                'kuota_max' => 'Kuota maksimal tidak boleh lebih kecil dari kuota yang sudah terisi (' . $kuotaTerisi . ').',
+            ]);
         }
 
         return [

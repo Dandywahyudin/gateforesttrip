@@ -100,7 +100,7 @@
                         Masuk
                     </a>
             @endauth
-            <button type="button" @click="open = ! open" class="md:hidden p-2 transition-colors {{ $isLandingPage ? 'text-white hover:text-primary' : 'text-gray-800 hover:text-primary' }}" :aria-expanded="open.toString()" aria-label="Toggle navigation">
+            <button type="button" @click="open = ! open" class="md:hidden p-2 text-white transition-colors hover:text-white/80" :aria-expanded="open.toString()" aria-label="Toggle navigation">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
                     <path x-show="!open" x-cloak stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                     <path x-show="open" x-cloak stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -109,36 +109,36 @@
         </div>
     </div>
 
-        <div x-show="open" x-transition class="md:hidden border-t {{ $isLandingPage ? 'border-white/10 bg-slate-950/95' : 'border-gray-200 bg-white/95' }} backdrop-blur-md">
+        <div x-show="open" x-transition class="md:hidden border-t border-gray-200 bg-white/95 backdrop-blur-md">
         <div class="max-w-[1440px] mx-auto px-6 lg:px-16 py-5 space-y-5">
             <nav class="space-y-3">
-            <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors {{ $isLandingPage ? 'text-white hover:bg-white/5 hover:text-primary' : 'text-gray-900 hover:bg-gray-100 hover:text-primary' }}" href="{{ url('/#top') }}">Beranda</a>
-            <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors {{ $isLandingPage ? 'text-white/80 hover:bg-white/5 hover:text-primary' : 'text-gray-700 hover:bg-gray-100 hover:text-primary' }}" href="{{ route('paket-trip.index') }}">Paket Trip</a>
-            <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors {{ $isLandingPage ? 'text-white/80 hover:bg-white/5 hover:text-primary' : 'text-gray-700 hover:bg-gray-100 hover:text-primary' }}" href="{{ $hubungiKamiUrl }}" target="_blank" rel="noopener noreferrer">Hubungi Kami</a>
+            <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] text-gray-900 transition-colors hover:bg-gray-100 hover:text-primary" href="{{ url('/#top') }}">Beranda</a>
+            <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] text-gray-700 transition-colors hover:bg-gray-100 hover:text-primary" href="{{ route('paket-trip.index') }}">Paket Trip</a>
+            <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] text-gray-700 transition-colors hover:bg-gray-100 hover:text-primary" href="{{ $hubungiKamiUrl }}" target="_blank" rel="noopener noreferrer">Hubungi Kami</a>
 
                 @auth
                     @if($user->isAdmin())
-                        <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors {{ $isLandingPage ? 'text-white/80 hover:bg-white/5 hover:text-primary' : 'text-gray-700 hover:bg-gray-100 hover:text-primary' }}" href="{{ route('admin.dashboard') }}">Dashboard</a>
+                        <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] text-gray-700 transition-colors hover:bg-gray-100 hover:text-primary" href="{{ route('admin.dashboard') }}">Dashboard</a>
                     @endif
                 @else
-                    <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] transition-colors {{ $isLandingPage ? 'text-white/80 hover:bg-white/5 hover:text-primary' : 'text-gray-700 hover:bg-gray-100 hover:text-primary' }}" href="{{ $hubungiKamiUrl }}" target="_blank" rel="noopener noreferrer">Hubungi Kami</a>
+                    <a @click="open = false" class="block rounded-2xl px-4 py-3 text-xs font-black uppercase tracking-[0.2em] text-gray-700 transition-colors hover:bg-gray-100 hover:text-primary" href="{{ $hubungiKamiUrl }}" target="_blank" rel="noopener noreferrer">Hubungi Kami</a>
                 @endauth
             </nav>
 
-            <div class="rounded-3xl border p-4 {{ $isLandingPage ? 'border-white/10 bg-white/5' : 'border-gray-200 bg-gray-50' }}">
+            <div class="rounded-3xl border border-gray-200 bg-gray-50 p-4">
                 @auth
                     <div class="flex items-start justify-between gap-4">
                         <div>
-                            <p class="text-[10px] font-black uppercase tracking-[0.28em] {{ $isLandingPage ? 'text-white/50' : 'text-gray-500' }}">{{ strtoupper($user->role) }}</p>
-                            <p class="mt-1 text-sm font-bold {{ $isLandingPage ? 'text-white' : 'text-gray-900' }}">{{ $user->nama }}</p>
-                            <p class="mt-1 text-xs {{ $isLandingPage ? 'text-white/60' : 'text-gray-500' }}">{{ $user->email }}</p>
+                            <p class="text-[10px] font-black uppercase tracking-[0.28em] text-gray-500">{{ strtoupper($user->role) }}</p>
+                            <p class="mt-1 text-sm font-bold text-gray-900">{{ $user->nama }}</p>
+                            <p class="mt-1 text-xs text-gray-500">{{ $user->email }}</p>
                         </div>
                         <div class="flex flex-col gap-2">
                             @if($user->isAdmin())
-                                <a @click="open = false" href="{{ route('admin.dashboard') }}" class="rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] transition-colors {{ $isLandingPage ? 'border-white/10 text-white/80 hover:border-primary hover:text-primary' : 'border-gray-200 text-gray-700 hover:border-primary hover:text-primary' }}">Dashboard</a>
+                                <a @click="open = false" href="{{ route('admin.dashboard') }}" class="rounded-full border border-gray-200 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-gray-700 transition-colors hover:border-primary hover:text-primary">Dashboard</a>
                             @endif
-                            <a @click="open = false" href="{{ route('reservasi.riwayat') }}" class="rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] transition-colors {{ $isLandingPage ? 'border-white/10 text-white/80 hover:border-primary hover:text-primary' : 'border-gray-200 text-gray-700 hover:border-primary hover:text-primary' }}">Riwayat</a>
-                            <a @click="open = false" href="{{ route('profile.edit') }}" class="rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] transition-colors {{ $isLandingPage ? 'border-white/10 text-white/80 hover:border-primary hover:text-primary' : 'border-gray-200 text-gray-700 hover:border-primary hover:text-primary' }}">Profil</a>
+                            <a @click="open = false" href="{{ route('reservasi.riwayat') }}" class="rounded-full border border-gray-200 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-gray-700 transition-colors hover:border-primary hover:text-primary">Riwayat</a>
+                            <a @click="open = false" href="{{ route('profile.edit') }}" class="rounded-full border border-gray-200 px-4 py-2 text-[10px] font-black uppercase tracking-[0.25em] text-gray-700 transition-colors hover:border-primary hover:text-primary">Profil</a>
                         </div>
                     </div>
 

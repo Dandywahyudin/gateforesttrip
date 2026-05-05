@@ -215,7 +215,7 @@ class MidtransService
 						'status' => 'paid',
 					]);
 
-					$jadwal = $jadwal->syncQuotaFromPaidReservations();
+					$jadwal = $jadwal->syncQuotaFromActiveReservations();
 
 					$jadwalDiperbarui = true;
 					if ($jadwal) {
@@ -230,7 +230,7 @@ class MidtransService
 						->lockForUpdate()
 						->firstOrFail();
 
-					$jadwal = $jadwal->syncQuotaFromPaidReservations();
+					$jadwal = $jadwal->syncQuotaFromActiveReservations();
 					event(JadwalKuotaUpdated::fromJadwal($jadwal));
 					$jadwalDiperbarui = true;
 				} else {
