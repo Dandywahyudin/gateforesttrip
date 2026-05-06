@@ -1,5 +1,4 @@
 @php
-    $isEdit = $paketTrip->exists ?? false;
     $selectedKategori = old('kategori', $paketTrip->kategori_value ?? '');
 @endphp
 
@@ -9,71 +8,111 @@
         @method($method)
     @endif
 
+    @if ($errors->any())
+        <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+            <p class="font-black uppercase tracking-[0.25em]">Ada data yang belum lengkap</p>
+            <p class="mt-1">Mohon lengkapi field yang ditandai merah sebelum menyimpan.</p>
+        </div>
+    @endif
+
     <div class="grid gap-6 xl:grid-cols-2">
         <div class="space-y-6">
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="nama">Nama Paket</label>
-                <input id="nama" name="nama" type="text" value="{{ old('nama', $paketTrip->nama ?? '') }}" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>
+                <input id="nama" name="nama" type="text" value="{{ old('nama', $paketTrip->nama ?? '') }}" class="w-full rounded-lg border {{ $errors->has('nama') ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary focus:ring-primary' }} px-4 py-3" required>
+                @error('nama')
+                    <p class="mt-2 text-xs font-semibold text-red-600">{{ $message }}</p>
+                @enderror
             </div>
 
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="lokasi">Lokasi</label>
-                <input id="lokasi" name="lokasi" type="text" value="{{ old('lokasi', $paketTrip->lokasi ?? '') }}" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>
+                <input id="lokasi" name="lokasi" type="text" value="{{ old('lokasi', $paketTrip->lokasi ?? '') }}" class="w-full rounded-lg border {{ $errors->has('lokasi') ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary focus:ring-primary' }} px-4 py-3" required>
+                @error('lokasi')
+                    <p class="mt-2 text-xs font-semibold text-red-600">{{ $message }}</p>
+                @enderror
             </div>
 
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="kategori">Kategori</label>
-                <select id="kategori" name="kategori" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">
+                <select id="kategori" name="kategori" class="w-full rounded-lg border {{ $errors->has('kategori') ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary focus:ring-primary' }} px-4 py-3">
                     <option value="">Pilih kategori</option>
                     @foreach(\App\Enums\PaketTripKategori::options() as $value => $label)
                         <option value="{{ $value }}" @selected($selectedKategori === $value)>{{ $label }}</option>
                     @endforeach
                 </select>
                 <p class="mt-2 text-xs text-gray-500">Gunakan kategori baku agar data katalog tetap konsisten.</p>
+                @error('kategori')
+                    <p class="mt-2 text-xs font-semibold text-red-600">{{ $message }}</p>
+                @enderror
             </div>
 
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="durasi_hari">Durasi Hari</label>
-                <input id="durasi_hari" name="durasi_hari" type="number" min="1" value="{{ old('durasi_hari', $paketTrip->durasi_hari ?? 1) }}" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>
+                <input id="durasi_hari" name="durasi_hari" type="number" min="1" value="{{ old('durasi_hari', $paketTrip->durasi_hari ?? 1) }}" class="w-full rounded-lg border {{ $errors->has('durasi_hari') ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary focus:ring-primary' }} px-4 py-3" required>
+                @error('durasi_hari')
+                    <p class="mt-2 text-xs font-semibold text-red-600">{{ $message }}</p>
+                @enderror
             </div>
 
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="harga">Harga</label>
-                <input id="harga" name="harga" type="number" min="0" value="{{ old('harga', $paketTrip->harga ?? 0) }}" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>
+                <input id="harga" name="harga" type="number" min="1" value="{{ old('harga', $paketTrip->harga ?? '') }}" class="w-full rounded-lg border {{ $errors->has('harga') ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary focus:ring-primary' }} px-4 py-3" required>
+                @error('harga')
+                    <p class="mt-2 text-xs font-semibold text-red-600">{{ $message }}</p>
+                @enderror
             </div>
 
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="meeting_point">Meeting Point</label>
-                <textarea id="meeting_point" name="meeting_point" rows="3" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">{{ old('meeting_point', $paketTrip->meeting_point ?? '') }}</textarea>
+                <textarea id="meeting_point" name="meeting_point" rows="3" class="w-full rounded-lg border {{ $errors->has('meeting_point') ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary focus:ring-primary' }} px-4 py-3">{{ old('meeting_point', $paketTrip->meeting_point ?? '') }}</textarea>
+                @error('meeting_point')
+                    <p class="mt-2 text-xs font-semibold text-red-600">{{ $message }}</p>
+                @enderror
             </div>
         </div>
 
         <div class="space-y-6">
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="deskripsi">Deskripsi</label>
-                <textarea id="deskripsi" name="deskripsi" rows="6" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>{{ old('deskripsi', $paketTrip->deskripsi ?? '') }}</textarea>
+                <textarea id="deskripsi" name="deskripsi" rows="6" class="w-full rounded-lg border {{ $errors->has('deskripsi') ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary focus:ring-primary' }} px-4 py-3" required>{{ old('deskripsi', $paketTrip->deskripsi ?? '') }}</textarea>
+                @error('deskripsi')
+                    <p class="mt-2 text-xs font-semibold text-red-600">{{ $message }}</p>
+                @enderror
             </div>
 
             <div>
                 <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="fasilitas">Fasilitas</label>
-                <textarea id="fasilitas" name="fasilitas" rows="4" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary" required>{{ old('fasilitas', $paketTrip->fasilitas ?? '') }}</textarea>
+                <textarea id="fasilitas" name="fasilitas" rows="5" placeholder="Contoh:&#10;- Transport&#10;- Makan 3x&#10;- Tiket masuk" class="w-full rounded-lg border {{ $errors->has('fasilitas') ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary focus:ring-primary' }} px-4 py-3" required>{{ old('fasilitas', $paketTrip->fasilitas ?? '') }}</textarea>
+                <p class="mt-2 text-xs text-gray-500">Tulis satu item per baris agar tampilan publik lebih rapi. Koma lama tetap terbaca.</p>
+                @error('fasilitas')
+                    <p class="mt-2 text-xs font-semibold text-red-600">{{ $message }}</p>
+                @enderror
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
                 <div>
                     <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="include">Include</label>
-                    <textarea id="include" name="include" rows="4" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">{{ old('include', $paketTrip->include ?? '') }}</textarea>
+                    <textarea id="include" name="include" rows="5" placeholder="Contoh:&#10;- Dokumentasi&#10;- Air mineral" class="w-full rounded-lg border {{ $errors->has('include') ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary focus:ring-primary' }} px-4 py-3">{{ old('include', $paketTrip->include ?? '') }}</textarea>
+                    <p class="mt-2 text-xs text-gray-500">Satu poin per baris supaya urutan tetap jelas dan mudah dibaca.</p>
+                    @error('include')
+                        <p class="mt-2 text-xs font-semibold text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
                 <div>
                     <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="exclude">Exclude</label>
-                    <textarea id="exclude" name="exclude" rows="4" class="w-full rounded-lg border-gray-200 px-4 py-3 focus:border-primary focus:ring-primary">{{ old('exclude', $paketTrip->exclude ?? '') }}</textarea>
+                    <textarea id="exclude" name="exclude" rows="5" placeholder="Contoh:&#10;- Pengeluaran pribadi&#10;- Tip driver" class="w-full rounded-lg border {{ $errors->has('exclude') ? 'border-red-300 focus:border-red-500 focus:ring-red-500' : 'border-gray-200 focus:border-primary focus:ring-primary' }} px-4 py-3">{{ old('exclude', $paketTrip->exclude ?? '') }}</textarea>
+                    <p class="mt-2 text-xs text-gray-500">Gunakan baris baru untuk memisahkan tiap pengecualian.</p>
+                    @error('exclude')
+                        <p class="mt-2 text-xs font-semibold text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
                 <div>
                     <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="foto">Foto Utama</label>
-                    <div class="rounded-lg border border-gray-200 bg-white p-4 space-y-4">
+                    <div class="space-y-4 rounded-lg border border-gray-200 bg-white p-4">
                         <div class="overflow-hidden rounded-lg border border-dashed border-gray-200 bg-gray-50">
                             @if(!empty($paketTrip->foto))
                                 <img src="{{ $paketTrip->foto_url }}" alt="Foto utama saat ini" class="h-40 w-full object-cover">
@@ -101,7 +140,7 @@
                 </div>
                 <div>
                     <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="foto2">Foto 2</label>
-                    <div class="rounded-lg border border-gray-200 bg-white p-4 space-y-4">
+                    <div class="space-y-4 rounded-lg border border-gray-200 bg-white p-4">
                         <div class="overflow-hidden rounded-lg border border-dashed border-gray-200 bg-gray-50">
                             @if(!empty($paketTrip->foto2))
                                 <img src="{{ $paketTrip->foto2_url }}" alt="Foto 2 saat ini" class="h-40 w-full object-cover">
@@ -128,7 +167,7 @@
                 </div>
                 <div>
                     <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="foto3">Foto 3</label>
-                    <div class="rounded-lg border border-gray-200 bg-white p-4 space-y-4">
+                    <div class="space-y-4 rounded-lg border border-gray-200 bg-white p-4">
                         <div class="overflow-hidden rounded-lg border border-dashed border-gray-200 bg-gray-50">
                             @if(!empty($paketTrip->foto3))
                                 <img src="{{ $paketTrip->foto3_url }}" alt="Foto 3 saat ini" class="h-40 w-full object-cover">
@@ -155,7 +194,7 @@
                 </div>
                 <div>
                     <label class="mb-2 block text-xs font-black uppercase tracking-[0.25em] text-gray-500" for="foto4">Foto 4</label>
-                    <div class="rounded-lg border border-gray-200 bg-white p-4 space-y-4">
+                    <div class="space-y-4 rounded-lg border border-gray-200 bg-white p-4">
                         <div class="overflow-hidden rounded-lg border border-dashed border-gray-200 bg-gray-50">
                             @if(!empty($paketTrip->foto4))
                                 <img src="{{ $paketTrip->foto4_url }}" alt="Foto 4 saat ini" class="h-40 w-full object-cover">
@@ -189,6 +228,17 @@
                     <span class="block text-sm text-gray-500">Tampilkan paket trip ini di katalog publik.</span>
                 </span>
             </label>
+
+            @if ($errors->any())
+                <div class="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                    <p class="font-black uppercase tracking-[0.25em]">Periksa kembali data form</p>
+                    <ul class="mt-2 list-disc space-y-1 pl-5 text-sm">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
         </div>
     </div>
 

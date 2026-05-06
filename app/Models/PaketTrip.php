@@ -73,6 +73,21 @@ class PaketTrip extends Model
         return PaketTripKategori::valueFor($this->kategori);
     }
 
+    public function getFasilitasItemsAttribute(): array
+    {
+        return $this->splitListField($this->fasilitas);
+    }
+
+    public function getIncludeItemsAttribute(): array
+    {
+        return $this->splitListField($this->include);
+    }
+
+    public function getExcludeItemsAttribute(): array
+    {
+        return $this->splitListField($this->exclude);
+    }
+
     private function resolveImageUrl(?string $path): ?string
     {
         if (! $path) {
@@ -80,5 +95,14 @@ class PaketTrip extends Model
         }
 
         return asset('storage/' . ltrim($path, '/'));
+    }
+
+    private function splitListField(?string $value): array
+    {
+        return collect(preg_split('/\r\n|\r|\n|,/', $value ?? '') ?: [])
+            ->map(fn ($item) => trim($item))
+            ->filter()
+            ->values()
+            ->all();
     }
 }

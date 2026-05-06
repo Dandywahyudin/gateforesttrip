@@ -88,7 +88,7 @@ class PaketTripController extends BaseController
             'include' => ['nullable', 'string'],
             'exclude' => ['nullable', 'string'],
             'durasi_hari' => ['required', 'integer', 'min:1'],
-            'harga' => ['required', 'numeric', 'min:0'],
+            'harga' => ['required', 'numeric', 'min:1'],
             'foto' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'foto2' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
             'foto3' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp', 'max:2048'],

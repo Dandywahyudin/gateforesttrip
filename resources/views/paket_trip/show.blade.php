@@ -181,7 +181,14 @@
                     <div class="space-y-4">
                         <div class="rounded-lg bg-background-light p-4">
                             <p class="text-xs font-black uppercase tracking-[0.25em] text-black/70 mb-1">Fasilitas Utama</p>
-                            <p class="text-sm leading-relaxed text-forest-green/70">{{ \Illuminate\Support\Str::limit($paket->fasilitas, 160) }}</p>
+                            <ul class="space-y-2 text-sm leading-relaxed text-forest-green/70">
+                                @foreach($paket->fasilitas_items as $item)
+                                    <li class="flex items-start gap-3">
+                                        <span class="mt-1 inline-flex h-2 w-2 shrink-0 rounded-full bg-primary"></span>
+                                        <span>{{ $item }}</span>
+                                    </li>
+                                @endforeach
+                            </ul>
                         </div>
                         <div class="rounded-lg bg-background-light p-4">
                             <p class="text-xs font-black uppercase tracking-[0.25em] text-black/70 mb-1">Meeting Point</p>
@@ -202,7 +209,7 @@
             </div>
 
             <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-                @foreach(explode(',', $paket->fasilitas) as $fasilitas)
+                @foreach($paket->fasilitas_items as $fasilitas)
                     <li class="flex items-start gap-3 rounded-2xl border border-forest-green/10 bg-white p-4 shadow-sm">
                         <span class="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
                             <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -222,7 +229,7 @@
                     <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3">Termasuk</p>
                     <h4 class="text-2xl font-display font-black text-forest-green uppercase mb-5">Apa yang didapat</h4>
                     <ul class="space-y-3 text-sm text-forest-green/70">
-                        @foreach(explode(',', $paket->include ?? '') as $item)
+                        @foreach($paket->include_items as $item)
                             <li class="flex items-start gap-3 rounded-2xl bg-background-light p-4">
                                 <span class="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary shrink-0">
                                     <span class="h-2 w-2 rounded-full bg-primary"></span>
@@ -236,7 +243,7 @@
                     <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary mb-3">Tidak Termasuk</p>
                     <h4 class="text-2xl font-display font-black text-forest-green uppercase mb-5">Pengecualian paket</h4>
                     <ul class="space-y-3 text-sm text-forest-green/70">
-                        @foreach(explode(',', $paket->exclude ?? '') as $item)
+                        @foreach($paket->exclude_items as $item)
                             <li class="flex items-start gap-3 rounded-2xl bg-background-light p-4">
                                 <span class="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-red-100 text-red-600 shrink-0">
                                     <span class="h-2 w-2 rounded-full bg-red-500"></span>

@@ -7,7 +7,6 @@
     <div class="rounded-lg border border-gray-100 bg-white p-6 shadow-sm">
         <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
             <div>
-                <p class="text-[10px] font-black uppercase tracking-[0.28em] text-primary">CRUD</p>
                 <h3 class="mt-2 text-3xl font-display font-black uppercase text-gray-900">Edit paket trip</h3>
                 <p class="mt-2 text-sm text-gray-500">{{ $paketTrip->nama }}</p>
             </div>
