@@ -9,7 +9,7 @@ enum PaketTripKategori: string
     case Camping = 'camping';
     case Hiking = 'hiking';
     case Pendakian = 'pendakian';
-    case Fotografi = 'fotografi';
+    case climbing = 'climbing';
     case Eksplorasi = 'eksplorasi';
     case Pantai = 'pantai';
     case Petualangan = 'petualangan';
@@ -20,10 +20,10 @@ enum PaketTripKategori: string
             self::Camping => 'Camping',
             self::Hiking => 'Hiking',
             self::Pendakian => 'Pendakian',
-            self::Fotografi => 'Fotografi',
             self::Eksplorasi => 'Eksplorasi',
             self::Pantai => 'Pantai',
             self::Petualangan => 'Petualangan',
+            self::climbing => 'Climbing',
         };
     }
 
@@ -66,8 +66,8 @@ enum PaketTripKategori: string
             'Camping & Hiking' => self::Camping->value,
             'Camping' => self::Camping->value,
             'Hiking' => self::Hiking->value,
+            'Climbing' => self::climbing->value,
             'Pendakian' => self::Pendakian->value,
-            'Fotografi' => self::Fotografi->value,
             'Adventure' => self::Petualangan->value,
             'Eksplorasi' => self::Eksplorasi->value,
             'Pantai' => self::Pantai->value,

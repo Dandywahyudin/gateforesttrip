@@ -18,7 +18,11 @@ class AdminController extends BaseController
             'total_jadwal' => Jadwal::count(),
             'total_reservasi' => Reservasi::count(),
             'reservasi_paid' => Reservasi::where('status', 'paid')->count(),
-            'omzet' => (float) Reservasi::sum('total_harga'),
+            'omzet' => (float) Reservasi::where('status', 'paid')
+                ->whereHas('pembayaran', function ($query) {
+                    $query->whereIn('status', ['settlement', 'capture']);
+                })
+                ->sum('total_harga'),
         ];
 
         $paketTrips = PaketTrip::withCount([

@@ -60,7 +60,7 @@ class PaketTripSeeder extends Seeder
             'deskripsi' => 'Memburu momen magis Ray of Light di kedalaman hutan purba bersama fotografer ahli. Workshop fotografi alam dengan teknik pencahayaan profesional.',
             'fasilitas' => 'Grup max 8 org, Fotografer profesional, Transportasi, Akomodasi, Meals',
             'lokasi' => 'Hutan Tanjung Puting, Kalimantan Tengah',
-            'kategori' => PaketTripKategori::Fotografi->value,
+            'kategori' => PaketTripKategori::climbing->value,
             'meeting_point' => 'Hotel Pangkalan, jam 07:00 pagi',
             'include' => 'Workshop fotografi, Transportasi, Akomodasi, Makan 3x, Pemandu foto',
             'exclude' => 'Peralatan fotografi pribadi, Asuransi, Perjalanan ke Pangkalan',
