@@ -29,11 +29,9 @@
                 <p class="text-[10px] text-forest-green/50 uppercase font-black tracking-widest">Mulai Dari</p>
                 <p class="text-xl font-display font-black text-forest-green">{{ $price }}</p>
             </div>
-            <button class="size-12 rounded-full border border-forest-green/20 flex items-center justify-center group-hover:bg-primary group-hover:border-primary group-hover:text-white transition-all hover:shadow-lg">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-5 h-5">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                </svg>
-            </button>
+            <span class="inline-flex h-12 items-center justify-center rounded-full bg-primary px-5 text-[10px] font-black uppercase tracking-[0.28em] text-white transition-all group-hover:bg-primary-dark hover:shadow-lg">
+                Detail
+            </span>
         </div>
     </div>
 </a>
