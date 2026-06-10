@@ -100,20 +100,43 @@ class MidtransService
 			$this->configure();
 
 			$notification = new Notification();
-			$orderId = $notification->order_id ?? $notification->transaction_id ?? null;
+			// $orderId = $notification->order_id ?? $notification->transaction_id ?? null;
+			$orderId = $notification->order_id ??  null;
 
 			if (! $orderId) {
+				Log::warning('Notifikasi Midtrans diabaikan: order_id tidak ditemukan pada payload.', [
+					'payload' => $notification,
+				]);
+				return null;
+			}
+
+			if (! $this->isValidSignature(
+				$orderId,
+				$notification->status_code ?? null,
+				$notification->gross_amount ?? null,
+				$notification->signature_key ?? null
+			)) {
+				Log::warning('Notifikasi Midtrans ditolak: signature_key tidak valid.', [
+					'orderId' => $orderId,
+				]);
+ 
 				return null;
 			}
 
 			$pembayaran = Pembayaran::with('reservasi')->where('orderId', $orderId)->first();
 
 			if (! $pembayaran) {
+				Log::warning('Notifikasi Midtrans diabaikan: pembayaran tidak ditemukan.', [
+					'orderId' => $orderId,
+				]);
+ 
 				return null;
 			}
-
-			return $this->applyGatewayStatus($pembayaran, $notification);
-		} catch (\Throwable $throwable) {
+			
+			// return $this->applyGatewayStatus($pembayaran, $notification);
+			$gatewayResponse = Transaction::status($orderId);
+			return $this->applyGatewayStatus($pembayaran, $gatewayResponse);
+			} catch (\Throwable $throwable) {
 			Log::error('Midtrans notification gagal diproses.', [
 				'message' => $throwable->getMessage(),
 			]);
@@ -121,6 +144,30 @@ class MidtransService
 			return null;
 		}
 	}
+
+	private function isValidSignature(
+		?string $orderId,
+		?string $statusCode,
+		?string $grossAmount,
+		?string $signatureKey
+	): bool {
+		if (! $orderId || ! $statusCode || $grossAmount === null || ! $signatureKey) {
+			return false;
+		}
+ 
+		$serverKey = (string) config('services.midtrans.server_key');
+ 
+		if ($serverKey === '') {
+			Log::error('Verifikasi signature Midtrans dibatalkan: server key belum dikonfigurasi.');
+ 
+			return false;
+		}
+ 
+		$expectedSignature = hash('sha512', $orderId . $statusCode . $grossAmount . $serverKey);
+ 
+		return hash_equals($expectedSignature, $signatureKey);
+	}
+ 
 
 	public function refreshPaymentStatus(Reservasi $reservasi): Pembayaran
 	{
