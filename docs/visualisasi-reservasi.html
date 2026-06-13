@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Visualisasi Alur Reservasi — GateForestTrip</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --panel: #161b22;
+    --panel-2: #1c2230;
+    --border: #2d3748;
+    --green: #1b4332;
+    --primary: #2dd4bf;
+    --accent: #f59e0b;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --code-bg: #0b0f17;
+    --kw: #ff7b72;
+    --fn: #d2a8ff;
+    --str: #a5d6ff;
+    --var: #79c0ff;
+    --cmt: #8b949e;
+    --num: #f0883e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    background: radial-gradient(1200px 600px at 70% -10%, #15324a55, transparent), var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 20px;
+  }
+  .wrap { max-width: 1340px; margin: 0 auto; }
+  header.top {
+    display: flex; align-items: center; justify-content: space-between;
+    flex-wrap: wrap; gap: 14px; margin-bottom: 18px;
+  }
+  .brand h1 { font-size: 22px; letter-spacing: .5px; }
+  .brand p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+  .badge {
+    background: linear-gradient(135deg, var(--primary), #0ea5e9);
+    color: #04222b; font-weight: 800; font-size: 11px;
+    padding: 4px 10px; border-radius: 999px; text-transform: uppercase; letter-spacing: 1px;
+  }
+
+  /* Controls */
+  .controls {
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 14px; padding: 12px 16px; margin-bottom: 16px;
+  }
+  button.ctrl {
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 10px; padding: 9px 14px; font-size: 13px; font-weight: 700;
+    cursor: pointer; transition: .15s; display: inline-flex; align-items: center; gap: 7px;
+  }
+  button.ctrl:hover { border-color: var(--primary); transform: translateY(-1px); }
+  button.ctrl.primary { background: var(--primary); color: #04222b; border-color: var(--primary); }
+  .spacer { flex: 1; }
+  .speed { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+  select {
+    background: var(--panel-2); color: var(--text); border: 1px solid var(--border);
+    border-radius: 8px; padding: 6px 8px; font-size: 12px;
+  }
+  .step-counter { font-size: 13px; color: var(--muted); font-weight: 700; }
+  .step-counter b { color: var(--primary); }
+
+  .progress-track { height: 6px; background: var(--panel-2); border-radius: 999px; overflow: hidden; margin-bottom: 18px; }
+  .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--accent)); transition: width .15s linear; }
+
+  .layout { display: grid; grid-template-columns: 240px 1fr 1fr; gap: 16px; }
+  @media (max-width: 1100px) { .layout { grid-template-columns: 1fr; } }
+
+  /* Timeline */
+  .timeline { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 10px; max-height: 640px; overflow-y: auto; }
+  .timeline h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); padding: 8px 10px; }
+  .tl-item {
+    display: flex; gap: 10px; align-items: flex-start; padding: 9px 10px; border-radius: 10px;
+    cursor: pointer; transition: .15s; border: 1px solid transparent;
+  }
+  .tl-item:hover { background: var(--panel-2); }
+  .tl-item.active { background: var(--panel-2); border-color: var(--primary); }
+  .tl-item.done .tl-num { background: var(--green); color: #9be7c4; }
+  .tl-num {
+    flex-shrink: 0; width: 24px; height: 24px; border-radius: 50%;
+    display: grid; place-items: center; font-size: 11px; font-weight: 800;
+    background: var(--panel-2); color: var(--muted); border: 1px solid var(--border);
+  }
+  .tl-item.active .tl-num { background: var(--primary); color: #04222b; border-color: var(--primary); }
+  .tl-txt { font-size: 12.5px; line-height: 1.35; }
+  .tl-txt span { display: block; color: var(--muted); font-size: 11px; margin-top: 2px; }
+
+  /* Scene */
+  .scene-card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 18px; }
+  .scene-title { font-size: 16px; font-weight: 800; margin-bottom: 4px; }
+  .scene-phase { font-size: 11px; text-transform: uppercase; letter-spacing: 1.4px; color: var(--accent); font-weight: 800; margin-bottom: 12px; }
+  .scene-desc { font-size: 13.5px; line-height: 1.6; color: #c9d1d9; margin-bottom: 16px; min-height: 76px; }
+
+  .stage { position: relative; padding: 10px 0 4px; }
+  .nodes { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; position: relative; z-index: 2; }
+  .node {
+    background: var(--panel-2); border: 1.5px solid var(--border); border-radius: 12px;
+    padding: 10px 12px; min-width: 104px; text-align: center; transition: .25s; opacity: .45;
+  }
+  .node .ico { font-size: 20px; }
+  .node .lbl { font-size: 11px; font-weight: 700; margin-top: 4px; }
+  .node .sub { font-size: 9.5px; color: var(--muted); }
+  .node.active { opacity: 1; border-color: var(--primary); box-shadow: 0 0 0 3px #2dd4bf22, 0 8px 24px #2dd4bf18; transform: translateY(-3px); }
+  .node.active.gw { border-color: var(--accent); box-shadow: 0 0 0 3px #f59e0b22; }
+  svg.wires { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+  .flow-note { margin-top: 14px; background: #0ea5e911; border: 1px dashed #0ea5e955; border-radius: 10px; padding: 10px 12px; font-size: 12px; color: #9bd5ff; }
+  .lock-pill { display:inline-block; background:#f59e0b22; border:1px solid #f59e0b66; color:#ffd28a; font-size:10.5px; font-weight:800; padding:2px 8px; border-radius:999px; margin-left:6px;}
+
+  /* Code panel */
+  .code-card { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+  .code-tab { display: flex; align-items: center; gap: 8px; padding: 11px 14px; background: var(--panel-2); border-bottom: 1px solid var(--border); }
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .dot.r{background:#ff5f56}.dot.y{background:#ffbd2e}.dot.g{background:#27c93f}
+  .code-file { font-size: 12px; color: var(--muted); margin-left: 8px; font-family: ui-monospace, monospace; }
+  .code-scroll { overflow: auto; flex: 1; max-height: 560px; }
+  pre { margin: 0; padding: 16px; font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; line-height: 1.65; background: var(--code-bg); white-space: pre; }
+  pre .ln { color: #3b4351; display: inline-block; width: 26px; user-select: none; }
+  .hl { background: #2dd4bf18; display: block; margin: 0 -16px; padding: 0 16px; border-left: 3px solid var(--primary); }
+  .kw { color: var(--kw); } .fn { color: var(--fn); } .str { color: var(--str); }
+  .var { color: var(--var); } .cmt { color: var(--cmt); font-style: italic; } .num { color: var(--num); }
+  footer { text-align: center; color: var(--muted); font-size: 12px; margin-top: 22px; }
+  .legend { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; margin-top:10px; font-size:11px; color:var(--muted);}
+  .legend span b{color:var(--text);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>🌲 Alur Reservasi GateForestTrip <span class="badge">Interaktif</span></h1>
+      <p>Putar untuk memahami alur reservasi dari awal sampai pembayaran — beserta kode fungsi yang dipakai di tiap langkah.</p>
+    </div>
+  </header>
+
+  <div class="controls">
+    <button class="ctrl primary" id="playBtn">▶ Putar</button>
+    <button class="ctrl" id="prevBtn">⏮ Sebelumnya</button>
+    <button class="ctrl" id="nextBtn">Berikutnya ⏭</button>
+    <button class="ctrl" id="restartBtn">↺ Ulangi</button>
+    <div class="spacer"></div>
+    <div class="speed">
+      Kecepatan
+      <select id="speedSel">
+        <option value="9000">Lambat</option>
+        <option value="6000" selected>Normal</option>
+        <option value="3500">Cepat</option>
+      </select>
+    </div>
+    <div class="step-counter">Langkah <b id="curNum">1</b> / <span id="totNum">14</span></div>
+  </div>
+
+  <div class="progress-track"><div class="progress-fill" id="progress"></div></div>
+
+  <div class="layout">
+    <aside class="timeline" id="timeline">
+      <h3>Daftar Langkah</h3>
+    </aside>
+
+    <section class="scene-card">
+      <div class="scene-phase" id="scenePhase"></div>
+      <div class="scene-title" id="sceneTitle"></div>
+      <div class="scene-desc" id="sceneDesc"></div>
+      <div class="stage">
+        <svg class="wires" id="wires"></svg>
+        <div class="nodes" id="nodes"></div>
+      </div>
+      <div class="flow-note" id="flowNote"></div>
+      <div class="legend">
+        <span>🟢 <b>aktif</b></span>
+        <span>🔒 <b>baris terkunci</b> (lockForUpdate)</span>
+        <span>🟠 <b>Midtrans</b> (eksternal)</span>
+      </div>
+    </section>
+
+    <section class="code-card">
+      <div class="code-tab">
+        <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+        <span class="code-file" id="codeFile">file.php</span>
+      </div>
+      <div class="code-scroll"><pre id="code"></pre></div>
+    </section>
+  </div>
+
+  <footer>Dibuat untuk dokumentasi tugas akhir — buka file ini di browser mana pun (tanpa perlu server).</footer>
+</div>
+
+<script>
+/* ---------- Definisi node (komponen sistem) ---------- */
+const NODES = [
+  { id: "user", ico: "🧑", lbl: "Wisatawan", sub: "Browser" },
+  { id: "rc",   ico: "🎮", lbl: "ReservasiController", sub: "app/Http" },
+  { id: "pc",   ico: "💳", lbl: "PembayaranController", sub: "app/Http" },
+  { id: "ms",   ico: "🔌", lbl: "MidtransService", sub: "app/Services" },
+  { id: "db",   ico: "🗄️", lbl: "Database", sub: "MySQL" },
+  { id: "gw",   ico: "🏦", lbl: "Midtrans", sub: "Gateway", gw: true },
+  { id: "sch",  ico: "⏰", lbl: "Scheduler", sub: "tiap menit" },
+];
+
+/* ---------- Langkah-langkah alur ---------- */
+const STEPS = [
+  {
+    phase: "Persiapan",
+    title: "1. Pilih jadwal keberangkatan",
+    desc: "Wisatawan membuka halaman pemilihan jadwal. Controller memuat jadwal berstatus 'open' dan menghitung sisa kuota tiap jadwal.",
+    active: ["user", "rc", "db"], from: "rc", to: "db", note: "Route: GET /reservasi/{paketTrip}/jadwal → name reservasi.jadwal",
+    file: "app/Http/Controllers/Wisatawan/ReservasiController.php",
+    code:
+`public function create(PaketTrip $paketTrip)
+{
+    $paket = $paketTrip->load(['jadwals' => function ($query) {
+        $query->where('status', 'open')
+            ->orderBy('tanggal_berangkat');
+    }]);
+
+    $jadwals = $paket->jadwals->map(function (Jadwal $jadwal) {
+        $jadwal->setAttribute('sisa_kuota_tersedia',
+            $this->getSisaKuotaTersedia($jadwal));
+        return $jadwal;
+    });
+
+    return view('wisatawan.reservasi.create', [
+        'paket' => $paket, 'jadwals' => $jadwals,
+        'sessionData' => session(self::SESSION_KEY, []),
+    ]);
+}`,
+    hl: [2,3,4,5]
+  },
+  {
+    phase: "Persiapan",
+    title: "2. Simpan pilihan jadwal (ke session)",
+    desc: "Input divalidasi, jadwal dipastikan cocok dengan paket & masih open, dan kuota dicek. Data disimpan ke SESSION — belum ditulis ke database.",
+    active: ["user", "rc"], from: "user", to: "rc", note: "Route: POST /reservasi/jadwal → name reservasi.jadwal.store",
+    file: "app/Http/Controllers/Wisatawan/ReservasiController.php",
+    code:
+`public function store(Request $request)
+{
+    $validated = $request->validate([
+        'paket_id'    => ['required', 'integer', Rule::exists('paket_trips','paketId')],
+        'jadwal_id'   => ['required', 'integer', Rule::exists('jadwals','jadwalId')],
+        'jml_peserta' => ['required', 'integer', 'min:1', 'max:20'],
+    ]);
+
+    $sisaKuota = $this->getSisaKuotaTersedia($jadwal);
+    if ((int) $validated['jml_peserta'] > $sisaKuota) {
+        return back()->withErrors([...]);
+    }
+
+    session()->put(self::SESSION_KEY, [
+        'jadwal_id'   => $jadwal->jadwalId,
+        'jml_peserta' => (int) $validated['jml_peserta'],
+        'total_harga' => (float) $hargaPerPax * $jml,
+    ]);
+    return redirect()->route('reservasi.peserta');
+}`,
+    hl: [9,10,11,14,15,16,17,18]
+  },
+  {
+    phase: "Persiapan",
+    title: "3. Tampilkan form data peserta",
+    desc: "Mengambil data dari session. Jika session kosong (user melompati langkah), diarahkan kembali. Lalu form isian peserta ditampilkan.",
+    active: ["user", "rc"], from: "rc", to: "user", note: "Route: GET /reservasi/peserta → name reservasi.peserta",
+    file: "app/Http/Controllers/Wisatawan/ReservasiController.php",
+    code:
+`public function createPeserta()
+{
+    $flow = session(self::SESSION_KEY);
+
+    if (! $flow) {
+        return redirect()->route('paket-trip.index')->withErrors([
+            'reservasi' => 'Silakan mulai reservasi dari awal.',
+        ]);
+    }
+
+    $paket  = PaketTrip::findOrFail($flow['paket_id']);
+    $jadwal = Jadwal::findOrFail($flow['jadwal_id']);
+
+    return view('wisatawan.reservasi.peserta',
+        compact('flow', 'paket', 'jadwal'));
+}`,
+    hl: [3,4,5,6,7]
+  },
+  {
+    phase: "Persiapan",
+    title: "4. Simpan data peserta (ke session)",
+    desc: "Validasi dibuat dinamis sebanyak jumlah peserta (nama, email, jenis kelamin, dll). Data peserta disimpan ke session, lalu lanjut ke ringkasan.",
+    active: ["user", "rc"], from: "user", to: "rc", note: "Route: POST /reservasi/peserta → name reservasi.peserta.store",
+    file: "app/Http/Controllers/Wisatawan/ReservasiController.php",
+    code:
+`public function storePeserta(Request $request)
+{
+    $jumlahPeserta = (int) $validated['jml_peserta'];
+
+    $rules = [];
+    for ($i = 0; $i < $jumlahPeserta; $i++) {
+        $rules["peserta.$i.nama"]          = ['required','string','max:255'];
+        $rules["peserta.$i.email"]         = ['required','email'];
+        $rules["peserta.$i.jenis_kelamin"] = ['required', Rule::in(['laki-laki','perempuan'])];
+        $rules["peserta.$i.tanggal_lahir"] = ['required','date'];
+    }
+    $validatedPeserta = $request->validate($rules, $messages);
+
+    $flow['data_peserta'] = array_slice($validatedPeserta['peserta'], 0, $jumlahPeserta);
+    session()->put(self::SESSION_KEY, $flow);
+
+    return redirect()->route('reservasi.ringkasan');
+}`,
+    hl: [5,6,7,8,9,10,11,15,16]
+  },
+  {
+    phase: "Persiapan",
+    title: "5. Halaman ringkasan",
+    desc: "Menampilkan rekap lengkap (paket, jadwal, daftar peserta, total harga) sebagai konfirmasi terakhir sebelum membuat reservasi.",
+    active: ["user", "rc"], from: "rc", to: "user", note: "Route: GET /reservasi/ringkasan → name reservasi.ringkasan",
+    file: "app/Http/Controllers/Wisatawan/ReservasiController.php",
+    code:
+`public function ringkasan()
+{
+    $flow = session(self::SESSION_KEY);
+
+    if (! $flow) {
+        return redirect()->route('paket-trip.index')->withErrors([...]);
+    }
+
+    $paket  = PaketTrip::findOrFail($flow['paket_id']);
+    $jadwal = Jadwal::findOrFail($flow['jadwal_id']);
+
+    return view('wisatawan.reservasi.ringkasan',
+        compact('flow', 'paket', 'jadwal'));
+}`,
+    hl: [9,10,12,13]
+  },
+  {
+    phase: "Checkout (kritis)",
+    title: "6. Checkout — kunci baris jadwal",
+    desc: "Inti pencegahan race condition. Seluruh proses dibungkus DB::transaction, lalu baris jadwal DIKUNCI dengan lockForUpdate sehingga proses lain menunggu giliran.",
+    active: ["user", "rc", "db"], from: "rc", to: "db", lock: true, note: "Route: POST /reservasi/checkout — DB::transaction + lockForUpdate 🔒",
+    file: "app/Http/Controllers/Wisatawan/ReservasiController.php",
+    code:
+`$reservasi = DB::transaction(function () use ($flow, $midtransService) {
+    $jadwal = Jadwal::whereKey($flow['jadwal_id'])
+        ->with('paketTrip')
+        ->lockForUpdate()          // 🔒 kunci baris — proses lain antri
+        ->firstOrFail();
+
+    $sisaKuota = $this->getSisaKuotaTersedia($jadwal);
+    if ((int) $flow['jml_peserta'] > $sisaKuota) {
+        throw new \\RuntimeException('Kuota jadwal tidak mencukupi lagi.');
+    }
+    // ... lanjut membuat reservasi ...
+});`,
+    hl: [1,2,3,4,5,7,8,9]
+  },
+  {
+    phase: "Checkout (kritis)",
+    title: "7. Buat Reservasi + Peserta + sinkron kuota",
+    desc: "Di dalam lock: kode reservasi dibuat, baris Reservasi & PesertaTrip ditulis, kuota dihitung ulang, dan event broadcast dikirim agar kuota ter-update real-time.",
+    active: ["rc", "db", "user"], from: "rc", to: "db", lock: true, note: "Masih di dalam DB::transaction yang sama (atomik)",
+    file: "app/Http/Controllers/Wisatawan/ReservasiController.php",
+    code:
+`$kodeReservasi = $this->generateReservasiCode($paket, $jadwal);
+
+$reservasi = Reservasi::create([
+    'userId'         => Auth::id(),
+    'jadwalId'       => $jadwal->jadwalId,
+    'kode_reservasi' => $kodeReservasi,
+    'jml_peserta'    => (int) $flow['jml_peserta'],
+    'total_harga'    => (float) $flow['total_harga'],
+    'status'         => 'unpaid',
+]);
+
+foreach ($flow['data_peserta'] as $peserta) {
+    PesertaTrip::create(['reservasiId' => $reservasi->reservasiId, ...]);
+}
+
+$jadwal = $jadwal->syncQuotaFromActiveReservations();
+event(JadwalKuotaUpdated::fromJadwal($jadwal->fresh([...])));`,
+    hl: [3,4,5,6,7,8,9,10,16,17]
+  },
+  {
+    phase: "Checkout (kritis)",
+    title: "8. Buat token pembayaran (Midtrans Snap)",
+    desc: "syncPayment membuat record Pembayaran (status pending, batas 10 menit) lalu meminta Snap Token ke Midtrans. Setelah transaksi COMMIT, kunci dilepas.",
+    active: ["rc", "ms", "gw", "db"], from: "ms", to: "gw", note: "MidtransService@syncPayment → createSnapToken → COMMIT 🔓",
+    file: "app/Services/MidtransService.php",
+    code:
+`public function syncPayment(Reservasi $reservasi): Pembayaran
+{
+    $pembayaran = $reservasi->pembayaran;
+
+    if (! $pembayaran) {
+        $pembayaran = Pembayaran::create([
+            'reservasiId' => $reservasi->reservasiId,
+            'orderId'     => 'ORD-' . $reservasi->kode_reservasi,
+            'jumlah'      => $reservasi->total_harga,
+            'status'      => 'pending',
+            'expired_at'  => now()->addMinutes(10),
+        ]);
+    }
+
+    if (empty($pembayaran->snap_token)) {
+        $snapToken = $this->createSnapToken($reservasi, $pembayaran->orderId);
+        $pembayaran->snap_token = $snapToken;
+        $pembayaran->save();
+    }
+    return $pembayaran->fresh();
+}`,
+    hl: [6,7,8,9,10,11,15,16]
+  },
+  {
+    phase: "Pembayaran",
+    title: "9. Tampilkan halaman pembayaran",
+    desc: "Wisatawan diarahkan ke halaman pembayaran. Controller menyiapkan pembayaran, menyimpan konteks order ke session, dan menampilkan popup Snap Midtrans.",
+    active: ["user", "pc", "ms"], from: "pc", to: "user", note: "Route: GET /reservasi/{kode}/pembayaran → PembayaranController@show",
+    file: "app/Http/Controllers/Wisatawan/PembayaranController.php",
+    code:
+`public function show(string $kodeReservasi, MidtransService $midtransService)
+{
+    $reservasi  = $this->resolveReservasi($kodeReservasi);
+    $pembayaran = $midtransService->syncPayment($reservasi);
+    $this->storeGatewayPaymentContext($reservasi, $pembayaran);
+
+    if (in_array($pembayaran->status, ['settlement','capture'], true)
+        || $reservasi->status === 'paid') {
+        return redirect()->route('reservasi.status', $reservasi->kode_reservasi);
+    }
+
+    return view('wisatawan.pembayaran.create',
+        compact('reservasi', 'pembayaran'));
+}`,
+    hl: [3,4,5,7,8,9,12]
+  },
+  {
+    phase: "Pembayaran",
+    title: "10. Wisatawan membayar via Snap",
+    desc: "Popup Midtrans Snap muncul di browser. Wisatawan memilih metode (VA, e-wallet, kartu) dan membayar. Snap memicu callback onSuccess / onPending / onError.",
+    active: ["user", "gw"], from: "user", to: "gw", note: "snap.js di create.blade.php — callback ke finish / unfinish / error",
+    file: "resources/views/wisatawan/pembayaran/create.blade.php",
+    code:
+`window.snap.pay(snapToken, {
+    onSuccess: function () { window.location.href = finishUrl; },
+    onPending: function () { window.location.href = unfinishUrl; },
+    onError:   function () { window.location.href = errorUrl; },
+    onClose:   function () { window.location.href = unfinishUrl; },
+});
+
+// URL callback dibangun dari route:
+// finishUrl   = route('reservasi.pembayaran.finish', ...)
+// unfinishUrl = route('reservasi.pembayaran.unfinish', ...)
+// errorUrl    = route('reservasi.pembayaran.error', ...)`,
+    hl: [1,2,3,4,5]
+  },
+  {
+    phase: "Konfirmasi",
+    title: "11. Webhook — verifikasi notifikasi Midtrans",
+    desc: "Midtrans mengirim notifikasi server-to-server. Sistem memverifikasi signature_key (anti pemalsuan) lalu mengambil ulang status resmi langsung dari Midtrans.",
+    active: ["gw", "pc", "ms"], from: "gw", to: "pc", note: "Route: POST /midtrans/notification → handleNotification (2 lapis keamanan)",
+    file: "app/Services/MidtransService.php",
+    code:
+`public function handleNotification(): ?Pembayaran
+{
+    $this->configure();
+    $notification = new Notification();
+    $orderId = $notification->order_id ?? null;
+
+    // Lapis 1: verifikasi signature_key (anti pemalsuan)
+    if (! $this->isValidSignature($orderId,
+        $notification->status_code, $notification->gross_amount,
+        $notification->signature_key)) {
+        return null;
+    }
+
+    $pembayaran = Pembayaran::with('reservasi')
+        ->where('orderId', $orderId)->first();
+
+    // Lapis 2: ambil ulang status resmi dari Midtrans
+    $gatewayResponse = Transaction::status($orderId);
+    return $this->applyGatewayStatus($pembayaran, $gatewayResponse);
+}`,
+    hl: [7,8,9,10,11,18,19,20]
+  },
+  {
+    phase: "Konfirmasi",
+    title: "12. Terapkan status & sinkron kuota",
+    desc: "applyGatewayStatus (terkunci) mengubah status Pembayaran & Reservasi. Jika lunas → reservasi 'paid', kuota disinkronkan, dan event broadcast dikirim.",
+    active: ["ms", "db", "user"], from: "ms", to: "db", lock: true, note: "applyGatewayStatus — DB::transaction + lockForUpdate 🔒",
+    file: "app/Services/MidtransService.php",
+    code:
+`return DB::transaction(function () use ($pembayaran, $gatewayResponse) {
+    $pembayaran = Pembayaran::with(['reservasi.jadwal.paketTrip'])
+        ->lockForUpdate()
+        ->findOrFail($pembayaran->pembayaranId);
+
+    if ($transactionStatus === 'settlement') {
+        $status = 'settlement';
+        $reservasiStatus = 'paid';
+    }
+    // ... pending / deny / cancel / expire ...
+
+    if (in_array($transactionStatus, ['settlement','capture'], true)) {
+        $reservasi->update(['status' => 'paid']);
+        $jadwal = $jadwal->syncQuotaFromActiveReservations();
+        event(JadwalKuotaUpdated::fromJadwal($jadwal));
+    }
+});`,
+    hl: [1,2,3,4,12,13,14,15]
+  },
+  {
+    phase: "Selesai",
+    title: "13. Halaman status & unduh dokumen",
+    desc: "Wisatawan melihat status reservasi (selalu disinkronkan ulang). Jika sudah lunas, dokumen bukti transaksi bisa diunduh sebagai PDF.",
+    active: ["user", "pc", "ms"], from: "pc", to: "user", note: "Route: GET /reservasi/{kode}/status & /tiket (PDF)",
+    file: "app/Http/Controllers/Wisatawan/PembayaranController.php",
+    code:
+`public function status(string $kodeReservasi, MidtransService $midtransService)
+{
+    $reservasi  = $this->resolveReservasi($kodeReservasi);
+    $pembayaran = $midtransService->refreshPaymentStatus($reservasi);
+    $adminWhatsappUrl = $this->resolveAdminWhatsappUrl($reservasi);
+
+    return view('wisatawan.pembayaran.status',
+        compact('reservasi', 'pembayaran', 'adminWhatsappUrl'));
+}
+
+// Unduh PDF (hanya jika pembayaran selesai):
+private function downloadCombinedDocument($kode, $midtrans) {
+    $pdf = Pdf::loadView('wisatawan.pembayaran.pdf.bukti-transaksi', [...]);
+    return $pdf->download('dokumen-' . $reservasi->kode_reservasi . '.pdf');
+}`,
+    hl: [3,4,5,13,14]
+  },
+  {
+    phase: "Latar belakang",
+    title: "14. Pembatalan otomatis (Scheduler)",
+    desc: "Tiap menit, command reservasi:sync-kuota memeriksa pembayaran yang lewat batas 10 menit: ditandai expire, reservasi dibatalkan, dan kuota dikembalikan.",
+    active: ["sch", "db"], from: "sch", to: "db", lock: true, note: "Command terjadwal → PaymentExpiryService@expireOverduePayments",
+    file: "app/Services/PaymentExpiryService.php",
+    code:
+`public function expireOverduePayments(): int
+{
+    $expiredPaymentIds = Pembayaran::query()
+        ->where('status', 'pending')
+        ->whereNotNull('expired_at')
+        ->where('expired_at', '<=', now())
+        ->pluck('pembayaranId');
+
+    foreach ($expiredPaymentIds as $pembayaranId) {
+        $reservasi = $this->expireSinglePayment((int) $pembayaranId);
+        // di dalam: lockForUpdate → status 'expire' + reservasi 'cancelled'
+    }
+
+    $this->resyncQuota($affectedJadwalIds); // kembalikan kuota + broadcast
+    return $expiredCount;
+}`,
+    hl: [3,4,5,6,7,9,10,11,14]
+  },
+];
+
+/* ---------- Penyorot sintaks PHP sederhana ---------- */
+const KEYWORDS = ["public","private","protected","function","return","if","else","elseif","foreach","for","as","new","use","throw","null","true","false","array","int","float","string","void","class","static","fn"];
+function escapeHtml(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
+function highlight(line){
+  let out = escapeHtml(line);
+  // komentar
+  const cmtIdx = out.indexOf("//");
+  let comment = "";
+  if (cmtIdx > -1 && !out.slice(0,cmtIdx).includes("'")) {
+    comment = '<span class="cmt">' + out.slice(cmtIdx) + '</span>';
+    out = out.slice(0, cmtIdx);
+  }
+  // string
+  out = out.replace(/&#39;|'/g,"'");
+  out = out.replace(/'([^']*)'/g, '<span class="str">\'$1\'</span>');
+  // fungsi
+  out = out.replace(/\b([a-zA-Z_][a-zA-Z0-9_]*)(\s*\()/g, '<span class="fn">$1</span>$2');
+  // variabel
+  out = out.replace(/(\$[a-zA-Z_][a-zA-Z0-9_]*)/g, '<span class="var">$1</span>');
+  // angka
+  out = out.replace(/\b(\d+)\b/g, '<span class="num">$1</span>');
+  // keyword
+  KEYWORDS.forEach(k=>{
+    out = out.replace(new RegExp("\\b("+k+")\\b","g"), '<span class="kw">$1</span>');
+  });
+  return out + comment;
+}
+function renderCode(step){
+  const lines = step.code.split("\n");
+  const hl = new Set(step.hl || []);
+  let html = "";
+  lines.forEach((ln,i)=>{
+    const n = i+1;
+    const content = '<span class="ln">'+n+'</span>' + highlight(ln);
+    html += hl.has(n) ? '<span class="hl">'+content+'</span>' : content + "\n";
+  });
+  return html;
+}
+
+/* ---------- Render node & wires ---------- */
+const nodesEl = document.getElementById("nodes");
+const wiresEl = document.getElementById("wires");
+NODES.forEach(n=>{
+  const d = document.createElement("div");
+  d.className = "node" + (n.gw ? " gw" : "");
+  d.id = "node-"+n.id;
+  d.innerHTML = `<div class="ico">${n.ico}</div><div class="lbl">${n.lbl}</div><div class="sub">${n.sub}</div>`;
+  nodesEl.appendChild(d);
+});
+
+function drawWire(fromId, toId, locked){
+  wiresEl.innerHTML = "";
+  const a = document.getElementById("node-"+fromId);
+  const b = document.getElementById("node-"+toId);
+  if(!a||!b) return;
+  const sr = nodesEl.getBoundingClientRect();
+  const ar = a.getBoundingClientRect();
+  const br = b.getBoundingClientRect();
+  const x1 = ar.left + ar.width/2 - sr.left;
+  const y1 = ar.top + ar.height/2 - sr.top;
+  const x2 = br.left + br.width/2 - sr.left;
+  const y2 = br.top + br.height/2 - sr.top;
+  const color = locked ? "#f59e0b" : "#2dd4bf";
+  const ns = "http://www.w3.org/2000/svg";
+  const line = document.createElementNS(ns,"line");
+  line.setAttribute("x1",x1);line.setAttribute("y1",y1);
+  line.setAttribute("x2",x2);line.setAttribute("y2",y2);
+  line.setAttribute("stroke",color);line.setAttribute("stroke-width","2");
+  line.setAttribute("stroke-dasharray","5 5");line.setAttribute("opacity","0.6");
+  wiresEl.appendChild(line);
+  const dot = document.createElementNS(ns,"circle");
+  dot.setAttribute("r","5");dot.setAttribute("fill",color);
+  const anim = document.createElementNS(ns,"animateMotion");
+  anim.setAttribute("dur","1.3s");anim.setAttribute("repeatCount","indefinite");
+  anim.setAttribute("path",`M ${x1} ${y1} L ${x2} ${y2}`);
+  dot.appendChild(anim);
+  wiresEl.appendChild(dot);
+}
+
+/* ---------- Render timeline ---------- */
+const timelineEl = document.getElementById("timeline");
+STEPS.forEach((s,i)=>{
+  const item = document.createElement("div");
+  item.className = "tl-item";
+  item.id = "tl-"+i;
+  item.innerHTML = `<div class="tl-num">${i+1}</div><div class="tl-txt">${s.title.replace(/^\d+\.\s/,"")}<span>${s.phase}</span></div>`;
+  item.onclick = ()=>{ goTo(i); pause(); };
+  timelineEl.appendChild(item);
+});
+
+/* ---------- State & kontrol ---------- */
+let cur = 0, playing = false, timer = null, progTimer = null, elapsed = 0;
+document.getElementById("totNum").textContent = STEPS.length;
+const progressEl = document.getElementById("progress");
+
+function render(i){
+  const s = STEPS[i];
+  document.getElementById("scenePhase").textContent = s.phase;
+  document.getElementById("sceneTitle").textContent = s.title;
+  document.getElementById("sceneDesc").textContent = s.desc;
+  document.getElementById("codeFile").textContent = s.file;
+  document.getElementById("code").innerHTML = renderCode(s);
+  document.getElementById("curNum").textContent = i+1;
+  let noteHtml = s.note;
+  if (s.lock) noteHtml += ' <span class="lock-pill">🔒 LOCK AKTIF</span>';
+  document.getElementById("flowNote").innerHTML = noteHtml;
+
+  NODES.forEach(n=>{
+    const el = document.getElementById("node-"+n.id);
+    el.classList.toggle("active", s.active.includes(n.id));
+  });
+  STEPS.forEach((_,j)=>{
+    const it = document.getElementById("tl-"+j);
+    it.classList.toggle("active", j===i);
+    it.classList.toggle("done", j<i);
+  });
+  setTimeout(()=>drawWire(s.from, s.to, s.lock), 60);
+}
+
+function goTo(i){
+  cur = (i + STEPS.length) % STEPS.length;
+  render(cur);
+  resetProgress();
+}
+function next(){ goTo(cur+1); }
+function prev(){ goTo(cur-1); }
+
+function resetProgress(){
+  elapsed = 0; progressEl.style.width = "0%";
+}
+function tickProgress(){
+  const dur = parseInt(document.getElementById("speedSel").value);
+  elapsed += 50;
+  progressEl.style.width = Math.min(100, (elapsed/dur)*100) + "%";
+}
+
+function play(){
+  playing = true;
+  document.getElementById("playBtn").textContent = "⏸ Jeda";
+  resetProgress();
+  const dur = parseInt(document.getElementById("speedSel").value);
+  progTimer = setInterval(tickProgress, 50);
+  timer = setInterval(()=>{ next(); }, dur);
+}
+function pause(){
+  playing = false;
+  document.getElementById("playBtn").textContent = "▶ Putar";
+  clearInterval(timer); clearInterval(progTimer);
+}
+function togglePlay(){ playing ? pause() : play(); }
+
+document.getElementById("playBtn").onclick = togglePlay;
+document.getElementById("nextBtn").onclick = ()=>{ next(); if(playing){ pause(); } };
+document.getElementById("prevBtn").onclick = ()=>{ prev(); if(playing){ pause(); } };
+document.getElementById("restartBtn").onclick = ()=>{ pause(); goTo(0); };
+document.getElementById("speedSel").onchange = ()=>{ if(playing){ pause(); play(); } };
+document.addEventListener("keydown", e=>{
+  if(e.key==="ArrowRight"){ next(); pause(); }
+  if(e.key==="ArrowLeft"){ prev(); pause(); }
+  if(e.key===" "){ e.preventDefault(); togglePlay(); }
+});
+window.addEventListener("resize", ()=>{ const s=STEPS[cur]; drawWire(s.from,s.to,s.lock); });
+
+/* init */
+render(0);
+</script>
+</body>
+</html>
