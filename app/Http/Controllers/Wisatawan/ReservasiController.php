@@ -26,6 +26,10 @@ class ReservasiController extends Controller
 
         $paket = $paketTrip->load(['jadwals' => function ($query) {
                 $query->where('status', 'open')
+                    ->where(function ($query) {
+                        $query->whereNull('cutoff_booking')
+                            ->orWhere('cutoff_booking', '>', now());
+                    })
                     ->orderBy('tanggal_berangkat');
             }]);
 
@@ -79,6 +83,12 @@ class ReservasiController extends Controller
             ]);
         }
 
+        if ($this->isPastBookingCutoff($jadwal)) {
+            return back()->withInput()->withErrors([
+                'jadwal_id' => 'Booking untuk jadwal ini sudah melewati cutoff.',
+            ]);
+        }
+
         $sisaKuota = $this->getSisaKuotaTersedia($jadwal);
 
         if ((int) $validated['jml_peserta'] > $sisaKuota) {
@@ -87,13 +97,13 @@ class ReservasiController extends Controller
             ]);
         }
 
-        $hargaPerPax = $jadwal->harga_override ?? $paket->harga;
+        $hargaPerPax = $paket->harga;
 
         session()->put(self::SESSION_KEY, [
             'paket_id' => $paket->paketId,
             'paket_nama' => $paket->nama,
             'jadwal_id' => $jadwal->jadwalId,
-            'jadwal_tanggal' => $jadwal->tanggal_berangkat,
+            'jadwal_tanggal' => Carbon::parse($jadwal->tanggal_berangkat)->toDateString(),
             'jml_peserta' => (int) $validated['jml_peserta'],
             'catatan' => $validated['catatan'] ?? null,
             'harga_per_pax' => (float) $hargaPerPax,
@@ -224,6 +234,10 @@ class ReservasiController extends Controller
                     ->firstOrFail();
                 $paket = $jadwal->paketTrip ?? PaketTrip::whereKey($jadwal->paketId)->firstOrFail();
 
+                if ($jadwal->status !== 'open' || $this->isPastBookingCutoff($jadwal)) {
+                    throw new \RuntimeException('Booking untuk jadwal ini sudah tidak tersedia.');
+                }
+
                 $sisaKuota = $this->getSisaKuotaTersedia($jadwal);
 
                 if ((int) $flow['jml_peserta'] > $sisaKuota) {
@@ -294,6 +308,11 @@ class ReservasiController extends Controller
     private function getSisaKuotaTersedia(Jadwal $jadwal): int
     {
         return max(0, (int) $jadwal->kuota_max - (int) $jadwal->kuota_terisi);
+    }
+
+    private function isPastBookingCutoff(Jadwal $jadwal): bool
+    {
+        return $jadwal->cutoff_booking && $jadwal->cutoff_booking->lte(now());
     }
 
     private function syncExpiredPaymentsForAllReservations(): void

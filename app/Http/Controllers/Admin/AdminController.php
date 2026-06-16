@@ -43,15 +43,6 @@ class AdminController extends BaseController
         return view('admin.dashboard', compact('stats', 'paketTrips', 'reservasis'));
     }
 
-    public function jadwal(): View
-    {
-        $jadwals = Jadwal::with('paketTrip')
-            ->orderBy('tanggal_berangkat')
-            ->get();
-
-        return view('admin.jadwal', compact('jadwals'));
-    }
-
     public function paketTrip(): View
     {
         $paketTrips = PaketTrip::withCount([

@@ -92,12 +92,12 @@ Route::middleware(['auth', 'verified'])->get('/dashboard', function (Request $re
 
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('dashboard');
-    Route::get('/jadwal', [AdminController::class, 'jadwal'])->name('jadwal.index');
     Route::get('/reservasi', [AdminReservasiController::class, 'index'])->name('reservasi.index');
     Route::post('/reservasi/paket/{paketTrip}/cancel', [AdminReservasiController::class, 'cancelByPaketTrip'])->name('reservasi.cancel-by-paket');
     Route::get('/reservasi/export/pdf', [AdminReservasiController::class, 'exportPdf'])->name('reservasi.export.pdf');
     Route::get('/reservasi/export/csv', [AdminReservasiController::class, 'exportCsv'])->name('reservasi.export.csv');
     Route::get('/reservasi/{reservasi}', [AdminReservasiController::class, 'show'])->name('reservasi.show');
+    
     Route::get('/paket-trip', [AdminPaketTripController::class, 'index'])->name('paket-trip.index');
     Route::get('/paket-trip/create', [AdminPaketTripController::class, 'create'])->name('paket-trip.create');
     Route::post('/paket-trip', [AdminPaketTripController::class, 'store'])->name('paket-trip.store');
@@ -105,14 +105,27 @@ Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->grou
     Route::put('/paket-trip/{paketTrip}', [AdminPaketTripController::class, 'update'])->name('paket-trip.update');
     Route::delete('/paket-trip/{paketTrip}', [AdminPaketTripController::class, 'destroy'])->name('paket-trip.destroy');
 
-    Route::prefix('/paket-trip/{paketTrip}/jadwal')->name('paket-trip.jadwal.')->group(function () {
-        Route::get('/', [AdminJadwalController::class, 'index'])->name('index');
-        Route::get('/create', [AdminJadwalController::class, 'create'])->name('create');
-        Route::post('/', [AdminJadwalController::class, 'store'])->name('store');
-        Route::get('/{jadwalId}/edit', [AdminJadwalController::class, 'edit'])->name('edit');
-        Route::put('/{jadwalId}', [AdminJadwalController::class, 'update'])->name('update');
-        Route::delete('/{jadwalId}', [AdminJadwalController::class, 'destroy'])->name('destroy');
-    });
+    Route::prefix('/jadwal')
+        ->name('jadwal.')
+        ->group(function () {
+            Route::get('/', [AdminJadwalController::class, 'index'])->name('index');
+            Route::get('/create', [AdminJadwalController::class, 'create'])->name('create');
+            Route::post('/', [AdminJadwalController::class, 'store'])->name('store');
+            Route::get('/{jadwal}/edit', [AdminJadwalController::class, 'edit'])->name('edit');
+            Route::put('/{jadwal}', [AdminJadwalController::class, 'update'])->name('update');
+            Route::delete('/{jadwal}', [AdminJadwalController::class, 'destroy'])->name('destroy');
+        });
+
+    Route::prefix('/paket-trip/{paketTrip}/jadwal')
+        ->name('paket-trip.jadwal.')
+        ->group(function () {
+            Route::get('/', [AdminJadwalController::class, 'nestedIndex'])->name('index');
+            Route::get('/create', [AdminJadwalController::class, 'nestedCreate'])->name('create');
+            Route::post('/', [AdminJadwalController::class, 'nestedStore'])->name('store');
+            Route::get('/{jadwal}/edit', [AdminJadwalController::class, 'nestedEdit'])->name('edit');
+            Route::put('/{jadwal}', [AdminJadwalController::class, 'nestedUpdate'])->name('update');
+            Route::delete('/{jadwal}', [AdminJadwalController::class, 'nestedDestroy'])->name('destroy');
+        });
 });
 
 Route::middleware('auth')->group(function () {

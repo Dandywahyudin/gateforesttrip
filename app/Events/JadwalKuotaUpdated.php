@@ -4,12 +4,12 @@ namespace App\Events;
 
 use App\Models\Jadwal;
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Contracts\Broadcasting\ShouldBroadcastNow;
+use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Carbon;
 
-class JadwalKuotaUpdated implements ShouldBroadcastNow
+class JadwalKuotaUpdated implements ShouldBroadcast
 {
     use Dispatchable, SerializesModels;
 
@@ -23,7 +23,7 @@ class JadwalKuotaUpdated implements ShouldBroadcastNow
     {
         $jadwal->loadMissing(['paketTrip', 'reservasis.pembayaran']);
 
-        $harga = $jadwal->harga_override ?? $jadwal->paketTrip?->harga ?? 0;
+        $harga = $jadwal->paketTrip?->harga ?? 0;
         $sisaKuota = max(0, (int) $jadwal->kuota_max - (int) $jadwal->kuota_terisi);
 
         return new self($jadwal->jadwalId, [

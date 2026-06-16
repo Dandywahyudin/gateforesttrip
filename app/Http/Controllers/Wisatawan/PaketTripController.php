@@ -18,6 +18,10 @@ class PaketTripController extends Controller
     {
         $paket = $paketTrip->load(['jadwals' => function ($query) {
                 $query->where('status', 'open')
+                    ->where(function ($query) {
+                        $query->whereNull('cutoff_booking')
+                            ->orWhere('cutoff_booking', '>', now());
+                    })
                     ->orderBy('tanggal_berangkat');
             }]);
         

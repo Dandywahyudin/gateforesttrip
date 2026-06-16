@@ -20,7 +20,7 @@
         <aside class="fixed inset-y-0 left-0 z-40 w-72 -translate-x-full transform border-r border-gray-200 bg-white transition-transform duration-300 ease-out lg:sticky lg:top-0 lg:flex lg:h-screen lg:w-72 lg:flex-col lg:translate-x-0" :class="sidebarOpen ? 'translate-x-0 lg:translate-x-0' : '-translate-x-full lg:hidden'">
             <div class="flex items-center justify-between border-b border-gray-200 p-5 sm:p-6">
                 <div class="flex items-center gap-3">
-                    <img src="/images/logo/logo.png" alt="logo" class="w-12 h-12 object-contain">
+                    <img src="/images/logo/logo.webp" alt="logo" class="w-12 h-12 object-contain">
                     <div>
                         <p class="text-[10px] font-black uppercase tracking-[0.3em] text-gray-400">Admin Panel</p>
                         <h1 class="mt-1 text-xl font-black uppercase text-gray-900">GateForestTrip</h1>

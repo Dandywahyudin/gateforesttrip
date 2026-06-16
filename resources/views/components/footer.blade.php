@@ -2,7 +2,7 @@
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-20 mb-20">
         <div class="flex flex-col gap-8">
             <div class="flex items-center gap-3 text-white">
-                <img src="/images/logo/logo.png" alt="logo" class="w-12 h-10 object-contain">
+                <img src="/images/logo/logo.webp" alt="logo" class="w-12 h-10 object-contain">
                 <span class="text-3xl font-display font-black uppercase">GateForestTrip</span>
             </div>
             <p class="text-white/50 text-sm leading-relaxed max-w-[300px]">
@@ -22,7 +22,8 @@
             <h4 class="font-display font-black text-xl uppercase">Bantuan</h4>
             <nav class="flex flex-col gap-4 text-white/50 text-sm">
 
-                <a class="hover:text-primary transition-colors" href="#">Kontak</a>
+                <a class="hover:text-primary transition-colors" href="mailto:gateforesttrip@gmail.com">Email : gateforesttrip@gmail.com</a>
+                <a class="hover:text-primary transition-colors" href="https://instagram.com/gateforesttrip" target="_blank" rel="noopener noreferrer">Instagram : @gateforesttrip</a>
             </nav>
         </div>
 

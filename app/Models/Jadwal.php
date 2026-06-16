@@ -15,8 +15,13 @@ class Jadwal extends Model
         'kuota_max',
         'kuota_terisi',
         'status',
-        'harga_override',
-        'cutoff_booking'
+        'cutoff_booking',
+    ];
+
+    protected $casts = [
+        'tanggal_berangkat' => 'date',
+        'tanggal_kembali' => 'date',
+        'cutoff_booking' => 'datetime',
     ];
 
     public function paketTrip()

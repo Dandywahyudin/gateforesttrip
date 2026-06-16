@@ -7,7 +7,7 @@
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
         <div class="grid grid-cols-1 lg:grid-cols-[1.25fr_0.75fr] gap-8 items-start">
             <div>
-                <form action="{{ route('reservasi.jadwal.store') }}" method="POST" class="rounded-[28px] border border-white/60 bg-white/90 p-6 md:p-8 shadow-[0_22px_70px_rgba(15,23,42,0.08)] backdrop-blur-md space-y-8">
+                <form action="{{ route('reservasi.jadwal.store') }}" method="POST" onsubmit="const btn = this.querySelector('button[type=submit]'); btn.disabled = true; btn.innerHTML = 'Memproses...';" class="rounded-[28px] border border-white/60 bg-white/90 p-6 md:p-8 shadow-[0_22px_70px_rgba(15,23,42,0.08)] backdrop-blur-md space-y-8">
                     @csrf
                     <input type="hidden" name="paket_id" value="{{ $paket->paketId }}">
 
@@ -35,7 +35,7 @@
                     <div class="space-y-3">
                         @forelse($jadwals as $jadwal)
                             @php
-                                $hargaJadwal = $jadwal->harga_override ?? $paket->harga;
+                                $hargaJadwal = $paket->harga;
                                 $sisaKuota = (int) ($jadwal->sisa_kuota_tersedia ?? max(0, $jadwal->kuota_max - $jadwal->kuota_terisi));
                                 $isSelected = (string) old('jadwal_id', $sessionData['jadwal_id'] ?? '') === (string) $jadwal->jadwalId;
                             @endphp
