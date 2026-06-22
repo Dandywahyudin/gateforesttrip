@@ -11,7 +11,7 @@
         $paket->foto4_url,
     ]));
 @endphp
-<section class="w-full pt-24 pb-10 bg-[radial-gradient(circle_at_top_left,_rgba(21,128,61,0.12),_transparent_35%),linear-gradient(to_bottom,_#ffffff,_#f8faf7)]">
+<section class="w-full pt-24 pb-10 bg-white">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
         <div class="mb-6">
             <x-breadcrumbs :items="[
@@ -38,7 +38,7 @@
                         @if(count($galleryImages))
                             <img id="gallery-main" src="{{ $galleryImages[0] }}" alt="{{ $paket->nama }}" class="h-full w-full object-cover transition-transform duration-700 hover:scale-105">
                         @else
-                            <div id="gallery-main" class="flex h-full w-full items-center justify-center bg-gradient-to-br from-forest-green/10 via-white to-primary/10 px-6 text-center">
+                            <div id="gallery-main" class="flex h-full w-full items-center justify-center bg-white px-6 text-center">
                                 <div class="space-y-3 max-w-md">
                                     <p class="text-[10px] font-black uppercase tracking-[0.35em] text-forest-green/50">Foto belum tersedia</p>
                                     <h2 class="text-2xl md:text-4xl font-display font-black uppercase text-forest-green leading-tight">{{ $paket->nama }}</h2>

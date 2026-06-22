@@ -49,7 +49,7 @@
                                 data-jadwal-total-kuota="{{ $jadwal->kuota_max }}"
                                 data-jadwal-selected="{{ $isSelected ? '1' : '0' }}">
                                 <div class="flex items-start gap-4">
-                                    <input type="radio" name="jadwal_id" value="{{ $jadwal->jadwalId }}" class="mt-1 h-5 w-5 border-forest-green/20 text-primary focus:ring-primary" {{ $isSelected ? 'checked' : '' }} {{ $sisaKuota <= 0 ? 'disabled' : '' }} data-jadwal-field="radio">
+                                    <input type="radio" name="jadwal_id" value="{{ $jadwal->jadwalId }}" class="mt-1 h-5 w-5 border-forest-green/20 text-primary focus:ring-primary" required {{ $isSelected ? 'checked' : '' }} {{ $sisaKuota <= 0 ? 'disabled' : '' }} data-jadwal-field="radio">
 
                                     <div class="min-w-0 flex-1 space-y-4">
                                         <div class="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -178,6 +178,24 @@
             return Number(card?.dataset.jadwalTotalKuota ?? 0);
         }
 
+        function syncCardVisualState(card, isSelected) {
+            const idleClasses = [
+                'border-forest-green/10',
+                'shadow-sm',
+                'hover:border-primary/30',
+                'hover:shadow-[0_18px_50px_rgba(15,23,42,0.08)]',
+            ];
+
+            card.classList.toggle('border-primary', isSelected);
+            card.classList.toggle('ring-4', isSelected);
+            card.classList.toggle('ring-primary/10', isSelected);
+            card.classList.toggle('shadow-[0_18px_50px_rgba(21,128,61,0.14)]', isSelected);
+
+            idleClasses.forEach((className) => {
+                card.classList.toggle(className, !isSelected);
+            });
+        }
+
         function setValue(nextValue, upperBound) {
             const max = Number.isFinite(upperBound) && upperBound > 0 ? upperBound : fallbackMax;
             const boundedValue = Math.min(max, Math.max(min, nextValue));
@@ -188,7 +206,9 @@
             const selectedCard = getSelectedCard();
 
             scheduleCards.forEach((card) => {
-                card.dataset.jadwalSelected = card === selectedCard ? '1' : '0';
+                const isSelected = card === selectedCard;
+                card.dataset.jadwalSelected = isSelected ? '1' : '0';
+                syncCardVisualState(card, isSelected);
             });
 
             if (!selectedCard) {
