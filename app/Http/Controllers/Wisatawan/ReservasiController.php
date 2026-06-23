@@ -20,6 +20,7 @@ class ReservasiController extends Controller
 {
     private const SESSION_KEY = 'reservasi_open_trip';
 
+    // menampilkan halaman reservasi untuk paket trip 
     public function create(PaketTrip $paketTrip)
     {
         $this->syncExpiredPaymentsForAllReservations();
@@ -48,6 +49,7 @@ class ReservasiController extends Controller
         ]);
     }
 
+    // menyimpan data reservasi ke session
     public function store(Request $request)
     {
         $this->syncExpiredPaymentsForAllReservations();
@@ -114,6 +116,7 @@ class ReservasiController extends Controller
         return redirect()->route('reservasi.peserta');
     }
 
+    // menampilkan form pengisian data peserta trip
     public function createPeserta()
     {
         $this->syncExpiredPaymentsForAllReservations();
@@ -132,6 +135,7 @@ class ReservasiController extends Controller
         return view('wisatawan.reservasi.peserta', compact('flow', 'paket', 'jadwal'));
     }
 
+    //menyimpan data peserta trip ke session
     public function storePeserta(Request $request)
     {
         $flow = session(self::SESSION_KEY);
@@ -192,6 +196,7 @@ class ReservasiController extends Controller
         return redirect()->route('reservasi.ringkasan');
     }
 
+    //menampilkan halaman ringkasan reservasi.
     public function ringkasan()
     {
         $this->syncExpiredPaymentsForAllReservations();
@@ -210,6 +215,7 @@ class ReservasiController extends Controller
         return view('wisatawan.reservasi.ringkasan', compact('flow', 'paket', 'jadwal'));
     }
 
+    //membuat reservasi, peserta trip, dan pembayaran di database, lalu mengarahkan ke halaman pembayaran.
     public function checkout(Request $request, MidtransService $midtransService)
     {
         $this->syncExpiredPaymentsForAllReservations();
@@ -227,6 +233,7 @@ class ReservasiController extends Controller
         }
 
         try {
+            // untuk mencegah overbooking
             $reservasi = DB::transaction(function () use ($flow, $midtransService) {
                 $jadwal = Jadwal::whereKey($flow['jadwal_id'])
                     ->with('paketTrip')
@@ -237,15 +244,15 @@ class ReservasiController extends Controller
                 if ($jadwal->status !== 'open' || $this->isPastBookingCutoff($jadwal)) {
                     throw new \RuntimeException('Booking untuk jadwal ini sudah tidak tersedia.');
                 }
-
+                // cek kuota
                 $sisaKuota = $this->getSisaKuotaTersedia($jadwal);
 
                 if ((int) $flow['jml_peserta'] > $sisaKuota) {
                     throw new \RuntimeException('Kuota jadwal tidak mencukupi lagi. Silakan pilih jadwal lain.');
                 }
-
+                //membuat kode reservasi
                 $kodeReservasi = $this->generateReservasiCode($paket, $jadwal);
-
+                //simpan reservasi dan peserta trip ke database
                 $reservasi = Reservasi::create([
                     'userId' => Auth::id(),
                     'jadwalId' => $jadwal->jadwalId,
@@ -268,12 +275,13 @@ class ReservasiController extends Controller
                 }
 
                 $jadwal = $jadwal->syncQuotaFromActiveReservations();
+                //broadcast event untuk memperbarui kuota jadwal di halaman lain
                 event(
                     \App\Events\JadwalKuotaUpdated::fromJadwal(
                         $jadwal->fresh(['paketTrip', 'reservasis.pembayaran'])
                     )
                 );
-
+                //generate pembayaran dan snap token midtrans
                 $midtransService->syncPayment($reservasi);
 
                 return $reservasi;
@@ -289,6 +297,8 @@ class ReservasiController extends Controller
         }
     }
 
+
+    //menampilkan riwayat reservasi wisatawan
     public function riwayat()
     {
         $this->syncExpiredPaymentsForAllReservations();
@@ -309,7 +319,8 @@ class ReservasiController extends Controller
     {
         return max(0, (int) $jadwal->kuota_max - (int) $jadwal->kuota_terisi);
     }
-
+    
+    //Memeriksa apakah jadwal telah melewati batas waktu pemesanan.
     private function isPastBookingCutoff(Jadwal $jadwal): bool
     {
         return $jadwal->cutoff_booking && $jadwal->cutoff_booking->lte(now());

@@ -44,18 +44,21 @@ class MidtransService
 		return $pembayaran->fresh();
 	}
 
+	//membuat snap token midtrans untuk proses bayar
 	public function createSnapToken(Reservasi $reservasi, ?string $orderId = null): ?string
 	{
 		try {
 			$this->configure();
 			$resolvedOrderId = $orderId ?? ('ORD-' . $reservasi->kode_reservasi);
 
+			//payload transaksi yang dikirim ke midtrans untuk membuat snap token
 			$payload = [
+				//informasi transaksi
 				'transaction_details' => [
 					'order_id' => $resolvedOrderId,
 					'gross_amount' => (int) round($reservasi->total_harga),
 				],
-
+				// informasi waktu kadaluarsa pembayaran
 				'expiry' => [
 					'start_time' => now('Asia/Jakarta')->format('Y-m-d H:i:s O'),
 					'unit' => 'minute',
@@ -75,6 +78,7 @@ class MidtransService
 						'name' => $reservasi->jadwal?->paketTrip?->nama ?? 'Open Trip',
 					],
 				],
+				//endpoint notifikasi midtrans untuk update status pembayaran
 				'notification_url' => route('midtrans.notification'),
 				'callbacks' => [
 					'finish' => route('reservasi.pembayaran.finish'),
@@ -84,6 +88,7 @@ class MidtransService
 
 			return Snap::getSnapToken($payload);
 		} catch (\Throwable $throwable) {
+			// simpan log error jika gagal membuat snap token
 			Log::warning('Gagal membuat Snap token reservasi.', [
 				'reservasiId' => $reservasi->reservasiId,
 				'kode_reservasi' => $reservasi->kode_reservasi,
@@ -94,15 +99,17 @@ class MidtransService
 		}
 	}
 
+	//Memproses notifikasi webhook dari midtrans
 	public function handleNotification(): ?Pembayaran
 	{
 		try {
 			$this->configure();
-
+			// ambil notifikasi dari midtrans
 			$notification = new Notification();
 			// $orderId = $notification->order_id ?? $notification->transaction_id ?? null;
+			// ambil orderId dari notifikasi midtrans
 			$orderId = $notification->order_id ??  null;
-
+			//validasi signature key untuk memastikan notifikasi berasal dari midtrans
 			if (! $orderId) {
 				Log::warning('Notifikasi Midtrans diabaikan: order_id tidak ditemukan pada payload.', [
 					'payload' => $notification,
@@ -144,7 +151,7 @@ class MidtransService
 			return null;
 		}
 	}
-
+	// verifikasi signature dari midtrans
 	private function isValidSignature(
 		?string $orderId,
 		?string $statusCode,
@@ -168,7 +175,7 @@ class MidtransService
 		return hash_equals($expectedSignature, $signatureKey);
 	}
  
-
+	//  sinkronisasi status pembayaran dari midtrans
 	public function refreshPaymentStatus(Reservasi $reservasi): Pembayaran
 	{
 		$reservasi->loadMissing(['jadwal.paketTrip', 'user', 'pembayaran']);
@@ -199,9 +206,11 @@ class MidtransService
 		}
 	}
 
+	//memperbarui status pembayaran, reservasi, dan kuota jadwal berdasarkan notifikasi dari midtrans
 	private function applyGatewayStatus(Pembayaran $pembayaran, mixed $gatewayResponse): Pembayaran
 	{
 		return DB::transaction(function () use ($pembayaran, $gatewayResponse) {
+			//lock data untuk mencegah race condition
 			$pembayaran = Pembayaran::with(['reservasi.jadwal.paketTrip'])
 				->lockForUpdate()
 				->findOrFail($pembayaran->pembayaranId);
@@ -220,6 +229,7 @@ class MidtransService
 				return $pembayaran->fresh(['reservasi.jadwal.paketTrip']);
 			}
 
+			// status pembayaran dan reservasi berdasarkan status transaksi dari Midtrans
 			if ($transactionStatus === 'settlement') {
 				$status = 'settlement';
 				$reservasiStatus = 'paid';
@@ -253,6 +263,7 @@ class MidtransService
 			if ($pembayaran->reservasi) {
 				$reservasi = $pembayaran->reservasi;
 
+				 // Lock data untuk mencegah race condition
 				if (in_array($transactionStatus, ['settlement', 'capture'], true) && $reservasi->status !== 'paid') {
 					$jadwal = Jadwal::whereKey($reservasi->jadwalId)
 						->lockForUpdate()
