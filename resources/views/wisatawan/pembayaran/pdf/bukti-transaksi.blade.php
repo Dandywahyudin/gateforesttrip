@@ -28,7 +28,7 @@
         }
 
         .document-header {
-            border-bottom: 3px solid #1f6a45;
+            border-bottom: 3px solid #000000;
             margin-bottom: 15px;
             padding-bottom: 12px;
         }
@@ -74,7 +74,7 @@
 
         .company-legal {
             margin-bottom: 3px;
-            color: #1f6a45;
+            color: #000000;
             font-size: 9px;
             font-weight: 700;
         }
@@ -120,7 +120,7 @@
         .section-title {
             margin: 0;
             padding: 0 0 5px;
-            border-bottom: 1px solid #1f6a45;
+            border-bottom: 1px solid #000000;
             color: #202622;
             font-size: 11px;
             font-weight: 700;
@@ -143,14 +143,14 @@
 
         .block-label {
             margin-bottom: 6px;
-            color: #1f6a45;
+            color: #000000;
             font-size: 9px;
             font-weight: 700;
         }
 
         .customer-name {
             margin-bottom: 2px;
-            color: #202622;
+            color: #000000;
             font-size: 11px;
             font-weight: 700;
         }
@@ -179,7 +179,7 @@
             border-right: 1px solid #aeb6b1;
             border-bottom: 1px solid #aeb6b1;
             background: #ecefed;
-            color: #242a26;
+            color: #000000;
             font-size: 8px;
             font-weight: 700;
             text-align: left;
@@ -225,7 +225,7 @@
         .invoice-table .total-value {
             padding-top: 9px;
             padding-bottom: 9px;
-            border-top: 2px solid #1f6a45;
+            border-top: 2px solid #000000;
             border-bottom: 0;
             font-size: 11px;
             font-weight: 700;
@@ -236,7 +236,7 @@
         }
 
         .invoice-table .total-value {
-            color: #1f6a45;
+            color: #000000;
             text-align: right;
         }
 
@@ -361,7 +361,7 @@
         }
 
         .signature-line {
-            border-top: 1px solid #59615c;
+            border-top: 1px solid #000000;
             padding-top: 4px;
             font-weight: 700;
         }

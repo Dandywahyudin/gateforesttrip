@@ -131,7 +131,10 @@
 <section class="w-full bg-white/95 border-y border-forest-green/10 backdrop-blur-sm">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
         <div class="flex gap-3 overflow-x-auto py-3 sm:py-4">
-            <button class="tab-btn shrink-0 rounded-full border border-forest-green/10 bg-forest-green px-5 py-3 text-xs font-black uppercase tracking-[0.25em] text-white shadow-sm transition-all active" data-tab="deskripsi">
+            {{-- <button class="tab-btn shrink-0 rounded-full border border-forest-green/10 bg-forest-green px-5 py-3 text-xs font-black uppercase tracking-[0.25em] text-white shadow-sm transition-all active" data-tab="deskripsi">
+                Deskripsi
+            </button> --}}
+            <button class="tab-btn shrink-0 rounded-full border border-forest-green/10 bg-white px-5 py-3 text-xs font-black uppercase tracking-[0.25em] text-forest-green/60 shadow-sm transition-all hover:border-primary/30 hover:text-forest-green" data-tab="deskripsi">
                 Deskripsi
             </button>
             <button class="tab-btn shrink-0 rounded-full border border-forest-green/10 bg-white px-5 py-3 text-xs font-black uppercase tracking-[0.25em] text-forest-green/60 shadow-sm transition-all hover:border-primary/30 hover:text-forest-green" data-tab="fasilitas">
@@ -184,7 +187,6 @@
                             <ul class="space-y-2 text-sm leading-relaxed text-forest-green/70">
                                 @foreach($paket->fasilitas_items as $item)
                                     <li class="flex items-start gap-3">
-                                        <span class="mt-1 inline-flex h-2 w-2 shrink-0 rounded-full bg-primary"></span>
                                         <span>{{ $item }}</span>
                                     </li>
                                 @endforeach
@@ -211,11 +213,6 @@
             <ul class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
                 @foreach($paket->fasilitas_items as $fasilitas)
                     <li class="flex items-start gap-3 rounded-2xl border border-forest-green/10 bg-white p-4 shadow-sm">
-                        <span class="mt-1 inline-flex h-6 w-6 items-center justify-center rounded-full bg-primary/10 text-primary">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-                                <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                            </svg>
-                        </span>
                         <span class="text-forest-green/80 leading-relaxed">{{ trim($fasilitas) }}</span>
                     </li>
                 @endforeach
@@ -231,9 +228,7 @@
                     <ul class="space-y-3 text-sm text-forest-green/70">
                         @foreach($paket->include_items as $item)
                             <li class="flex items-start gap-3 rounded-2xl bg-background-light p-4">
-                                <span class="mt-0.5 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary shrink-0">
-                                    <span class="h-2 w-2 rounded-full bg-primary"></span>
-                                </span>
+                                
                                 <span class="leading-relaxed">{{ trim($item) }}</span>
                             </li>
                         @endforeach

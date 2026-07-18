@@ -60,7 +60,6 @@
                             <a href="{{ route('admin.reservasi.index') }}" class="rounded-full border border-gray-200 px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-gray-700 transition hover:border-primary hover:text-primary">Reset</a>
                         @endif
                         <a href="{{ route('admin.reservasi.export.pdf', $exportQuery) }}" class="rounded-full border border-gray-200 px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-gray-700 transition hover:border-primary hover:text-primary">Export PDF Paid</a>
-                        <a href="{{ route('admin.reservasi.export.csv', $exportQuery) }}" class="rounded-full border border-gray-200 px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-gray-700 transition hover:border-primary hover:text-primary">Export Excel Paid</a>
                     </div>
                 </div>
                 <p class="mt-3 text-xs text-gray-500">Export hanya mengambil reservasi yang sudah dibayar.</p>

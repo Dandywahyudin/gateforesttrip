@@ -96,17 +96,24 @@
                     <div class="flex flex-col gap-2">
                         <label class="text-sm font-semibold text-gray-700 dark:text-gray-200" for="password">Password</label>
                         <div class="relative">
-                            <input 
-                                class="w-full rounded-xl border bg-gray-50 dark:bg-white/5 px-4 py-3.5 text-base text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none {{ $errors->has('password') ? 'border-red-500 dark:border-red-500' : 'border-gray-200 dark:border-white/10' }}"
+                            <x-text-input 
+                                class="w-full pr-10 rounded-xl border bg-gray-50 dark:bg-white/5 px-4 py-3.5 text-base text-gray-900 dark:text-white placeholder:text-gray-400 focus:border-primary focus:ring-1 focus:ring-primary transition-colors outline-none {{ $errors->has('password') ? 'border-red-500 dark:border-red-500' : 'border-gray-200 dark:border-white/10' }}"
                                 id="password" 
                                 name="password"
                                 placeholder="Masukkan kata sandi" 
                                 type="password"
                                 required
                                 autocomplete="current-password"
-                            >
-                            <span class="material-symbols-outlined absolute right-4 top-3.5 text-gray-400 text-[20px]">visibility_off</span>
+                            />
+                            <button type="button" id="togglePassword" class="absolute inset-y-0 right-4 pr-4 flex items-center mt-1 text-gray-500 hover:text-gray-700">
+                                <!-- Ikon Mata (Eye) dari Heroicons -->
+                                <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                </svg>
+                            </button>
                         </div>
+                        <x-input-error :messages="$errors->get('password')" class="mt-2" />
                     </div>
                     
                     <!-- Forgot Password & Remember Me -->
@@ -168,4 +175,18 @@
         </div>
     </div>
 </body>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+
+        togglePassword.addEventListener('click', function () {
+            // Cek tipe saat ini, lalu ubah
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            
+            // Logika tambahan untuk mengganti ikon SVG mata terbuka/tertutup bisa dimasukkan di sini
+        });
+    });
+</script>
 </html>

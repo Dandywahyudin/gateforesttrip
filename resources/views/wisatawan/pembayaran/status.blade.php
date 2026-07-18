@@ -37,8 +37,14 @@
                             <p class="mt-1 text-sm text-forest-green/60">{{ $reservasi->jadwal?->paketTrip?->nama }}</p>
                         </div>
                         <div class="flex flex-col gap-2 items-start md:items-end">
-                            <span class="px-4 py-2 rounded-full text-xs font-black uppercase tracking-[0.25em] {{ $reservasi->status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">
-                                Reservasi: {{ $reservasi->status }}
+                            <span @class([
+                                'px-4 py-2 rounded-full text-xs font-black uppercase tracking-[0.25em]',
+                                'bg-green-100 text-green-700' => $reservasi->status == 'paid',
+                                'bg-yellow-100 text-yellow-700' => $reservasi->status == 'unpaid',
+                                'bg-red-100 text-red-700' => $reservasi->status == 'cancelled',
+                                'bg-gray-100 text-gray-700' => !in_array($reservasi->status, ['paid', 'unpaid', 'cancelled']),
+                            ])>
+                                Reservasi: {{ ucfirst($reservasi->status) }}
                             </span>
                         </div>
                     </div>

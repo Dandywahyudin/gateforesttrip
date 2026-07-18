@@ -114,7 +114,7 @@
                                 <h4 class="mt-1 text-sm font-black text-gray-900">{{ $reservasi->jadwal?->paketTrip?->nama }}</h4>
                                 <p class="mt-1 text-xs text-gray-500">{{ $reservasi->user?->nama }}</p>
                             </div>
-                            <span class="inline-flex shrink-0 rounded-full {{ $reservasi->status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }} px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em]">
+                            <span class="inline-flex shrink-0 rounded-full {{ $reservasi->status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }} px-3 py-1 text-[10px] font-black uppercase tracking-[0.22em]">
                                 {{ $reservasi->status }}
                             </span>
                         </div>
