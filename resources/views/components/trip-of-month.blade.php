@@ -4,7 +4,6 @@
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
         <div class="flex flex-col md:flex-row items-end justify-between mb-16 gap-4">
             <div class="space-y-4">
-                <span class="text-primary font-black tracking-[0.4em] uppercase text-xs">Rekomendasi Untuk Anda</span>
                 <h2 class="text-5xl md:text-7xl font-display font-black text-forest-green uppercase">Paket Pilihan</h2>
             </div>
             <p class="text-forest-green/60 max-w-[400px] text-right font-medium">Kumpulan paket aktif yang paling layak dipertimbangkan untuk perjalanan berikutnya.</p>

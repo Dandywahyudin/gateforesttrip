@@ -62,7 +62,7 @@ class MidtransService
 				'expiry' => [
 					'start_time' => now('Asia/Jakarta')->format('Y-m-d H:i:s O'),
 					'unit' => 'minute',
-					'duration' => 2,
+					'duration' => 10,
 				],
 
 				'customer_details' => [
