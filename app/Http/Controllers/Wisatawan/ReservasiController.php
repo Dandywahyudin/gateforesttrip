@@ -232,6 +232,18 @@ class ReservasiController extends Controller
             return redirect()->route('reservasi.peserta');
         }
 
+            $existingUnpaid = Reservasi::where('userId', Auth::id())
+            ->where('jadwalId', $flow['jadwal_id'])
+            ->where('status', 'unpaid')
+            ->first();
+
+        if ($existingUnpaid) {
+            // Jika masih ada yang belum dibayar, lemparkan error atau kembalikan ke halaman riwayat
+            return redirect()->route('reservasi.peserta')->withErrors([
+                'reservasi' => 'Anda masih memiliki pemesanan yang belum dibayar untuk jadwal ini. Silakan selesaikan pembayaran terlebih dahulu.',
+            ]);
+        }
+
         try {
             // untuk mencegah overbooking
             $reservasi = DB::transaction(function () use ($flow, $midtransService) {

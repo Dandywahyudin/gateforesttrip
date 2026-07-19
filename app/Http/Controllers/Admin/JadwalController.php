@@ -208,7 +208,12 @@ class JadwalController extends BaseController
             $rules['paketId'] = ['required', 'exists:paket_trips,paketId'];
         }
 
-        $validated = $request->validate($rules);
+        $validated = $request->validate($rules, [
+            'tanggal_berangkat.date' => 'Tanggal berangkat harus berupa tanggal yang valid.',
+            'tanggal_kembali.date' => 'Tanggal kembali harus berupa tanggal yang valid.',
+            'tanggal_kembali.after_or_equal' => 'Tanggal kembali harus sama dengan atau setelah tanggal berangkat.',
+            'cutoff_booking.date' => 'Cutoff booking harus berupa tanggal yang valid.',
+        ]);
         $paketTrip ??= PaketTrip::whereKey($validated['paketId'])->firstOrFail();
         $kuotaTerisi = (int) ($jadwal?->kuota_terisi ?? 0);
 
