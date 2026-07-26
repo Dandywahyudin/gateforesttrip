@@ -1,65 +1,78 @@
 @props(['highlightPaket' => null, 'featuredPakets' => collect()])
 
-<section class="w-full py-32 bg-white">
-    <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
-        <div class="flex flex-col md:flex-row items-end justify-between mb-16 gap-4">
-            <div class="space-y-4">
-                <h2 class="text-5xl md:text-7xl font-display font-black text-forest-green uppercase">Paket Pilihan</h2>
-            </div>
-            <p class="text-forest-green/60 max-w-[400px] text-right font-medium">Kumpulan paket aktif yang paling layak dipertimbangkan untuk perjalanan berikutnya.</p>
-        </div>
-
-        @if($highlightPaket)
-            <div class="relative w-full rounded-2xl overflow-hidden shadow-[0_30px_100px_rgba(27,67,50,0.15)] group mb-12">
-                @if($highlightPaket->foto_url)
-                    <div class="aspect-[21/9] min-h-[500px] w-full bg-cover bg-center transition-transform duration-1000 group-hover:scale-105" style='background-image: url("{{ $highlightPaket->foto_url }}");'></div>
-                @else
-                    <div class="aspect-[21/9] min-h-[500px] w-full bg-gradient-to-br from-forest-green via-forest-green/85 to-primary"></div>
-                @endif
-
-                <div class="absolute inset-0 bg-gradient-to-t from-forest-green via-forest-green/20 to-transparent"></div>
-
-                <div class="absolute bottom-0 left-0 w-full p-8 md:p-16 flex flex-col md:flex-row items-end justify-between gap-8">
-                    <div class="space-y-6 max-w-[800px]">
-                        <div class="flex gap-4 flex-wrap">
-                            <span class="bg-primary text-white text-[10px] font-black uppercase tracking-widest px-6 py-2 rounded-full">{{ $highlightPaket->kategori_label ?? 'Direkomendasikan' }}</span>
-                            <span class="bg-white/20 backdrop-blur-md text-white text-[10px] font-black uppercase tracking-widest px-6 py-2 rounded-full border border-white/20">{{ $highlightPaket->jadwal_open_count ?? 0 }} jadwal aktif</span>
-                        </div>
-
-                        <h3 class="text-4xl md:text-7xl font-display font-black text-white uppercase leading-none">{{ $highlightPaket->nama }}</h3>
-
-                        <p class="text-white/70 text-lg max-w-[600px] font-light">{{ \Illuminate\Support\Str::limit($highlightPaket->deskripsi, 180) }}</p>
-                    </div>
-
-                    <div class="flex flex-col items-end gap-6 w-full md:w-auto">
-                        <div class="text-right">
-                            <p class="text-white/50 text-xs font-black uppercase tracking-widest mb-1">Harga Mulai</p>
-                            <p class="text-4xl font-display font-black text-primary">Rp {{ number_format($highlightPaket->harga, 0, ',', '.') }}</p>
-                        </div>
-                        <a href="{{ route('paket-trip.show', $highlightPaket) }}" class="w-full md:w-auto h-16 px-12 inline-flex items-center justify-center bg-white text-forest-green font-black uppercase tracking-widest text-sm hover:bg-primary hover:text-white transition-all rounded-full shadow-xl">
-                            LIHAT PAKET
-                        </a>
-                    </div>
+<section class="w-full bg-white py-20 lg:py-28">
+    <div class="mx-auto max-w-7xl px-6 lg:px-8">
+        <div class="flex flex-col items-center gap-12 lg:flex-row lg:items-center">
+            
+            <!-- Sisi Kiri: 1 Gambar Penuh -->
+            <div class="w-full lg:w-1/2 flex justify-center lg:justify-start">
+                <!-- Wrapper Gambar Tunggal -->
+                <div class="w-full max-w-lg overflow-hidden rounded-2xl md:rounded-[2.5rem] bg-gray-200 shadow-xl aspect-[4/5] lg:aspect-[3/4]">
+                    <!-- Pastikan nama file gambar disesuaikan dengan yang ada di folder public/images/ Anda -->
+                    <img src="{{ asset('images/background/GATEFORESTTRIP.webp') }}" alt="Petualangan Alam Gate Forest Trip" class="h-full w-full object-cover transition-transform duration-700 hover:scale-105">
                 </div>
             </div>
-        @endif
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            @forelse($featuredPakets as $paket)
-                <x-trip-card
-                    :paket="$paket"
-                    :image="$paket->foto_url"
-                    category="{{ strtoupper($paket->kategori_label ?? 'PAKET AKTIF') }}"
-                    title="{{ $paket->nama }}"
-                    description="{{ \Illuminate\Support\Str::limit($paket->deskripsi, 90) }}"
-                    price="Rp {{ number_format($paket->harga, 0, ',', '.') }}"
+            <!-- Sisi Kanan: Teks & Daftar Keunggulan -->
+            <div class="w-full lg:w-1/2 flex flex-col pt-4 lg:pt-0">
+                
+                <h2 class="text-2xl sm:text-5xl font-bold text-gray-900 leading-[1.2] mb-12">
+                    Kenapa Pilih <br /> GateForestTrip?
+                </h2>
+
+                <div class="flex flex-col gap-10">
                     
-                />
-            @empty
-                <div class="col-span-full rounded-2xl border border-dashed border-forest-green/20 bg-forest-green/5 p-8 text-center text-forest-green/60">
-                    Belum ada paket trip aktif untuk ditampilkan.
+                    <!-- Poin 1 -->
+                    <div class="flex gap-6 items-start group">
+                        <div class="flex-shrink-0 w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center transition-colors group-hover:bg-primary/10">
+                            <!-- Icon Map/Compass -->
+                            <svg class="w-8 h-8 text-gray-500 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 6.75V15m6-6v8.25m.503 3.498l4.875-2.437c.381-.19.622-.58.622-1.006V4.82c0-.836-.88-1.38-1.628-1.006l-3.869 1.934c-.317.159-.69.159-1.006 0L9.503 3.252a1.125 1.125 0 00-1.006 0L3.622 5.689C3.24 5.88 3 6.27 3 6.695V19.18c0 .836.88 1.38 1.628 1.006l3.869-1.934c.317-.159.69-.159 1.006 0l4.994 2.497c.317.158.69.158 1.006 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Banyak Pilihan Destinasi</h3>
+                            <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+                                Mau liburan santai di hutan pinus, camping, canyoneering ataupun jelajah curug semuanya ada di Gate Forest Trip dengan rute yang aman.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Poin 2 -->
+                    <div class="flex gap-6 items-start group">
+                        <div class="flex-shrink-0 w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center transition-colors group-hover:bg-primary/10">
+                            <!-- Icon Wallet/Payment -->
+                            <svg class="w-8 h-8 text-gray-500 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Banyak Metode Pembayaran</h3>
+                            <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+                                Gak usah pusing, kami menyediakan banyak metode pembayaran instan dan otomatis yang bakal bikin kamu lebih nyaman.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Poin 3 -->
+                    <div class="flex gap-6 items-start group">
+                        <div class="flex-shrink-0 w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center transition-colors group-hover:bg-primary/10">
+                            <!-- Icon Security/Lock -->
+                            <svg class="w-8 h-8 text-gray-500 group-hover:text-primary transition-colors" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-gray-900 mb-2">Transaksi & Aktivitas Aman</h3>
+                            <p class="text-sm sm:text-base text-gray-600 leading-relaxed">
+                                Keamanan privasi transaksi reservasi online dan keselamatan Anda selama trip menjadi prioritas utama kami.
+                            </p>
+                        </div>
+                    </div>
+
                 </div>
-            @endforelse
+            </div>
+
         </div>
     </div>
 </section>

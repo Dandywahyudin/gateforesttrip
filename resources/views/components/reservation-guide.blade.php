@@ -1,94 +1,90 @@
-<section id="cara-reservasi" class="w-full bg-white py-24">
-    <div class="mx-auto max-w-[1440px] px-6 lg:px-16">
-        <div class="mb-14 grid grid-cols-1 gap-8 lg:grid-cols-[0.8fr_1.2fr] lg:items-end">
-            <div class="space-y-4">
-                <span class="text-xs font-black uppercase tracking-[0.4em] text-primary">Cara Reservasi</span>
-                <h2 class="font-display text-4xl font-black uppercase leading-tight text-forest-green md:text-6xl">
-                    Booking trip dalam beberapa langkah
-                </h2>
-            </div>
-            <p class="max-w-2xl text-sm leading-relaxed text-forest-green/70 md:text-base lg:ml-auto lg:text-right">
-                Ikuti alur reservasi dari halaman paket sampai pembayaran. Pastikan data peserta sudah benar sebelum checkout agar tiket dan bukti transaksi tercatat rapi di akun Anda.
-            </p>
-        </div>
+<!-- Pastikan Alpine.js sudah ter-load di layout utama Anda (app.blade.php) -->
+<section id="cara-reservasi" class="w-full bg-white py-16 lg:py-24">
+    <div class="mx-auto max-w-3xl px-6 lg:px-8">
+        
+        <h2 class="mb-8 text-2xl font-bold text-gray-900 md:text-3xl">
+            Cara Melakukan Reservasi
+        </h2>
 
-        <div class="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3">
-            <div class="rounded-2xl border border-forest-green/10 bg-background-light p-6 shadow-sm">
-                <div class="mb-6 flex items-center justify-between gap-4">
-                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-forest-green font-display text-xl font-black text-white">1</span>
-                    <span class="text-[10px] font-black uppercase tracking-[0.28em] text-forest-green/40">Paket</span>
+        <!-- Container Accordion dengan garis pemisah (divide-y) -->
+        <div class="divide-y divide-gray-200 border-t border-b border-gray-200">
+            
+            <!-- Langkah 1 -->
+            <div x-data="{ open: false }" class="py-5">
+                <button @click="open = !open" type="button" class="flex w-full items-center justify-between text-left focus:outline-none">
+                    <span class="text-base font-bold text-gray-900">1. Pilih paket trip</span>
+                    <span class="ml-6 flex items-center text-gray-400">
+                        <!-- Icon Plus (+) tampil saat tertutup -->
+                        <svg x-show="!open" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                        </svg>
+                        <!-- Icon Silang (X) tampil saat terbuka -->
+                        <svg x-show="open" style="display: none;" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </span>
+                </button>
+                <div x-show="open" x-transition.opacity.duration.300ms style="display: none;" class="mt-4 text-sm leading-relaxed text-gray-500">
+                    Buka katalog, lihat detail destinasi, harga, fasilitas, meeting point, dan foto perjalanan yang tersedia.
                 </div>
-                <h3 class="mb-3 font-display text-2xl font-black uppercase leading-tight text-forest-green">Pilih paket trip</h3>
-                <p class="text-sm leading-relaxed text-forest-green/70">Buka katalog, lihat detail destinasi, harga, fasilitas, meeting point, dan foto perjalanan yang tersedia.</p>
             </div>
 
-            <div class="rounded-2xl border border-forest-green/10 bg-background-light p-6 shadow-sm">
-                <div class="mb-6 flex items-center justify-between gap-4">
-                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary font-display text-xl font-black text-white">2</span>
-                    <span class="text-[10px] font-black uppercase tracking-[0.28em] text-forest-green/40">Akun</span>
+            <!-- Langkah 2 -->
+            <div x-data="{ open: false }" class="py-5">
+                <button @click="open = !open" type="button" class="flex w-full items-center justify-between text-left focus:outline-none">
+                    <span class="text-base font-bold text-gray-900">2. Masuk sebagai wisatawan</span>
+                    <span class="ml-6 flex items-center text-gray-400">
+                        <svg x-show="!open" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        <svg x-show="open" style="display: none;" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </span>
+                </button>
+                <div x-show="open" x-transition.opacity.duration.300ms style="display: none;" class="mt-4 text-sm leading-relaxed text-gray-500">
+                    Login terlebih dahulu agar reservasi, status pembayaran, tiket, dan riwayat pesanan tersimpan di akun Anda.
                 </div>
-                <h3 class="mb-3 font-display text-2xl font-black uppercase leading-tight text-forest-green">Masuk sebagai wisatawan</h3>
-                <p class="text-sm leading-relaxed text-forest-green/70">Login terlebih dahulu agar reservasi, status pembayaran, tiket, dan riwayat pesanan tersimpan di akun Anda.</p>
             </div>
 
-            <div class="rounded-2xl border border-forest-green/10 bg-background-light p-6 shadow-sm">
-                <div class="mb-6 flex items-center justify-between gap-4">
-                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-forest-green font-display text-xl font-black text-white">3</span>
-                    <span class="text-[10px] font-black uppercase tracking-[0.28em] text-forest-green/40">Jadwal</span>
+            <!-- Langkah 3 -->
+            <div x-data="{ open: false }" class="py-5">
+                <button @click="open = !open" type="button" class="flex w-full items-center justify-between text-left focus:outline-none">
+                    <span class="text-base font-bold text-gray-900">3. Tentukan jadwal</span>
+                    <span class="ml-6 flex items-center text-gray-400">
+                        <svg x-show="!open" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        <svg x-show="open" style="display: none;" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </span>
+                </button>
+                <div x-show="open" x-transition.opacity.duration.300ms style="display: none;" class="mt-4 text-sm leading-relaxed text-gray-500">
+                    Pilih tanggal keberangkatan yang masih open, lalu isi jumlah peserta sesuai sisa kuota yang tersedia.
                 </div>
-                <h3 class="mb-3 font-display text-2xl font-black uppercase leading-tight text-forest-green">Tentukan jadwal</h3>
-                <p class="text-sm leading-relaxed text-forest-green/70">Pilih tanggal keberangkatan yang masih open, lalu isi jumlah peserta sesuai sisa kuota yang tersedia.</p>
             </div>
 
-            <div class="rounded-2xl border border-forest-green/10 bg-background-light p-6 shadow-sm">
-                <div class="mb-6 flex items-center justify-between gap-4">
-                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-primary font-display text-xl font-black text-white">4</span>
-                    <span class="text-[10px] font-black uppercase tracking-[0.28em] text-forest-green/40">Peserta</span>
+            <!-- Langkah 4 -->
+            <div x-data="{ open: false }" class="py-5">
+                <button @click="open = !open" type="button" class="flex w-full items-center justify-between text-left focus:outline-none">
+                    <span class="text-base font-bold text-gray-900">4. Isi data peserta</span>
+                    <span class="ml-6 flex items-center text-gray-400">
+                        <svg x-show="!open" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        <svg x-show="open" style="display: none;" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </span>
+                </button>
+                <div x-show="open" x-transition.opacity.duration.300ms style="display: none;" class="mt-4 text-sm leading-relaxed text-gray-500">
+                    Lengkapi nama, email, jenis kelamin, tanggal lahir, dan nomor HP peserta sesuai jumlah orang yang ikut.
                 </div>
-                <h3 class="mb-3 font-display text-2xl font-black uppercase leading-tight text-forest-green">Isi data peserta</h3>
-                <p class="text-sm leading-relaxed text-forest-green/70">Lengkapi nama, email, jenis kelamin, tanggal lahir, dan nomor HP peserta sesuai jumlah orang yang ikut.</p>
             </div>
 
-            <div class="rounded-2xl border border-forest-green/10 bg-background-light p-6 shadow-sm">
-                <div class="mb-6 flex items-center justify-between gap-4">
-                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-forest-green font-display text-xl font-black text-white">5</span>
-                    <span class="text-[10px] font-black uppercase tracking-[0.28em] text-forest-green/40">Checkout</span>
+            <!-- Langkah 5 -->
+            <div x-data="{ open: false }" class="py-5">
+                <button @click="open = !open" type="button" class="flex w-full items-center justify-between text-left focus:outline-none">
+                    <span class="text-base font-bold text-gray-900">5. Cek ringkasan dan bayar</span>
+                    <span class="ml-6 flex items-center text-gray-400">
+                        <svg x-show="!open" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" /></svg>
+                        <svg x-show="open" style="display: none;" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </span>
+                </button>
+                <div x-show="open" x-transition.opacity.duration.300ms style="display: none;" class="mt-4 text-sm leading-relaxed text-gray-500">
+                    Periksa kembali data Anda. Jika sudah sesuai, lanjutkan pembayaran dan hasil transaksi akan otomatis tersimpan di riwayat Anda.
                 </div>
-                <h3 class="mb-3 font-display text-2xl font-black uppercase leading-tight text-forest-green">Cek ringkasan</h3>
-                <p class="text-sm leading-relaxed text-forest-green/70">Periksa paket, jadwal, data peserta, dan total harga. Jika sudah sesuai, lanjutkan ke pembayaran.</p>
             </div>
 
-            <div class="rounded-2xl border border-forest-green/10 bg-forest-green p-6 text-white shadow-[0_22px_70px_rgba(27,67,50,0.18)]">
-                <div class="mb-6 flex items-center justify-between gap-4">
-                    <span class="inline-flex h-12 w-12 items-center justify-center rounded-full bg-white font-display text-xl font-black text-forest-green">6</span>
-                    <span class="text-[10px] font-black uppercase tracking-[0.28em] text-white/50">Tiket</span>
-                </div>
-                <h3 class="mb-3 font-display text-2xl font-black uppercase leading-tight">Bayar dan simpan tiket</h3>
-                <p class="text-sm leading-relaxed text-white/75">Selesaikan pembayaran, lalu cek status, bukti transaksi, dan tiket melalui menu riwayat reservasi.</p>
-            </div>
-        </div>
-
-        <div class="mt-12 flex flex-col gap-4 rounded-2xl border border-forest-green/10 bg-background-light p-6 md:flex-row md:items-center md:justify-between">
-            <div>
-                <p class="text-[10px] font-black uppercase tracking-[0.3em] text-primary">Siap mulai?</p>
-                <p class="mt-2 text-base font-bold text-forest-green">Pilih paket yang sesuai, lalu ikuti alur reservasi sampai pembayaran.</p>
-            </div>
-            <div class="flex flex-col gap-3 sm:flex-row">
-                <a href="{{ route('paket-trip.index') }}" class="inline-flex items-center justify-center rounded-full bg-forest-green px-8 py-4 text-xs font-black uppercase tracking-[0.25em] text-white transition hover:bg-forest-green/90">
-                    Lihat Paket
-                </a>
-                @auth
-                    @if(auth()->user()->isWisatawan())
-                        <a href="{{ route('reservasi.riwayat') }}" class="inline-flex items-center justify-center rounded-full border border-forest-green/15 px-8 py-4 text-xs font-black uppercase tracking-[0.25em] text-forest-green transition hover:border-primary hover:text-primary">
-                            Riwayat
-                        </a>
-                    @endif
-                @else
-                    <a href="{{ route('login') }}" class="inline-flex items-center justify-center rounded-full border border-forest-green/15 px-8 py-4 text-xs font-black uppercase tracking-[0.25em] text-forest-green transition hover:border-primary hover:text-primary">
-                        Masuk
-                    </a>
-                @endauth
-            </div>
         </div>
     </div>
 </section>

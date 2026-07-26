@@ -34,7 +34,7 @@
             <a href="{{ url('/') }}">
                 <img src="{{ asset('/images/logo/logo.webp') }}" alt="GateForestTrip Logo" class="w-12 h-12 object-contain">
             </a>
-            <h3 class="text-2xl font-black font-display uppercase {{ $isLandingPage ? 'text-white' : 'text-gray-900' }}">GateForestTrip</h3>
+            <h3 class="text-2xl font-black font-display uppercase {{ $isLandingPage ? 'text-primary' : 'text-primary' }}">GateForestTrip</h3>
         </div>
 
         @php
