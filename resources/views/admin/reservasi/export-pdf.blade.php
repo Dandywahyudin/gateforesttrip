@@ -83,7 +83,17 @@
                     <td>{{ $reservasi->jadwal?->paketTrip?->nama }}</td>
                     <td>{{ $reservasi->user?->nama }}</td>
                     <td>{{ $reservasi->jadwal?->tanggal_berangkat ? \Illuminate\Support\Carbon::parse($reservasi->jadwal->tanggal_berangkat)->translatedFormat('d M Y') : '-' }}</td>
-                    <td>{{ $reservasi->jml_peserta }}</td>
+                        <td>
+                            <div>{{ $reservasi->jml_peserta }} orang</div>
+                            @php
+                                $namaPeserta = $reservasi->peserta?->pluck('nama')->filter()->values();
+                            @endphp
+                            @if($namaPeserta->count() > 1)
+                                <div style="margin-top: 4px; font-size: 9px; color: #6b7280; line-height: 1.4;">
+                                    {{ $namaPeserta->implode(', ') }}
+                                </div>
+                            @endif
+                        </td>
                     <td><span class="badge">{{ $reservasi->status }}</span></td>
                     <td><span class="badge">{{ $reservasi->pembayaran?->status ?? 'belum ada' }}</span></td>
                     <td>Rp {{ number_format($reservasi->total_harga, 0, ',', '.') }}</td>

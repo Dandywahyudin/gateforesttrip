@@ -186,6 +186,14 @@ class MidtransService
 			$pembayaran = $this->syncPayment($reservasi);
 		}
 
+		if ($this->shouldExpireLocally($pembayaran)) {
+			return $this->expirePaymentLocally($pembayaran);
+		}
+
+		if (in_array($pembayaran->status, ['expire', 'cancel', 'deny', 'refund', 'partial_refund', 'chargeback'], true) || $pembayaran->reservasi?->status === 'cancelled') {
+			return $pembayaran->fresh(['reservasi.jadwal.paketTrip']);
+		}
+
 		if (empty($pembayaran->snap_token)) {
 			return $pembayaran->fresh();
 		}
@@ -204,6 +212,52 @@ class MidtransService
 
 			return $pembayaran->fresh();
 		}
+	}
+
+	private function shouldExpireLocally(Pembayaran $pembayaran): bool
+	{
+		return $pembayaran->status === 'pending'
+			&& $pembayaran->expired_at !== null
+			&& $pembayaran->expired_at->lte(now());
+	}
+
+	private function expirePaymentLocally(Pembayaran $pembayaran): Pembayaran
+	{
+		return DB::transaction(function () use ($pembayaran) {
+			$pembayaran = Pembayaran::with(['reservasi.jadwal.paketTrip'])
+				->lockForUpdate()
+				->findOrFail($pembayaran->pembayaranId);
+
+			if ($pembayaran->status !== 'pending' || ! $pembayaran->reservasi) {
+				return $pembayaran->fresh(['reservasi.jadwal.paketTrip']);
+			}
+
+			$pembayaran->update([
+				'status' => 'expire',
+			]);
+
+			$reservasi = $pembayaran->reservasi;
+
+			if ($reservasi->status !== 'paid') {
+				$reservasi->update([
+					'status' => 'cancelled',
+				]);
+
+				$jadwal = Jadwal::whereKey($reservasi->jadwalId)
+					->lockForUpdate()
+					->first();
+
+				if ($jadwal) {
+					$jadwal = $jadwal->syncQuotaFromActiveReservations();
+
+					if ($jadwal) {
+						event(JadwalKuotaUpdated::fromJadwal($jadwal));
+					}
+				}
+			}
+
+			return $pembayaran->fresh(['reservasi.jadwal.paketTrip']);
+		});
 	}
 
 	//memperbarui status pembayaran, reservasi, dan kuota jadwal berdasarkan notifikasi dari midtrans

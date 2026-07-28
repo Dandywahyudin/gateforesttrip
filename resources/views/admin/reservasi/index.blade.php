@@ -13,12 +13,17 @@
                     <p class="mt-2 text-sm text-gray-500">Pantau reservasi, peserta, dan status pembayaran.</p>
                 </div>
                 <div class="flex flex-wrap gap-3">
-                    @if($paketTrip)
-                        <form method="POST" action="{{ route('admin.reservasi.cancel-by-paket', $paketTrip) }}" onsubmit="return confirm('Cancel semua reservasi untuk paket ini? Jadwal akan dinonaktifkan dan paket trip dijadikan nonaktif.');">
+                    @if($paketTrip && $jadwalTrip)
+                        <form method="POST" action="{{ route('admin.reservasi.cancel-by-paket', $paketTrip) }}" onsubmit="return confirm('Cancel reservasi untuk jadwal yang sedang difilter ini? Jadwal lain pada paket yang sama tidak akan ikut dicancel.');">
                             @csrf
-                            <button type="submit" class="rounded-full border border-red-200 px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-red-600 transition hover:border-red-300 hover:bg-red-50">Cancel Paket</button>
+                            <input type="hidden" name="jadwal" value="{{ $jadwalTrip->jadwalId }}">
+                            <button type="submit" class="rounded-full border border-red-200 px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-red-600 transition hover:border-red-300 hover:bg-red-50">Cancel Jadwal Ini</button>
                         </form>
                         <a href="{{ route('admin.reservasi.index') }}" class="rounded-full border border-gray-200 px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-gray-700 transition hover:border-primary hover:text-primary">Semua Reservasi</a>
+                    @elseif($paketTrip)
+                        <div class="rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black uppercase tracking-[0.22em] text-amber-700">
+                            Pilih jadwal untuk cancel terfokus
+                        </div>
                     @endif
                     <a href="{{ route('admin.dashboard') }}" class="rounded-full bg-primary px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-white transition hover:bg-primary-dark">Dashboard</a>
                 </div>

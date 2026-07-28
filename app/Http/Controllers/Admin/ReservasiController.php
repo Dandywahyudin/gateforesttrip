@@ -137,16 +137,29 @@ class ReservasiController extends BaseController
         return view('admin.reservasi.show', compact('reservasi'));
     }
 
-    public function cancelByPaketTrip(PaketTrip $paketTrip): RedirectResponse
+    public function cancelByPaketTrip(Request $request, PaketTrip $paketTrip): RedirectResponse
     {
-        $result = DB::transaction(function () use ($paketTrip) {
-            $jadwals = Jadwal::where('paketId', $paketTrip->paketId)
+        if (! $request->filled('jadwal')) {
+            return redirect()
+                ->route('admin.reservasi.index', ['paket' => $paketTrip->slug])
+                ->withErrors([
+                    'jadwal' => 'Silakan pilih jadwal terlebih dahulu sebelum melakukan cancel.',
+                ]);
+        }
+
+        $jadwalTrip = Jadwal::with('paketTrip')
+            ->whereKey((int) $request->input('jadwal'))
+            ->where('paketId', $paketTrip->paketId)
+            ->firstOrFail();
+
+        $result = DB::transaction(function () use ($jadwalTrip) {
+            $jadwals = Jadwal::whereKey($jadwalTrip->jadwalId)
                 ->lockForUpdate()
                 ->get();
 
             $reservasis = Reservasi::with('pembayaran')
-                ->whereHas('jadwal', function ($query) use ($paketTrip) {
-                    $query->where('paketId', $paketTrip->paketId);
+                ->whereHas('jadwal', function ($query) use ($jadwalTrip) {
+                    $query->whereKey($jadwalTrip->jadwalId);
                 })
                 ->lockForUpdate()
                 ->get();
@@ -181,23 +194,20 @@ class ReservasiController extends BaseController
                 event(JadwalKuotaUpdated::fromJadwal($jadwal->fresh(['paketTrip', 'reservasis.pembayaran'])));
             }
 
-            $paketTrip->update([
-                'aktif' => false,
-            ]);
-
             return [$cancelledReservasiCount, $cancelledPaymentCount, $jadwals->count()];
         });
 
         [$cancelledReservasiCount, $cancelledPaymentCount, $jadwalCount] = $result;
 
         return redirect()
-            ->route('admin.reservasi.index', ['paket' => $paketTrip->slug, 'status' => 'cancelled'])
+            ->route('admin.reservasi.index', ['paket' => $paketTrip->slug, 'jadwal' => $jadwalTrip->jadwalId, 'status' => 'cancelled'])
             ->with('success', sprintf(
-                'Berhasil cancel %d reservasi, %d pembayaran, dan %d jadwal untuk paket %s.',
+                'Berhasil cancel %d reservasi, %d pembayaran, dan %d jadwal untuk paket %s pada jadwal %s.',
                 $cancelledReservasiCount,
                 $cancelledPaymentCount,
                 $jadwalCount,
                 $paketTrip->nama,
+                Carbon::parse($jadwalTrip->tanggal_berangkat)->translatedFormat('d M Y'),
             ));
     }
 
@@ -220,7 +230,7 @@ class ReservasiController extends BaseController
             }
         }
 
-        $reservasis = Reservasi::with(['jadwal.paketTrip', 'user', 'pembayaran'])
+        $reservasis = Reservasi::with(['jadwal.paketTrip', 'user', 'pembayaran', 'peserta'])
             ->where('status', 'paid')
             ->when($paketTrip, function ($query) use ($paketTrip) {
                 $query->whereHas('jadwal', function ($jadwalQuery) use ($paketTrip) {
