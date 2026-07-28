@@ -23,7 +23,7 @@
                 </div>
 
                 <!-- Category Filter -->
-                <div class="lg:col-span-3">
+                <div class="lg:col-span-6">
                     <label class="mb-2 block text-xs font-black uppercase tracking-widest text-forest-green/70">
                         Kategori
                     </label>
@@ -32,20 +32,6 @@
                         @foreach(\App\Enums\PaketTripKategori::options() as $value => $label)
                             <option value="{{ $value }}">{{ $label }}</option>
                         @endforeach
-                    </select>
-                </div>
-
-                <!-- Price Range -->
-                <div class="lg:col-span-3">
-                    <label class="mb-2 block text-xs font-black uppercase tracking-widest text-forest-green/70">
-                        Harga
-                    </label>
-                    <select id="price-filter" class="w-full rounded-2xl border border-forest-green/15 bg-white px-5 py-4 font-medium text-forest-green transition-all focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20">
-                        <option value="">Semua Harga</option>
-                        <option value="0-1000000">Rp 0 - 1 Juta</option>
-                        <option value="1000000-2500000">Rp 1 - 2.5 Juta</option>
-                        <option value="2500000-5000000">Rp 2.5 - 5 Juta</option>
-                        <option value="5000000">Rp 5+ Juta</option>
                     </select>
                 </div>
             </div>

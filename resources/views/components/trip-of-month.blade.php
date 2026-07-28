@@ -5,11 +5,11 @@
         <div class="flex flex-col items-center gap-12 lg:flex-row lg:items-center">
             
             <!-- Sisi Kiri: 1 Gambar Penuh -->
-            <div class="w-full lg:w-1/2 flex justify-center lg:justify-start">
-                <!-- Wrapper Gambar Tunggal -->
-                <div class="w-full max-w-lg overflow-hidden rounded-2xl md:rounded-[2.5rem] bg-gray-200 shadow-xl aspect-[4/5] lg:aspect-[3/4]">
-                    <!-- Pastikan nama file gambar disesuaikan dengan yang ada di folder public/images/ Anda -->
-                    <img src="{{ asset('images/background/GATEFORESTTRIP.webp') }}" alt="Petualangan Alam Gate Forest Trip" class="h-full w-full object-cover transition-transform duration-700 hover:scale-105">
+            <div class="w-full lg:w-1/2 flex justify-center">
+                <div class="w-full max-w-md overflow-hidden rounded-2xl md:rounded-[2.5rem] bg-gray-200 shadow-xl aspect-[4/5] lg:aspect-[3/4]">
+                    <img src="{{ asset('images/background/GATEFORESTTRIP.webp') }}"
+                        alt="Petualangan Alam Gate Forest Trip"
+                        class="h-full w-full object-cover transition-transform duration-700 hover:scale-105">
                 </div>
             </div>
 
