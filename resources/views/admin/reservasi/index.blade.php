@@ -33,12 +33,21 @@
                 $exportQuery = array_filter([
                     'paket' => $paketTrip?->slug,
                     'jadwal' => $jadwalTrip?->jadwalId,
+                    'date_from' => $dateFrom,
+                    'date_to' => $dateTo,
+                ]);
+
+                $baseFilterQuery = array_filter([
+                    'paket' => $paketTrip?->slug,
+                    'jadwal' => $jadwalTrip?->jadwalId,
+                    'date_from' => $dateFrom,
+                    'date_to' => $dateTo,
                 ]);
             @endphp
 
             <form method="get" action="{{ route('admin.reservasi.index') }}" class="mt-6 rounded-lg border border-gray-100 bg-gray-50 p-4">
                 <input type="hidden" name="status" value="{{ $status }}">
-                <div class="grid gap-4 lg:grid-cols-4">
+                <div class="grid gap-4 lg:grid-cols-6">
                     <div>
                         <label class="mb-2 block text-[10px] font-black uppercase tracking-[0.25em] text-gray-500">Paket Trip</label>
                         <select name="paket" class="w-full rounded-lg border-gray-200 bg-white text-sm focus:border-primary focus:ring-primary">
@@ -59,18 +68,32 @@
                             @endforeach
                         </select>
                     </div>
+                    <div>
+                        <label class="mb-2 block text-[10px] font-black uppercase tracking-[0.25em] text-gray-500">Dari Tanggal</label>
+                        <input type="date" name="date_from" value="{{ old('date_from', $dateFrom) }}" class="w-full rounded-lg border-gray-200 bg-white text-sm focus:border-primary focus:ring-primary">
+                    </div>
+                    <div>
+                        <label class="mb-2 block text-[10px] font-black uppercase tracking-[0.25em] text-gray-500">Sampai Tanggal</label>
+                        <input type="date" name="date_to" value="{{ old('date_to', $dateTo) }}" class="w-full rounded-lg border-gray-200 bg-white text-sm focus:border-primary focus:ring-primary">
+                    </div>
                     <div class="lg:col-span-2 flex flex-wrap items-end gap-3">
                         <button type="submit" class="rounded-full bg-primary px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-white transition hover:bg-primary-dark">Terapkan Filter</button>
-                        @if($paketTrip || $jadwalTrip || $status !== '')
+                        @if($paketTrip || $jadwalTrip || $dateFrom || $dateTo || $status !== '')
                             <a href="{{ route('admin.reservasi.index') }}" class="rounded-full border border-gray-200 px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-gray-700 transition hover:border-primary hover:text-primary">Reset</a>
                         @endif
                         <a href="{{ route('admin.reservasi.export.pdf', $exportQuery) }}" class="rounded-full border border-gray-200 px-4 py-2 text-xs font-black uppercase tracking-[0.25em] text-gray-700 transition hover:border-primary hover:text-primary">Export PDF Paid</a>
                     </div>
                 </div>
-                <p class="mt-3 text-xs text-gray-500">Export hanya mengambil reservasi yang sudah dibayar.</p>
+                @error('date_to')
+                    <p class="mt-3 text-xs font-semibold text-red-600">{{ $message }}</p>
+                @enderror
+                @error('date_from')
+                    <p class="mt-3 text-xs font-semibold text-red-600">{{ $message }}</p>
+                @enderror
+                <p class="mt-3 text-xs text-gray-500">Rentang tanggal memakai tanggal berangkat. Export hanya mengambil reservasi yang sudah dibayar.</p>
             </form>
 
-            @if($paketTrip || $jadwalTrip)
+            @if($paketTrip || $jadwalTrip || $dateFrom || $dateTo)
                 <div class="mt-4 rounded-lg border border-primary/10 bg-primary/5 p-4 text-sm text-gray-700">
                     <span class="font-black uppercase tracking-[0.22em] text-primary">Filter aktif:</span>
                     <span class="ml-2">
@@ -83,14 +106,23 @@
                         @if($jadwalTrip)
                             Jadwal {{ \Illuminate\Support\Carbon::parse($jadwalTrip->tanggal_berangkat)->translatedFormat('d M Y') }}
                         @endif
+                        @if(($paketTrip || $jadwalTrip) && ($dateFrom || $dateTo))
+                            <span class="mx-1 text-gray-400">|</span>
+                        @endif
+                        @if($dateFrom || $dateTo)
+                            Tanggal berangkat
+                            {{ $dateFrom ? \Illuminate\Support\Carbon::parse($dateFrom)->translatedFormat('d M Y') : 'awal' }}
+                            s/d
+                            {{ $dateTo ? \Illuminate\Support\Carbon::parse($dateTo)->translatedFormat('d M Y') : 'akhir' }}
+                        @endif
                     </span>
                 </div>
             @endif
             <div class="mt-6 flex flex-wrap gap-2">
-                <a href="{{ route('admin.reservasi.index', array_filter(['paket' => $paketTrip?->slug, 'jadwal' => $jadwalTrip?->jadwalId])) }}" class="rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] {{ $status === '' ? 'border-primary bg-primary/10 text-primary' : 'border-gray-200 text-gray-700 hover:border-primary hover:text-primary' }}">Semua</a>
-                <a href="{{ route('admin.reservasi.index', array_filter(['paket' => $paketTrip?->slug, 'jadwal' => $jadwalTrip?->jadwalId, 'status' => 'unpaid'])) }}" class="rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] {{ $status === 'unpaid' ? 'border-primary bg-primary/10 text-primary' : 'border-gray-200 text-gray-700 hover:border-primary hover:text-primary' }}">Unpaid</a>
-                <a href="{{ route('admin.reservasi.index', array_filter(['paket' => $paketTrip?->slug, 'jadwal' => $jadwalTrip?->jadwalId, 'status' => 'paid'])) }}" class="rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] {{ $status === 'paid' ? 'border-primary bg-primary/10 text-primary' : 'border-gray-200 text-gray-700 hover:border-primary hover:text-primary' }}">Paid</a>
-                <a href="{{ route('admin.reservasi.index', array_filter(['paket' => $paketTrip?->slug, 'jadwal' => $jadwalTrip?->jadwalId, 'status' => 'cancelled'])) }}" class="rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] {{ $status === 'cancelled' ? 'border-primary bg-primary/10 text-primary' : 'border-gray-200 text-gray-700 hover:border-primary hover:text-primary' }}">Cancelled</a>
+                <a href="{{ route('admin.reservasi.index', $baseFilterQuery) }}" class="rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] {{ $status === '' ? 'border-primary bg-primary/10 text-primary' : 'border-gray-200 text-gray-700 hover:border-primary hover:text-primary' }}">Semua</a>
+                <a href="{{ route('admin.reservasi.index', array_merge($baseFilterQuery, ['status' => 'unpaid'])) }}" class="rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] {{ $status === 'unpaid' ? 'border-primary bg-primary/10 text-primary' : 'border-gray-200 text-gray-700 hover:border-primary hover:text-primary' }}">Unpaid</a>
+                <a href="{{ route('admin.reservasi.index', array_merge($baseFilterQuery, ['status' => 'paid'])) }}" class="rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] {{ $status === 'paid' ? 'border-primary bg-primary/10 text-primary' : 'border-gray-200 text-gray-700 hover:border-primary hover:text-primary' }}">Paid</a>
+                <a href="{{ route('admin.reservasi.index', array_merge($baseFilterQuery, ['status' => 'cancelled'])) }}" class="rounded-full border px-4 py-2 text-[10px] font-black uppercase tracking-[0.22em] {{ $status === 'cancelled' ? 'border-primary bg-primary/10 text-primary' : 'border-gray-200 text-gray-700 hover:border-primary hover:text-primary' }}">Cancelled</a>
             </div>
         </div>
 

@@ -20,6 +20,8 @@ class ReservasiController extends BaseController
 {
     public function index(Request $request): View
     {
+        [$dateFrom, $dateTo] = $this->resolveDateRange($request);
+
         $status = (string) $request->input('status', '');
         $paketTrip = null;
         $jadwalTrip = null;
@@ -62,35 +64,48 @@ class ReservasiController extends BaseController
             ->when($jadwalTrip, function ($query) use ($jadwalTrip) {
                 $query->where('jadwalId', $jadwalTrip->jadwalId);
             })
+            ->when($dateFrom || $dateTo, function ($query) use ($dateFrom, $dateTo) {
+                $query->whereHas('jadwal', function ($jadwalQuery) use ($dateFrom, $dateTo) {
+                    $jadwalQuery
+                        ->when($dateFrom, function ($query) use ($dateFrom) {
+                            $query->whereDate('tanggal_berangkat', '>=', $dateFrom);
+                        })
+                        ->when($dateTo, function ($query) use ($dateTo) {
+                            $query->whereDate('tanggal_berangkat', '<=', $dateTo);
+                        });
+                });
+            })
             ->latest('reservasiId');
 
         $reservasis = $reservasisQuery->paginate(10);
         $reservasis->withQueryString();
 
-        return view('admin.reservasi.index', compact('reservasis', 'status', 'paketTrip', 'jadwalTrip', 'pakets', 'jadwals'));
+        return view('admin.reservasi.index', compact('reservasis', 'status', 'paketTrip', 'jadwalTrip', 'pakets', 'jadwals', 'dateFrom', 'dateTo'));
     }
 
     public function exportPdf(Request $request)
     {
-        [$status, $paketTrip, $jadwalTrip, $reservasis] = $this->resolveExportData($request);
+        [$status, $paketTrip, $jadwalTrip, $dateFrom, $dateTo, $reservasis] = $this->resolveExportData($request);
 
         $pdf = Pdf::loadView('admin.reservasi.export-pdf', [
             'reservasis' => $reservasis,
             'status' => $status,
             'paketTrip' => $paketTrip,
             'jadwalTrip' => $jadwalTrip,
+            'dateFrom' => $dateFrom,
+            'dateTo' => $dateTo,
             'generatedAt' => now(),
         ])->setPaper('a4', 'landscape');
 
-        $filename = $this->buildExportFilename('pdf', $paketTrip, $jadwalTrip);
+        $filename = $this->buildExportFilename('pdf', $paketTrip, $jadwalTrip, $dateFrom, $dateTo);
 
         return $pdf->download($filename);
     }
 
     public function exportCsv(Request $request): StreamedResponse
     {
-        [$status, $paketTrip, $jadwalTrip, $reservasis] = $this->resolveExportData($request);
-        $filename = $this->buildExportFilename('csv', $paketTrip, $jadwalTrip);
+        [$status, $paketTrip, $jadwalTrip, $dateFrom, $dateTo, $reservasis] = $this->resolveExportData($request);
+        $filename = $this->buildExportFilename('csv', $paketTrip, $jadwalTrip, $dateFrom, $dateTo);
 
         return response()->streamDownload(function () use ($reservasis) {
             $handle = fopen('php://output', 'w');
@@ -213,6 +228,8 @@ class ReservasiController extends BaseController
 
     private function resolveExportData(Request $request): array
     {
+        [$dateFrom, $dateTo] = $this->resolveDateRange($request);
+
         $status = 'paid';
         $paketTrip = null;
         $jadwalTrip = null;
@@ -240,13 +257,43 @@ class ReservasiController extends BaseController
             ->when($jadwalTrip, function ($query) use ($jadwalTrip) {
                 $query->where('jadwalId', $jadwalTrip->jadwalId);
             })
+            ->when($dateFrom || $dateTo, function ($query) use ($dateFrom, $dateTo) {
+                $query->whereHas('jadwal', function ($jadwalQuery) use ($dateFrom, $dateTo) {
+                    $jadwalQuery
+                        ->when($dateFrom, function ($query) use ($dateFrom) {
+                            $query->whereDate('tanggal_berangkat', '>=', $dateFrom);
+                        })
+                        ->when($dateTo, function ($query) use ($dateTo) {
+                            $query->whereDate('tanggal_berangkat', '<=', $dateTo);
+                        });
+                });
+            })
             ->latest('reservasiId')
             ->get();
 
-        return [$status, $paketTrip, $jadwalTrip, $reservasis];
+        return [$status, $paketTrip, $jadwalTrip, $dateFrom, $dateTo, $reservasis];
     }
 
-    private function buildExportFilename(string $extension, ?PaketTrip $paketTrip, ?Jadwal $jadwalTrip): string
+    private function resolveDateRange(Request $request): array
+    {
+        $dateToRules = ['nullable', 'date'];
+
+        if ($request->filled('date_from')) {
+            $dateToRules[] = 'after_or_equal:date_from';
+        }
+
+        $validated = $request->validate([
+            'date_from' => ['nullable', 'date'],
+            'date_to' => $dateToRules,
+        ]);
+
+        return [
+            $validated['date_from'] ?? null,
+            $validated['date_to'] ?? null,
+        ];
+    }
+
+    private function buildExportFilename(string $extension, ?PaketTrip $paketTrip, ?Jadwal $jadwalTrip, ?string $dateFrom = null, ?string $dateTo = null): string
     {
         $parts = ['reservasi-paid'];
 
@@ -256,6 +303,10 @@ class ReservasiController extends BaseController
 
         if ($jadwalTrip) {
             $parts[] = 'jadwal-' . Carbon::parse($jadwalTrip->tanggal_berangkat)->format('Ymd');
+        }
+
+        if ($dateFrom || $dateTo) {
+            $parts[] = 'tanggal-' . ($dateFrom ? Carbon::parse($dateFrom)->format('Ymd') : 'awal') . '-sd-' . ($dateTo ? Carbon::parse($dateTo)->format('Ymd') : 'akhir');
         }
 
         $parts[] = now()->format('Ymd-His');

@@ -56,6 +56,14 @@
         @if($jadwalTrip)
             <p class="meta">Filter jadwal: {{ \Illuminate\Support\Carbon::parse($jadwalTrip->tanggal_berangkat)->translatedFormat('d M Y') }}</p>
         @endif
+        @if($dateFrom || $dateTo)
+            <p class="meta">
+                Filter tanggal berangkat:
+                {{ $dateFrom ? \Illuminate\Support\Carbon::parse($dateFrom)->translatedFormat('d M Y') : 'awal' }}
+                s/d
+                {{ $dateTo ? \Illuminate\Support\Carbon::parse($dateTo)->translatedFormat('d M Y') : 'akhir' }}
+            </p>
+        @endif
         @if($status !== '')
             <p class="meta">Hanya reservasi dengan pembayaran lunas</p>
         @endif

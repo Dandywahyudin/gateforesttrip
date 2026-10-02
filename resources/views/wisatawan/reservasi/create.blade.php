@@ -64,7 +64,7 @@
                                                     Rp {{ number_format($hargaJadwal, 0, ',', '.') }}
                                                 </span>
                                                 <span class="inline-flex rounded-full bg-background-light px-3 py-2 text-[10px] font-black uppercase tracking-[0.22em] text-forest-green" data-jadwal-field="sisa-kuota">
-                                                    {{ $sisaKuota }} dari {{ $jadwal->kuota_max }} kursi
+                                                    {{ $sisaKuota }} dari {{ $jadwal->kuota_max }} kuota tersisa
                                                 </span>
                                             </div>
                                         </div>
@@ -219,7 +219,7 @@
                     const sisaElement = card.querySelector('[data-jadwal-field="sisa-kuota"]');
 
                     if (sisaElement) {
-                        sisaElement.textContent = `${baseSisa} dari ${totalKuota} kursi`;
+                        sisaElement.textContent = `${baseSisa} dari ${totalKuota} kuota tersisa`;
                     }
                 });
 
@@ -246,7 +246,7 @@
                 const selectedQuantity = Number(input.value || min);
                 const displaySisa = isSelected ? Math.max(0, base - selectedQuantity) : base;
 
-                sisaElement.textContent = `${displaySisa} dari ${total || base} kursi`;
+                sisaElement.textContent = `${displaySisa} dari ${total || base} kuota`;
             });
         }
 

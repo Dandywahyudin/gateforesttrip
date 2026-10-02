@@ -22,7 +22,23 @@
         }
     }
 @endphp
-
+<!-- Meta Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '2556612258116626');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=2556612258116626&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Meta Pixel Code -->
 <header x-data="{ open: false }" x-on:keydown.escape.window="open = false" class="fixed top-0 z-[100] w-full transition-all duration-300 {{ $isLandingPage ? 'bg-black/10 backdrop-blur-md border-b border-white/5' : 'bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm' }}">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16 py-4 flex items-center justify-between">
         <div class="flex items-center gap-3">
