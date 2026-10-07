@@ -1,26 +1,7 @@
 @php
     $isLandingPage = request()->is('/') || request()->is('');
-    $hubungiKamiUrl = url('/#hubungi-kami');
-
-    $adminWhatsapp = \App\Models\User::query()
-        ->where('role', 'admin')
-        ->whereNotNull('no_hp')
-        ->orderBy('userId')
-        ->first();
-
-    if ($adminWhatsapp?->no_hp) {
-        $phoneNumber = preg_replace('/\D+/', '', (string) $adminWhatsapp->no_hp);
-
-        if ($phoneNumber !== '') {
-            if (str_starts_with($phoneNumber, '0')) {
-                $phoneNumber = '62' . substr($phoneNumber, 1);
-            } elseif (str_starts_with($phoneNumber, '8')) {
-                $phoneNumber = '62' . $phoneNumber;
-            }
-
-            $hubungiKamiUrl = 'https://wa.me/' . $phoneNumber . '?text=' . rawurlencode('Halo Admin GateForestTrip, saya ingin bertanya mengenai trip yang tersedia.');
-        }
-    }
+    $phoneNumber = '6285222569636';
+    $hubungiKamiUrl = 'https://wa.me/' . $phoneNumber . '?text=' . rawurlencode('Halo Admin GateForestTrip, saya ingin bertanya mengenai trip yang tersedia.');
 @endphp
 <!-- Meta Pixel Code -->
 <script>
