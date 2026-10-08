@@ -10,6 +10,9 @@
         $paket->foto3_url,
         $paket->foto4_url,
     ]));
+    $reservationPhoneNumber = '6285222569636';
+    $reservationMessage = 'Halo Admin GateForestTrip, saya ingin reservasi paket trip ' . $paket->nama . '.';
+    $reservationWhatsappUrl = 'https://wa.me/' . $reservationPhoneNumber . '?text=' . rawurlencode($reservationMessage);
 @endphp
 <section class="w-full pt-24 pb-10 bg-white">
     <div class="max-w-[1440px] mx-auto px-6 lg:px-16">
@@ -103,24 +106,22 @@
                         </div>
                     </div>
 
-                    @auth
-                        @if(auth()->user()->isWisatawan())
-                            <a href="{{ route('reservasi.jadwal', $paket) }}" class="group flex w-full items-center justify-center gap-3 rounded-2xl bg-forest-green px-5 py-4 text-sm font-black uppercase tracking-[0.28em] text-white transition hover:-translate-y-0.5 hover:bg-forest-green/90 hover:shadow-lg hover:shadow-forest-green/20">
-                                <span>Reservasi Sekarang</span>
-                                <span class="transition group-hover:translate-x-1">→</span>
-                            </a>
+                    {{--
+                        Alur reservasi lama dipertahankan sebagai referensi:
+                        @auth
+                            @if(auth()->user()->isWisatawan())
+                                <a href="{{ route('reservasi.jadwal', $paket) }}">Reservasi Sekarang</a>
+                            @else
+                                <a href="{{ route('login') }}">Login untuk Reservasi</a>
+                            @endif
                         @else
-                            <a href="{{ route('login') }}" class="group flex w-full items-center justify-center gap-3 rounded-2xl bg-forest-green px-5 py-4 text-sm font-black uppercase tracking-[0.28em] text-white transition hover:-translate-y-0.5 hover:bg-forest-green/90 hover:shadow-lg hover:shadow-forest-green/20">
-                                <span>Login untuk Reservasi</span>
-                                <span class="transition group-hover:translate-x-1">→</span>
-                            </a>
-                        @endif
-                    @else
-                        <a href="{{ route('login') }}" class="group flex w-full items-center justify-center gap-3 rounded-2xl bg-forest-green px-5 py-4 text-sm font-black uppercase tracking-[0.28em] text-white transition hover:-translate-y-0.5 hover:bg-forest-green/90 hover:shadow-lg hover:shadow-forest-green/20">
-                            <span>Login untuk Reservasi</span>
-                            <span class="transition group-hover:translate-x-1">→</span>
-                        </a>
-                    @endauth
+                            <a href="{{ route('login') }}">Login untuk Reservasi</a>
+                        @endauth
+                    --}}
+                    <a href="{{ $reservationWhatsappUrl }}" target="_blank" rel="noopener noreferrer" class="group flex w-full items-center justify-center gap-3 rounded-2xl bg-forest-green px-5 py-4 text-sm font-black uppercase tracking-[0.28em] text-white transition hover:-translate-y-0.5 hover:bg-forest-green/90 hover:shadow-lg hover:shadow-forest-green/20">
+                        <span>Reservasi Sekarang</span>
+                        <span class="transition group-hover:translate-x-1">→</span>
+                    </a>
                 </div>
             </div>
         </div>
